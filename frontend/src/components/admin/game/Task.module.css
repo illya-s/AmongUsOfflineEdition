@@ -1,0 +1,37 @@
+.task {
+    padding: var(--ant-padding);
+
+    display: grid;
+    grid-template-columns: max-content auto;
+    align-items: center;
+    gap: var(--ant-padding);
+
+    border: 1px solid var(--ant-color-border);
+    border-radius: var(--ant-border-radius);
+    background-color: var(--ant-color-bg-elevated);
+
+    cursor: pointer;
+    user-select: none;
+
+    &.active {
+        background-color: var(--ant-color-primary);
+        color: var(--ant-color-text-heading);
+    }
+}
+
+.center {
+    display: grid;
+    grid-template-rows: max-content max-content;
+}
+
+.name {
+    display: -webkit-box;
+    color: var(--ant-color-text-heading);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.text {
+    color: var(--ant-color-text-description);
+}

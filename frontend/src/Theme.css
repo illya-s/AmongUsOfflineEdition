@@ -1,0 +1,14 @@
+:root {
+    --color-info:                 hsl(217, 80%, 60%);
+    --color-info-hover:           hsl(217, 100%, 60%);
+    --color-info-active:          hsl(217, 100%, 60%);
+    --color-info-bg:              hsl(217, 100%, 9%);
+    --color-info-bg-active:       hsl(217, 100%, 15%);
+    --color-info-bg-hover:        hsl(217, 100%, 15%);
+    --color-info-bg-filled-hover: hsl(217, 100%, 25%);
+    --color-info-border:          hsl(217, 100%, 50%);
+    --color-info-border-hover:    hsl(217, 100%, 60%);
+    --color-info-text:            hsl(217, 100%, 70%);
+    --color-info-text-active:     hsl(217, 100%, 85%);
+    --color-info-text-hover:      hsl(217, 100%, 85%);
+}

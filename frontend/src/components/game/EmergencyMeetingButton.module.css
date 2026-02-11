@@ -1,0 +1,60 @@
+/* YourStyles.module.css */
+.button-container {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.alert-button {
+    position: relative;
+
+    width: 75px;
+    height: 75px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: repeating-linear-gradient(45deg, black 0 20%, yellow 20% 40%);
+    border: 3px solid grey;
+    border-radius: var(--ant-border-radius);
+
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+
+    &::after {
+        position: absolute;
+
+        width: 80%;
+        height: 80%;
+        content: "";
+
+        background-color: darkgray;
+        border-radius: var(--ant-border-radius);
+    }
+}
+
+.alert-button > div {
+    z-index: 2;
+
+    width: 50%;
+    height: 50%;
+
+    background-color: red;
+    border-radius: 50%;
+}
+
+.progress-container {
+    width: 8px;
+    height: 100%;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 0%;
+    background-color: red;
+    width: 100%;
+}

@@ -1,0 +1,15 @@
+.block {
+    padding: var(--ant-padding);
+
+    display: flex;
+    flex-direction: row;
+    gap: var(--ant-padding);
+    align-items: center;
+
+    border-radius: var(--ant-border-radius);
+    background-color: var(--ant-color-bg-elevated);
+}
+
+.middle {
+    flex: 1 1 auto;
+}
