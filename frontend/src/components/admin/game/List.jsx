@@ -8,7 +8,7 @@ export default function List({
 }) {
     return (
         <div className={`${styles.list} ${className}`}>
-            {dataSource.length != 0 ? (
+            {Array.isArray(dataSource) && dataSource.length !== 0 ? (
                 dataSource.map(renderItem)
             ) : (
                 <span className={styles.message}>{emptyMessage}</span>

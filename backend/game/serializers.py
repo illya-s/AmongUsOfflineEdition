@@ -1,8 +1,8 @@
-import random
-from asyncio.tasks import all_tasks
+import base64
+import datetime
 
 from django.conf import settings
-from django.contrib.auth.models import AnonymousUser
+from django.core.files.base import ContentFile
 from django.db import transaction
 from django.utils import timezone
 from rest_framework import serializers
@@ -18,7 +18,7 @@ from game.exceptions import (
 from game.request import SocketRequest
 from user.models import User
 
-from .models import GameRoom, GameTask, Location, Player, Task
+from .models import GameRoom, GameTask, Location, Meeting, Player, Task, Vote
 
 
 class ToggleAutoAssignRoleSerializer(serializers.Serializer):
@@ -65,19 +65,20 @@ class ChangeGameSerializer(serializers.Serializer):
         all_tasks_count = all_tasks.count()
         shuffle_tasks = list(all_tasks.order_by("?"))
 
-        if all_players_count <= 3:
+        if not instance.active and all_players_count <= 3:
             raise NotEnoughPlayersError("Недостаточно игроков для начала игры")
 
-        if all_tasks_count < all_players_count:
+        if not instance.active and all_tasks_count < all_players_count:
             raise NotEnoughTasksError(
                 f"Недостаточно задач: найдено {all_tasks_count}, а игроков экипажа {all_players_count}"
             )
 
         instance.active = value
-        instance.start_time = timezone.now()
+        instance.start_time = timezone.now() + datetime.timedelta(seconds=20)
         instance.save()
 
         if not instance.active:
+            instance.reset_game()
             return instance
 
         if not instance.auto_assign_role:
@@ -92,12 +93,13 @@ class ChangeGameSerializer(serializers.Serializer):
         else:
             random_players = list(all_players.order_by("?"))
 
-            if all_players_count <= 6:
-                imposters_count = 1
-            elif all_players_count <= 9:
-                imposters_count = 2
-            else:
-                imposters_count = 3
+            imposters_count = 1
+            # if all_players_count <= 6:
+            #     imposters_count = 1
+            # elif all_players_count <= 9:
+            #     imposters_count = 2
+            # else:
+            #     imposters_count = 3
 
             imposters = random_players[:imposters_count]
             crew = random_players[imposters_count:]
@@ -192,10 +194,29 @@ class PlayerSerializer(serializers.ModelSerializer):
         extra_kwargs = {"room": {"required": False}}
 
 
+class VoteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vote
+        fields = "__all__"
+
+
+class MeetingSerializer(serializers.ModelSerializer):
+    votes = VoteSerializer(many=True, read_only=True)
+    time_remaining = serializers.IntegerField(
+        source="get_time_remaining", read_only=True
+    )
+
+    class Meta:
+        model = Meeting
+        fields = "__all__"
+
+
 class GameTaskSerializer(serializers.ModelSerializer):
     task = serializers.PrimaryKeyRelatedField(queryset=Task.objects.all())
     location = serializers.PrimaryKeyRelatedField(queryset=Location.objects.all())
-    player = serializers.PrimaryKeyRelatedField(queryset=Player.objects.all())
+    player = serializers.PrimaryKeyRelatedField(
+        queryset=Player.objects.all(), required=False
+    )
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -272,8 +293,18 @@ class UpdateZonesSerializer(serializers.Serializer):
 class GameRoomSerializer(serializers.ModelSerializer):
     tasks = GameTaskSerializer(many=True, read_only=True)
     players = PlayerSerializer(many=True, read_only=True)
+    meetings = MeetingSerializer(many=True, read_only=True)
+
+    locations = serializers.SerializerMethodField(read_only=True)
+    available_tasks = serializers.SerializerMethodField(read_only=True)
 
     game_map = serializers.SerializerMethodField(read_only=True)
+
+    def get_locations(self, obj: GameRoom):
+        return LocationSerializer(Location.objects.all(), many=True).data
+
+    def get_available_tasks(self, obj: GameRoom):
+        return TaskSerializer(Task.objects.all(), many=True).data
 
     def get_game_map(self, obj: GameRoom):
         return f"{settings.BACKEND_URL}{obj.game_map.url}" if obj.game_map else None
@@ -282,3 +313,88 @@ class GameRoomSerializer(serializers.ModelSerializer):
         model = GameRoom
         fields = "__all__"
         read_only_fields = ("id", "code", "updated", "created")
+
+
+class ChangeMapSerializer(serializers.Serializer):
+    game_map = serializers.CharField()
+
+    def update(self, instance: GameRoom, validated_data):
+        game_map_base64 = validated_data.get("game_map")
+        if game_map_base64:
+            try:
+                format, imgstr = game_map_base64.split(";base64,")
+                ext = format.split("/")[-1]
+                data = ContentFile(base64.b64decode(imgstr), name=f"map.{ext}")
+                instance.game_map = data
+                instance.save()
+            except Exception as e:
+                raise serializers.ValidationError(
+                    f"Ошибка при декодировании изображения: {str(e)}"
+                )
+        return instance
+
+
+class CompleteTaskSerializer(serializers.Serializer):
+    """Serializer for completing a task"""
+
+    id = serializers.IntegerField(required=True, help_text="Task ID to complete")
+
+
+class KillPlayerSerializer(serializers.Serializer):
+    """Serializer for imposter killing a player"""
+
+    target_id = serializers.IntegerField(
+        required=True, help_text="ID of player to kill"
+    )
+
+
+class StartEmergencyMeetingSerializer(serializers.Serializer):
+    """Serializer for starting an emergency meeting"""
+
+
+class StartMeetingVoteSerializer(serializers.Serializer):
+    """Serializer for admin to start the voting phase of a meeting"""
+
+    meeting_id = serializers.IntegerField(
+        required=True, help_text="ID of the meeting to start"
+    )
+
+
+class ReportBodySerializer(serializers.Serializer):
+    """Serializer for reporting a dead body"""
+
+    reported_player_id = serializers.IntegerField(
+        required=True, help_text="ID of the dead player being reported"
+    )
+
+
+class SubmitVoteSerializer(serializers.Serializer):
+    """Serializer for submitting a vote during a meeting"""
+
+    meeting_id = serializers.IntegerField(required=True, help_text="ID of the meeting")
+    voted_for_id = serializers.IntegerField(
+        required=False,
+        allow_null=True,
+        help_text="ID of player to vote for. Null/omit to skip vote",
+    )
+
+
+class TriggerSabotageSerializer(serializers.Serializer):
+    """Serializer for triggering a sabotage"""
+
+    type = serializers.ChoiceField(
+        choices=["o2", "reactor", "lights", "comms"],
+        required=True,
+        help_text="Type of sabotage to trigger",
+    )
+
+
+class ResolveSabotageSerializer(serializers.Serializer):
+    """Serializer for resolving a sabotage"""
+
+
+class UpdatePlayerLocationSerializer(serializers.Serializer):
+    """Serializer for updating player map position"""
+
+    x = serializers.FloatField(min_value=0, max_value=100)
+    y = serializers.FloatField(min_value=0, max_value=100)

@@ -1,10 +1,11 @@
-# Python-generated files
+# default files
+.venv/
 __pycache__/
+*.py[cod]
 *.py[oc]
-build/
-dist/
-wheels/
-*.egg-info
-
-# Virtual environments
-.venv
+.env
+db.sqlite3
+media/
+staticfiles/
+logs/
+.uv/

@@ -10,6 +10,12 @@ import DotedMenu from "./icons/doted-menu.svg?react";
 export { LogoIcon, UserIcon, ChatIcon, SendIcon, RightSideIcon, DotedMenu };
 
 import CheckIcon from "./icons/check.svg?react";
-import CloseIcon from "./icons/close.svg?react"
+import CloseIcon from "./icons/close.svg?react";
 
 export { CheckIcon, CloseIcon };
+
+import AliveIcon from "./icons/alive.svg?react";
+import GhostIcon from "./icons/ghost.svg?react";
+import KnifeIcon from "./icons/knife.svg?react";
+
+export { AliveIcon, GhostIcon, KnifeIcon };

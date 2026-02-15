@@ -1,0 +1,83 @@
+.wrapper {
+	padding: 32px;
+	text-align: center;
+}
+
+.wrapper h1 {
+	color: white;
+	margin-bottom: 24px;
+}
+
+.voteList {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	margin-bottom: 24px;
+	max-height: 300px;
+	overflow-y: auto;
+}
+
+.voteCard {
+	background: rgba(255, 255, 255, 0.1);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.playerVote {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+}
+
+.voteInfo {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	flex: 1;
+}
+
+.voteInfo strong {
+	font-size: 16px;
+	color: white;
+}
+
+.voteInfo span {
+	font-size: 14px;
+	color: rgba(255, 255, 255, 0.7);
+}
+
+.result {
+	margin-top: 32px;
+	padding: 24px;
+	background: rgba(0, 0, 0, 0.3);
+	border-radius: 12px;
+}
+
+.ejected {
+	color: #ff4d4f;
+	font-size: 24px;
+	margin-bottom: 12px;
+}
+
+.ejectedIcon {
+	font-size: 32px;
+	display: inline-block;
+	margin-right: 12px;
+}
+
+.role {
+	color: white;
+	font-size: 16px;
+}
+
+.role strong {
+	color: #1890ff;
+}
+
+.noEjection {
+	color: #52c41a;
+	font-size: 20px;
+}
+
+.modal {
+	background: linear-gradient(135deg, #4a148c 0%, #1a237e 100%);
+}

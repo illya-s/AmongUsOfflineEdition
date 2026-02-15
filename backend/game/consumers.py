@@ -1,3 +1,4 @@
+from game.models import GameRoom
 from urllib.parse import parse_qs
 
 from channels.db import database_sync_to_async
@@ -27,8 +28,9 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
 
         game = await database_sync_to_async(get_game_by_code)(self.room_name)
 
-        if not game or not game.id:
+        if not isinstance(game, GameRoom):
             await self.close()
+            return
 
         pId_raw = query_params.get("pId", [None])[0]
         pId = None if pId_raw in [None, "null", "undefined"] else pId_raw

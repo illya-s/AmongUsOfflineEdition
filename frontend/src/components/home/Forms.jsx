@@ -19,11 +19,16 @@ export function GameConnectForm({ setGame }) {
     }, [code]);
 
     const handleGetGame = async () => {
+        if (!code) {
+            message.warning("Введите код")
+            return
+        }
+
         const game = await getGame(code);
 
         if (!game) {
             message.error("Что-то пошло не так!");
-        } else if (game?.active) {
+        } else if (game?.active && !localStorage.getItem(code)) {
             message.warning("Игра уже стартовыла!");
             setCode("");
         } else {
@@ -33,14 +38,14 @@ export function GameConnectForm({ setGame }) {
     };
 
     return (
-        <form action={handleGetGame} className={styles.form}>
+        <form className={styles.form}>
             <Input.OTP
                 placeholder="Введите код..."
                 formatter={(str) => str.toUpperCase()}
                 length={8}
                 value={code}
                 onChange={(value) => setCode(value)}
-                onKeyDown={(e) => e.key == "Enter" && handleAddGameUser()}
+                onKeyDown={(e) => e.key == "Enter" && handleGetGame()}
                 size="large"
             />
 
@@ -81,7 +86,7 @@ export function GameAddUserForm({ gameSocket, code, setPId, setPlayer }) {
 
     return (
         <div className={styles.wrapper}>
-            <form className={styles.form}>
+            <form className={styles.form} onSubmit={handleAddGameUser}>
                 <Input
                     placeholder="Введите имя..."
                     value={name}

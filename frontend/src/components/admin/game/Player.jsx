@@ -3,6 +3,7 @@ import { Avatar, Button, Popconfirm, Select } from "antd";
 import { useState } from "react";
 import { sendWithAck } from "../../../lib/api/sendWithAck";
 import styles from "./Player.module.css";
+import { AliveIcon, GhostIcon, KnifeIcon } from "../../../assets/icons";
 
 export default function Player({ player, game, gameSocket, editable = false }) {
     const [isLoading, setIsLoading] = useState(false);
@@ -30,20 +31,27 @@ export default function Player({ player, game, gameSocket, editable = false }) {
 
     return (
         <div className={styles.block}>
-            <Avatar>{player.id}</Avatar>
+            {player?.is_alive ? (
+                player?.role == "imposter" ? (
+                    <KnifeIcon style={{ width: 32, color: "#FFF" }} />
+                ) : (
+                    <AliveIcon style={{ width: 32, color: "#FFF" }} />
+                )
+            ) : (
+                <GhostIcon style={{ width: 32, color: "#FFF" }} />
+            )}
 
             <div className={styles.middle}>
                 <h3>{player.name}</h3>
 
                 <span>
-                    Роль:&nbsp;
+                    #{player.id} Роль:&nbsp;
                     {game?.active ? (
                         <span>
-                            {
+                            {Array.isArray(player.roleList) &&
                                 player.roleList.find(
                                     (role) => role.value == roleValue,
-                                )?.name
-                            }
+                                )?.name}
                         </span>
                     ) : (
                         <Select
@@ -51,7 +59,10 @@ export default function Player({ player, game, gameSocket, editable = false }) {
                             onChange={updatePlayerRole}
                             options={[
                                 { value: "null", label: "Не назначено" },
-                                ...player.roleList.map((role) => {
+                                ...(Array.isArray(player.roleList)
+                                    ? player.roleList
+                                    : []
+                                ).map((role) => {
                                     return {
                                         value: role.value,
                                         label: role.name,
@@ -63,6 +74,29 @@ export default function Player({ player, game, gameSocket, editable = false }) {
                     )}
                 </span>
             </div>
+
+            {game?.active && player.is_alive && (
+                <Popconfirm
+                    title={`Убить игрока ${player.name}?`}
+                    onConfirm={() => {
+                        sendWithAck(gameSocket, {
+                            action: "kill_player",
+                            data: { target_id: player.id },
+                        }).catch((err) => {
+                            console.error(err.message);
+                        });
+                    }}
+                >
+                    <Button
+                        size="middle"
+                        danger
+                        shape="circle"
+                        style={{ marginRight: "10px" }}
+                    >
+                        🔪
+                    </Button>
+                </Popconfirm>
+            )}
 
             <Popconfirm
                 title="Вы действительно хотите удалить игрока?"

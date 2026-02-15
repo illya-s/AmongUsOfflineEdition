@@ -4,6 +4,7 @@ let updateGame = null;
 let updateTasks = null;
 let updatePlayers = null;
 let updateLocations = null;
+let updateAvailableTasks = null;
 
 export function initSocketHandlers({
     pId,
@@ -12,6 +13,7 @@ export function initSocketHandlers({
     setTasks,
     setPlayers,
     setLocations,
+    setAvailableTasks,
 }) {
     player_id = pId;
     updatePlayer = setPlayer;
@@ -19,6 +21,7 @@ export function initSocketHandlers({
     updateTasks = setTasks;
     updatePlayers = setPlayers;
     updateLocations = setLocations;
+    updateAvailableTasks = setAvailableTasks;
 }
 
 let pendingRequests = {};
@@ -64,10 +67,11 @@ export function handleSocketMessage(event) {
         case "init":
         case "update":
             updateGame?.(msg.data.game);
-            updateTasks?.(msg.data.game.tasks);
-            updatePlayers?.(msg.data.game.players);
+            updateTasks?.(Array.isArray(msg.data.game.tasks) ? msg.data.game.tasks : []);
+            updatePlayers?.(Array.isArray(msg.data.game.players) ? msg.data.game.players : []);
             updatePlayer?.(msg.player)
-            // updateLocations?.()
+            updateLocations?.(Array.isArray(msg.data.game.locations) ? msg.data.game.locations : []);
+            updateAvailableTasks?.(Array.isArray(msg.data.game.available_tasks) ? msg.data.game.available_tasks : []);
             break;
 
         case "error":

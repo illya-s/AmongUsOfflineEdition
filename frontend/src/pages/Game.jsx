@@ -1,6 +1,4 @@
-import styles from "./Game.module.css";
-
-import { WarningOutlined, LoadingOutlined } from "@ant-design/icons";
+import { LoadingOutlined, WarningOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
@@ -8,6 +6,9 @@ import { Section } from "../components/elements/Section";
 import { GameContainer, GameLoading } from "../components/game/Game";
 import { GameAddUserForm } from "../components/home/Forms";
 import { useGameSocket } from "../lib/api/useGameSocket";
+import styles from "./Game.module.css";
+import { GameWaiting } from "../components/game/GameWaiting";
+import { WinScreen } from "../components/game/WinScreen";
 
 export default function Game() {
     const { code } = useParams();
@@ -42,6 +43,20 @@ export default function Game() {
         // setPlayer(p);
     }, [players]);
 
+    const startTime = game?.start_time
+        ? new Date(game.start_time).getTime()
+        : 0;
+
+    const [started, setStarted] = useState(false);
+
+    if (player && !player.is_alive) {
+        navigate("/ghost");
+    }
+
+    if (game?.is_ended) {
+        return <WinScreen game={game} />;
+    }
+
     return loading || loading === null ? (
         <Section className={styles.loading}>
             {loading === null ? (
@@ -70,13 +85,22 @@ export default function Game() {
             setPlayer={setPlayer}
         />
     ) : game?.active ? (
-        <GameContainer
-            gameSocket={gameSocket}
-            game={game}
-            tasks={tasks}
-            player={player}
-            players={players}
-        />
+        !started ? (
+            <GameWaiting
+                player={player}
+                players={players}
+                startTime={startTime}
+                onFinish={() => setStarted(true)}
+            />
+        ) : (
+            <GameContainer
+                gameSocket={gameSocket}
+                game={game}
+                tasks={tasks}
+                player={player}
+                players={players}
+            />
+        )
     ) : (
         <GameLoading
             gameSocket={gameSocket}

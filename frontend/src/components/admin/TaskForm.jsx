@@ -18,10 +18,15 @@ export function useTaskForm() {
         </form>
     );
 
+    const reset = () => {
+        setText("");
+    };
+
     return {
         TaskForm,
         taskFormData: {
             text: text,
         },
+        reset,
     };
 }
