@@ -1,21 +1,27 @@
 import { CheckIcon } from "../../assets/icons/";
 
-import { LoadingOutlined, InfoCircleOutlined } from "@ant-design/icons";
-import { Avatar, Button, Popover, Progress, Spin, Statistic } from "antd";
+import { InfoCircleOutlined, LoadingOutlined } from "@ant-design/icons";
+import { Button, Popover, Progress, Spin, Statistic } from "antd";
 
-import gameContStyles from "./GameContainer.module.css";
-import { Section } from "../elements/Section";
 import { sendWithAck } from "../../lib/api/sendWithAck";
+import { Section } from "../elements/Section";
+import gameContStyles from "./GameContainer.module.css";
 
-import gameLoadingStyles from "./GameLoading.module.css";
-import { Fragment, useState } from "react";
-import { useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
+import { AliveIcon, KnifeIcon } from "../../assets/icons";
 import { colorFromNumber } from "../../lib/client/colorFromNumber";
 import List from "../admin/game/List";
-import Task from "../admin/game/Task";
-import { EmergencyMeetingButton } from "./EmergencyMeetingButton";
+import gameLoadingStyles from "./GameLoading.module.css";
+import { MeetingScreen } from "./MeetingScreen";
+import { Player } from "./Player";
+import { ReportButton } from "./ReportButton";
+import { SabotageMenu } from "./SabotageMenu";
+import { SelfKillButton } from "./SelfKillButton";
+import { useMessageApi } from "../../providers/MessageProvider";
 
 export function GameContainer({ gameSocket, game, tasks, player, players }) {
+    const message = useMessageApi();
+
     const [mapDimensions, setMapDimensions] = useState({ width: 0, height: 0 });
 
     const [currentTaskId, setCurrentTaskId] = useState(null);
@@ -41,13 +47,57 @@ export function GameContainer({ gameSocket, game, tasks, player, players }) {
     const isCooldown =
         player.cooldown_until && new Date(player.cooldown_until) > new Date();
 
+    const isImposter = player.role === "imposter";
+    const activeMeeting = game?.meetings.find((m) => m.is_active);
+
+    const handleStartEmergencyMeeting = () => {
+        if (!player.is_alive) return;
+
+        sendWithAck(gameSocket, {
+            action: "start_emergency_meeting",
+            data: {},
+        }).catch((error) => {
+            console.error("Failed to start emergency meeting:", error);
+        });
+    };
+
+    const [showResults, setShowResults] = useState(activeMeeting);
+
+    const activeSabotage = game?.last_sabotage_type;
+    const isCommsSabotaged = activeSabotage === "comms";
+
+    const cooldownTime = new Date(player.cooldown_until).getTime();
+    const tasksBlockedTime = new Date(game.tasks_blocked_until).getTime();
+    const maxTime = Math.max(cooldownTime, tasksBlockedTime);
+
+    if (activeMeeting || showResults) {
+        return (
+            <MeetingScreen
+                gameSocket={gameSocket}
+                meeting={activeMeeting}
+                players={players}
+                player={player}
+                setShowResults={setShowResults}
+                onMeetingEnd={() => {
+                    sendWithAck(gameSocket, {
+                        action: "end_meeting",
+                        data: { meeting_id: activeMeeting.id },
+                    }).catch((err) =>
+                        console.error("Auto-ending meeting failed:", err),
+                    );
+                }}
+            />
+        );
+    }
+
     return (
         <div className={gameContStyles.wrapper}>
             <div className={gameContStyles["top-wrapper"]}>
                 <Progress
-                    value={game?.progress}
-                    className={gameContStyles["ant-progress"]}
-                    size={[null, 32]}
+                    percent={game?.progress}
+                    status="active"
+                    size={[null, 20]}
+                    strokeColor={{ from: "#108ee9", to: "#87d068" }}
                 />
 
                 <Popover
@@ -56,19 +106,26 @@ export function GameContainer({ gameSocket, game, tasks, player, players }) {
                             <div
                                 className={
                                     player.role == "imposter"
-                                        ? gameContStyles["imposter-avatar"]
-                                        : gameContStyles["crew-avatar"]
-                                }
-                            ></div>
-                            <span
-                                className={
-                                    player.role == "imposter"
                                         ? gameContStyles.imposter
                                         : gameContStyles.crew
                                 }
                             >
-                                {player.role}
-                            </span>
+                                {player?.role == "imposter" ? (
+                                    <KnifeIcon style={{ width: 18 }} />
+                                ) : (
+                                    <AliveIcon style={{ width: 18 }} />
+                                )}
+
+                                <span>{player.role}</span>
+                            </div>
+
+                            {isImposter && (
+                                <SabotageMenu
+                                    gameSocket={gameSocket}
+                                    game={game}
+                                    player={player}
+                                />
+                            )}
                         </div>
                     }
                 >
@@ -79,54 +136,74 @@ export function GameContainer({ gameSocket, game, tasks, player, players }) {
             </div>
 
             <div className={gameContStyles["main-buttons"]}>
-                <EmergencyMeetingButton
-                    onClick={() => console.log("EmergencyMeeting pressed !")}
+                {!activeMeeting &&
+                    game.emergency_meetings_blocked_until &&
+                    new Date(game.emergency_meetings_blocked_until) >
+                        new Date() && (
+                        <Statistic.Timer
+                            type="countdown"
+                            title="Перезарядка..."
+                            value={new Date(
+                                game.emergency_meetings_blocked_until,
+                            ).getTime()}
+                        />
+                    )}
+
+                <ReportButton
+                    onClick={handleStartEmergencyMeeting}
+                    activeMeeting={activeMeeting}
+                    blockedUntil={game.emergency_meetings_blocked_until}
                 />
+
+                {!isImposter && (
+                    <SelfKillButton
+                        onClick={() => {
+                            sendWithAck(gameSocket, {
+                                action: "kill_player",
+                            });
+                        }}
+                    />
+                )}
             </div>
 
-            <svg
-                viewBox={`0 0 ${mapDimensions.width} ${mapDimensions.height}`}
-                style={{
-                    transformOrigin: "0 0",
-                    willChange: "transform",
-                }}
-            >
+            <svg viewBox={`0 0 ${mapDimensions.width} ${mapDimensions.height}`}>
                 <image href={game?.game_map} width="100%" height="100%" />
-                {renderList.map((task) => {
-                    const points = task.points;
-                    const color1 = colorFromNumber(task.id);
-                    const color2 = colorFromNumber(task.id, 0.4);
-                    return (
-                        <Fragment key={`svg_task_${task.id}`}>
-                            {points?.length > 0 && (
-                                <polyline
-                                    points={points
-                                        .map((p) => `${p.x},${p.y}`)
-                                        .join(" ")}
-                                    fill={color2}
-                                    stroke={color1}
-                                    strokeWidth={2}
-                                />
-                            )}
-                            {points?.map((p, i) => (
-                                <circle
-                                    key={i}
-                                    cx={p.x}
-                                    cy={p.y}
-                                    r="3"
-                                    fill={color1}
-                                />
-                            ))}
-                        </Fragment>
-                    );
-                })}
+
+                {Array.isArray(renderList) &&
+                    renderList.map((task) => {
+                        if (!task) return null;
+                        const points = task.points;
+                        const color1 = colorFromNumber(task.id);
+                        const color2 = colorFromNumber(task.id, 0.4);
+                        return (
+                            <Fragment key={`svg_task_${task.id}`}>
+                                {Array.isArray(points) && points.length > 0 && (
+                                    <polyline
+                                        points={points
+                                            .map((p) => `${p.x},${p.y}`)
+                                            .join(" ")}
+                                        fill={color2}
+                                        stroke={color1}
+                                        strokeWidth={2}
+                                    />
+                                )}
+                                {Array.isArray(points) &&
+                                    points.map((p, i) => (
+                                        <circle
+                                            key={i}
+                                            cx={p.x}
+                                            cy={p.y}
+                                            r="3"
+                                            fill={color1}
+                                        />
+                                    ))}
+                            </Fragment>
+                        );
+                    })}
             </svg>
 
             <div>
-                <Statistic.Timer
-                    type="countdown"
-                    value={new Date(player.cooldown_until).getTime()}
-                />
+                <Statistic.Timer type="countdown" value={maxTime} />
             </div>
 
             <List
@@ -141,23 +218,38 @@ export function GameContainer({ gameSocket, game, tasks, player, players }) {
                         <span>{task.task.text}</span>
 
                         <button
-                            disabled={isCooldown}
+                            disabled={
+                                isCooldown ||
+                                isCommsSabotaged ||
+                                task.is_completed
+                            }
                             onClick={(e) => {
                                 e.stopPropagation();
 
-                                if (isCooldown) return;
+                                if (
+                                    isCooldown ||
+                                    isCommsSabotaged ||
+                                    task.is_completed
+                                )
+                                    return;
 
                                 sendWithAck(gameSocket, {
-                                    action: "change_check_task",
+                                    action: "complete_task",
                                     data: {
                                         id: task.id,
-                                        value: !task.is_completed,
                                     },
+                                }).catch((error) => {
+                                    console.error(
+                                        "Failed to complete task:",
+                                        error,
+                                    );
                                 });
                             }}
-                            className={`${gameContStyles["task-complete-button"]} ${isCooldown ? gameContStyles.disabled : ""}`}
+                            className={`${gameContStyles["task-complete-button"]} ${isCooldown || task.is_completed ? gameContStyles.disabled : ""}`}
                         >
-                            <CheckIcon color="green" />
+                            <CheckIcon
+                                color={task.is_completed ? "gray" : "green"}
+                            />
                         </button>
                     </div>
                 )}
@@ -204,15 +296,14 @@ export function GameLoading({ gameSocket, game, player, players }) {
                 </div>
 
                 <div className={gameLoadingStyles["player-list"]}>
-                    {players.map((p) => (
-                        <div
-                            key={`player_${p.id}`}
-                            className={`${gameLoadingStyles.player} ${p.id == player.id && gameLoadingStyles.me}`}
-                        >
-                            <Avatar size="large">{p.id}</Avatar>
-                            <span>{p.name}</span>
-                        </div>
-                    ))}
+                    {Array.isArray(players) &&
+                        players.map((p) => (
+                            <Player
+                                key={`player_${p.id}`}
+                                player={p}
+                                active={p.id == player.id}
+                            />
+                        ))}
                 </div>
             </div>
         </Section>

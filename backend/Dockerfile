@@ -27,8 +27,14 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 # Добавляем виртуальное окружение в PATH
 ENV PATH="/app/.venv/bin:$PATH"
+ENV DJANGO_SETTINGS_MODULE=config.settings.prod
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
 
 EXPOSE 8000
 
 # Запуск через uv run для надежности
-CMD ["uv", "run", "python", "manage.py", "runserver", "0.0.0.0:8000"]
+# CMD ["uv", "run", "manage.py", "runserver", "0.0.0.0:8000"]

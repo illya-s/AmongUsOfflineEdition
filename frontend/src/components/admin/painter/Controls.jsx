@@ -1,7 +1,7 @@
 import moveCursor from "/cursor-tool.png";
 import penCursor from "/pen-tool.png";
 
-import { Section } from "../../../elements/Section";
+import { Section } from "../../elements/Section";
 import styles from "./Controls.module.css";
 
 export const Controls = ({

@@ -1,7 +1,7 @@
 import "./DesktopLayout.css";
 
-import { useAuth } from "../providers/useAuth";
 import { LogoIcon, UserIcon } from "../assets/icons";
+import { useAuth } from "../providers/useAuth";
 
 import { Link, Outlet } from "react-router";
 
@@ -20,7 +20,7 @@ export default function DesktopLayout() {
 				{user ? (
 					<div className="layout-header-user-wrapper">
 						{user.username}
-						<Avatar size="small">{user.username[0]}</Avatar>
+						<Avatar size="small">{user.username?.[0] || '?'}</Avatar>
 					</div>
 				) : (
 					<Link to="/auth" className="layout-header-user-wrapper">

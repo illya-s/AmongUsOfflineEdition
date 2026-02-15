@@ -2,25 +2,18 @@ import "./GameTaskForm.css";
 
 import { Modal, Select } from "antd";
 import { useState } from "react";
-import { useEffect } from "react";
-import { useMessageApi } from "../../../../providers/MessageProvider";
-import { getTasks } from "../../../requests/api_task";
-import { getLocations } from "../../../requests/api_locations";
-import { sendWithAck } from "../../../../lib/api/sendWithAck";
+import { sendWithAck } from "../../../lib/api/sendWithAck";
+import { useMessageApi } from "../../../providers/MessageProvider";
 
-export function GameTaskForm({ gameSocket, isOpen, setIsOpen, code }) {
+export function GameTaskForm({
+    gameSocket,
+    isOpen,
+    setIsOpen,
+    code,
+    locations,
+    tasks,
+}) {
     const message = useMessageApi();
-
-    const [tasks, setTasks] = useState([]);
-    const [locations, setLocations] = useState([]);
-
-    useEffect(() => {
-        const init = async () => {
-            setTasks(await getTasks());
-            setLocations(await getLocations());
-        };
-        init();
-    }, []);
 
     const [task, setTask] = useState(null);
     const [location, setLocation] = useState(null);
@@ -54,7 +47,7 @@ export function GameTaskForm({ gameSocket, isOpen, setIsOpen, code }) {
                     <Select
                         value={location}
                         onChange={(value) => setLocation(value)}
-                        options={locations.map((location) => {
+                        options={(Array.isArray(locations) ? locations : []).map((location) => {
                             return {
                                 value: location.id,
                                 label: location.name,
@@ -69,7 +62,7 @@ export function GameTaskForm({ gameSocket, isOpen, setIsOpen, code }) {
                     <Select
                         value={task}
                         onChange={(value) => setTask(value)}
-                        options={tasks.map((task) => {
+                        options={(Array.isArray(tasks) ? tasks : []).map((task) => {
                             return {
                                 value: task.id,
                                 label: task.text,

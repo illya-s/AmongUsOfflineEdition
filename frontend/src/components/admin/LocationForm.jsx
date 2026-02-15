@@ -33,11 +33,17 @@ export function useLocationForm() {
         </form>
     );
 
+    const reset = () => {
+        setText("");
+        setPosition("");
+    };
+
     return {
         LocationForm,
         locationFormData: {
             name: text,
             position: position,
         },
+        reset,
     };
 }

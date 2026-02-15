@@ -1,27 +1,27 @@
 import "./Admin.css";
 
-import { useEffect, useState } from "react";
-import { Link } from "react-router"
-import { Avatar, Button, Image, theme } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
+import { Avatar, Button } from "antd";
+import { useEffect, useState } from "react";
+import { Link } from "react-router";
 
 import { api } from "../providers/authService";
 
-import { Section } from "../components/elements/Section";
-import { useTaskForm } from "../components/admin/TaskForm";
-import { useLocationForm } from "../components/admin/LocationForm";
 import { AdminBlock } from "../components/admin/AdminBlock";
 import { useGameForm } from "../components/admin/GameForm";
+import { useLocationForm } from "../components/admin/LocationForm";
+import { useTaskForm } from "../components/admin/TaskForm";
+import { Section } from "../components/elements/Section";
 
 
 export default function Admin() {
-    const { TaskForm, taskFormData } = useTaskForm();
+    const { TaskForm, taskFormData, reset: resetTaskForm } = useTaskForm();
     const [tasks, setTasks] = useState([]);
 
-    const { LocationForm, locationFormData } = useLocationForm();
+    const { LocationForm, locationFormData, reset: resetLocationForm } = useLocationForm();
     const [locations, setLocations] = useState([]);
 
-    const { GameForm, gameFormData } = useGameForm();
+    const { GameForm, gameFormData, reset: resetGameForm } = useGameForm();
     const [games, setGames] = useState([]);
 
     useEffect(() => {
@@ -31,7 +31,7 @@ export default function Admin() {
     }, []);
 
     const updateTaskList = () => {
-        api.get("tasks")
+        api.get("tasks/")
             .then((res) => {
                 setTasks(res.data);
             })
@@ -43,6 +43,7 @@ export default function Admin() {
         api.post("tasks/", { ...data })
             .then((res) => {
                 updateTaskList();
+                resetTaskForm();
             })
             .catch((exc) => {
                 console.error(exc);
@@ -59,7 +60,7 @@ export default function Admin() {
     };
 
     const updateLocationList = () => {
-        api.get("locations")
+        api.get("locations/")
             .then((res) => {
                 setLocations(res.data);
             })
@@ -71,6 +72,7 @@ export default function Admin() {
         api.post("locations/", { ...data })
             .then((res) => {
                 updateLocationList();
+                resetLocationForm();
             })
             .catch((exc) => {
                 console.error(exc);
@@ -87,7 +89,7 @@ export default function Admin() {
     };
 
     const updateGameList = () => {
-        api.get("games")
+        api.get("games/")
             .then((res) => {
                 setGames(res.data);
             })
@@ -103,6 +105,7 @@ export default function Admin() {
         api.post("games/", formData)
             .then((res) => {
                 updateGameList();
+                resetGameForm();
             })
             .catch((exc) => {
                 console.error(exc);
@@ -162,12 +165,11 @@ export default function Admin() {
 
             <AdminBlock
                 title="Задания"
-                addClick={() => setIsOpenaAddTask(true)}
 
                 titleModal="Добавить Задание"
                 formModal={TaskForm}
                 onOkModal={() => handleAddTask(taskFormData)}
-                
+
                 dataSource={tasks}
                 renderItem={(task) => (
                     <div key={`task_${task.id}`} className="task-block">
@@ -193,7 +195,6 @@ export default function Admin() {
                 layout="grid"
 
                 title="Игры"
-                addClick={() => setIsOpenaAddTask(true)}
 
                 titleModal="Добавить Игру"
                 formModal={GameForm}

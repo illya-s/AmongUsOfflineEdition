@@ -1,17 +1,15 @@
-import { useCallback, useEffect, useState } from "react";
-import { useParams } from "react-router";
-import { Controls } from "../components/admin/game/painter/Controls";
-import { Section } from "../components/elements/Section";
-import styles from "./Painter.module.css";
-import List from "../components/admin/game/List";
-import { Task } from "../components/admin/game/painter/Task";
-import { useRef } from "react";
-import { useGameSocket } from "../lib/api/useGameSocket";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
+import { useParams } from "react-router";
+import List from "../components/admin/game/List";
+import { Controls } from "../components/admin/painter/Controls";
+import { GameTaskForm } from "../components/admin/painter/GameTaskForm";
+import { Task } from "../components/admin/painter/Task";
+import { Section } from "../components/elements/Section";
 import { sendWithAck } from "../lib/api/sendWithAck";
-import { Fragment } from "react";
+import { useGameSocket } from "../lib/api/useGameSocket";
 import { colorFromNumber } from "../lib/client/colorFromNumber";
-import { GameTaskForm } from "../components/admin/game/painter/GameTaskForm";
+import styles from "./Painter.module.css";
 
 const SNAP_RADIUS = 5;
 
@@ -27,7 +25,7 @@ const PAN_SPEED = 1;
 
 export default function Painter() {
     const { code } = useParams();
-    const { gameSocket, game, players, tasks, locations } = useGameSocket(code);
+    const { gameSocket, game, players, tasks, locations, availableTasks } = useGameSocket(code);
 
     const [mapDimensions, setMapDimensions] = useState({ width: 0, height: 0 });
 
@@ -324,9 +322,9 @@ export default function Painter() {
                         gameSocket={gameSocket}
                         isSelected={currentTaskId === task.id}
                         onClick={() => handleSelectTask(task.id)}
-                        // onKeyDown={(e) =>
-                        //     e.key === "Delete" && handleDeleteTask(task.id)
-                        // }
+                    // onKeyDown={(e) =>
+                    //     e.key === "Delete" && handleDeleteTask(task.id)
+                    // }
                     />
                 )}
             />
@@ -336,6 +334,8 @@ export default function Painter() {
                 isOpen={isOpenForm}
                 setIsOpen={setIsOpenForm}
                 code={code}
+                locations={locations}
+                tasks={availableTasks}
             />
 
             <Section
@@ -370,13 +370,14 @@ export default function Painter() {
                         height={mapDimensions.height}
                     />
 
-                    {renderList.map((task) => {
+                    {Array.isArray(renderList) && renderList.map((task) => {
+                        if (!task) return null;
                         const points = task.points;
                         const color1 = colorFromNumber(task.id);
                         const color2 = colorFromNumber(task.id, 0.4);
                         return (
                             <Fragment key={`svg_task_${task.id}`}>
-                                {points?.length > 0 && (
+                                {Array.isArray(points) && points.length > 0 && (
                                     <polyline
                                         points={points
                                             .map((p) => `${p.x},${p.y}`)
@@ -386,7 +387,7 @@ export default function Painter() {
                                         strokeWidth={2}
                                     />
                                 )}
-                                {points?.map((p, i) => (
+                                {Array.isArray(points) && points.map((p, i) => (
                                     <circle
                                         key={i}
                                         cx={p.x}

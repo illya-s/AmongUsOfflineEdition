@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { handleSocketMessage, initSocketHandlers } from "./sendWithAck";
 
 export const useGameSocket = (code, pId = null, setPlayer = null, setLoading) => {
@@ -7,8 +7,21 @@ export const useGameSocket = (code, pId = null, setPlayer = null, setLoading) =>
     const [players, setPlayers] = useState([]);
     const [tasks, setTasks] = useState([]);
     const [locations, setLocations] = useState([]);
+    const [availableTasks, setAvailableTasks] = useState([]);
 
     const reconnectAttempts = useRef(0);
+
+    useEffect(() => {
+        initSocketHandlers({
+            pId,
+            setPlayer,
+            setGame,
+            setTasks,
+            setPlayers,
+            setLocations,
+            setAvailableTasks,
+        });
+    }, [pId, setPlayer, setGame, setTasks, setPlayers, setLocations, setAvailableTasks]);
 
     useEffect(() => {
         let ws;
@@ -19,18 +32,11 @@ export const useGameSocket = (code, pId = null, setPlayer = null, setLoading) =>
             const token = localStorage.getItem("access_token");
 
             const connect = () => {
+                const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+                const host = window.location.host;
                 ws = new WebSocket(
-                    `ws://192.168.0.164:8000/ws/game/${code}/?access_token=${token}&pId=${pId}`,
+                    `${protocol}//${host}/ws/game/${code}/?access_token=${token}&pId=${pId}`,
                 );
-
-                initSocketHandlers({
-                    pId,
-                    setPlayer,
-                    setGame,
-                    setTasks,
-                    setPlayers,
-                    setLocations,
-                });
 
                 ws.onopen = () => {
                     console.log("WS Connected");
@@ -42,12 +48,12 @@ export const useGameSocket = (code, pId = null, setPlayer = null, setLoading) =>
                     console.log("WS Disconnected");
 
                     if (e.code === 1000 || !isMounted) {
-                        setLoading?.(null)
-                        return
-                    };
+                        setLoading?.(null);
+                        return;
+                    }
 
                     if (reconnectAttempts.current < 10) {
-                        setLoading?.(true)
+                        setLoading?.(true);
                         reconnectAttempts.current++;
                         const timeout = 1000 * reconnectAttempts.current;
                         console.log(`Reconnecting in ${timeout}ms...`);
@@ -55,7 +61,7 @@ export const useGameSocket = (code, pId = null, setPlayer = null, setLoading) =>
                             if (isMounted) connect();
                         }, timeout);
                     } else {
-                        setLoading?.(null)
+                        setLoading?.(null);
                         console.warn("Max reconnect attempts reached");
                     }
                 };
@@ -80,5 +86,5 @@ export const useGameSocket = (code, pId = null, setPlayer = null, setLoading) =>
         };
     }, [code]);
 
-    return { gameSocket, game, players, tasks, locations };
+    return { gameSocket, game, players, tasks, locations, availableTasks };
 };

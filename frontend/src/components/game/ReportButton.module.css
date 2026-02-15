@@ -6,6 +6,10 @@
 }
 
 .alert-button {
+    --br-color: hsl(0, 0%, 70%);
+    --bn-color: hsl(0, 100%, 50%);
+    --lg-value: repeating-linear-gradient(45deg, black 0 20%, yellow 20% 40%);
+    
     position: relative;
 
     width: 75px;
@@ -15,8 +19,8 @@
     align-items: center;
     justify-content: center;
 
-    background: repeating-linear-gradient(45deg, black 0 20%, yellow 20% 40%);
-    border: 3px solid grey;
+    background: var(--lg-value);
+    border: 3px solid var(--br-color);
     border-radius: var(--ant-border-radius);
 
     cursor: pointer;
@@ -30,19 +34,29 @@
         height: 80%;
         content: "";
 
-        background-color: darkgray;
+        background-color: var(--br-color);
         border-radius: var(--ant-border-radius);
     }
-}
 
-.alert-button > div {
-    z-index: 2;
+    & > div {
+        z-index: 2;
 
-    width: 50%;
-    height: 50%;
+        width: 50%;
+        height: 50%;
 
-    background-color: red;
-    border-radius: 50%;
+        background-color: var(--bn-color);
+        border-radius: 50%;
+    }
+
+    &.disabled {
+        --br-color: hsl(0, 0%, 30%);
+        --bn-color: hsl(0, 100%, 0%);
+        --lg-value: repeating-linear-gradient(
+            45deg,
+            hsl(0, 0%, 10%) 0 20%,
+            hsl(0, 0%, 20%) 20% 40%
+        );
+    }
 }
 
 .progress-container {
