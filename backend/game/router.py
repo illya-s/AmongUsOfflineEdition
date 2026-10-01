@@ -24,12 +24,9 @@ handlepatterns: dict[str, Type[SocketHandler]] = {
     # meetings
     "start_emergency_meeting": handlers_meeting.StartEmergencyMeeting,
     "report_body": handlers_meeting.ReportBody,
-    "submit_vote": handlers_meeting.SubmitVote,
     "start_meeting_vote": handlers_meeting.StartMeetingVote,
-    "end_meeting": handlers_meeting.EndMeeting,
+    "submit_vote": handlers_meeting.SubmitVote,
     # sabotages
     "trigger_sabotage": handlers_sabotage.TriggerSabotage,
     "resolve_sabotage": handlers_sabotage.ResolveSabotage,
-    # mapping
-    # "update_player_location": handlers_gameplay.UpdatePlayerLocation,
 }

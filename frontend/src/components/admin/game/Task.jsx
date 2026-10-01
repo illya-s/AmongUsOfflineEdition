@@ -4,7 +4,7 @@ import { Avatar } from "antd";
 export default function Task({ task }) {
     return (
         <div className={style.task}>
-            <Avatar>{task.id}</Avatar>
+            <Avatar>{task.sequence_number ?? task.id}</Avatar>
             
             <div className={style.center}>
                 <span className={style.name}>{task.task.text}</span>

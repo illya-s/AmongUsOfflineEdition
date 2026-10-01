@@ -14,6 +14,8 @@ router.register("games", views.GameRoomView, basename="root")
 
 
 urlpatterns = [
+    path("health/", views.health),
+    
     path("", include(router.urls)),
     path("game/<str:code>/toggle/", view=views.GameStartToggle.as_view()),
 

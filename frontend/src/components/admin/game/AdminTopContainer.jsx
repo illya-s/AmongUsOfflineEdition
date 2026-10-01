@@ -6,15 +6,17 @@ import {
 } from "@ant-design/icons";
 import { Avatar, Badge, Button, Modal, Statistic, Upload } from "antd";
 import { useState } from "react";
-import { useNavigate } from "react-router"
+import { useNavigate } from "react-router";
 import { sendWithAck } from "../../../lib/api/sendWithAck";
 import { api } from "../../../providers/authService";
 import { Section } from "../../elements/Section";
 import styles from "./AdminTopContainer.module.css";
+import { useMessageApi } from "../../../providers/MessageProvider";
 
 export function AdminTopContainer({ gameSocket, game }) {
+    const message = useMessageApi();
     const navigate = useNavigate();
-    
+
     const [isMapModalVisible, setIsMapModalVisible] = useState(false);
     const [isUploadingMap, setIsUploadingMap] = useState(false);
 

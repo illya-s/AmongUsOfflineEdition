@@ -5,6 +5,7 @@ from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import transaction
 from django.utils import timezone
+from game.tasks import update
 from rest_framework import serializers
 
 from game.exceptions import (
@@ -73,13 +74,17 @@ class ChangeGameSerializer(serializers.Serializer):
                 f"Недостаточно задач: найдено {all_tasks_count}, а игроков экипажа {all_players_count}"
             )
 
+        start_time = timezone.now() + datetime.timedelta(seconds=20)
+
         instance.active = value
-        instance.start_time = timezone.now() + datetime.timedelta(seconds=20)
+        instance.start_time = start_time
         instance.save()
 
         if not instance.active:
             instance.reset_game()
             return instance
+
+        update.apply_async(args=[instance.pk], eta=start_time)
 
         if not instance.auto_assign_role:
             if all_players.filter(role__isnull=True).exists():
@@ -161,8 +166,8 @@ class PlayerSerializer(serializers.ModelSerializer):
         return [{"value": ch[0], "name": ch[1]} for ch in Player.Roles.choices]
 
     def validate(self, data):
-        request: SocketRequest = self.context.get("request")
-        game = request.game
+        # request: SocketRequest = self.context.get("request")
+        game = self.context.get("game")
         name = data.get("name")
 
         if not game:
@@ -180,17 +185,17 @@ class PlayerSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        request: SocketRequest = self.context.get("request")
-        user = request.user if isinstance(request.user, User) else None
-        game = request.game
+        # request: SocketRequest = self.context.get("request")
+        # user = request.user if isinstance(request.user, User) else None
+        game = self.context.get("game")
         name = validated_data["name"]
 
-        return Player.objects.create(user=user, name=name, room=game)
+        return Player.objects.create(name=name, room=game)
 
     class Meta:
         model = Player
         fields = "__all__"
-        read_only_fields = ("id", "joined_at")
+        read_only_fields = ("id", "room", "joined_at")
         extra_kwargs = {"room": {"required": False}}
 
 
@@ -242,9 +247,11 @@ class GameTaskSerializer(serializers.ModelSerializer):
             "task_id",
             "player",
             "points",
+            "sequence_number",
             "is_completed",
             "created",
         ]
+        read_only_fields = ("sequence_number",)
 
 
 class PersonalDataSerializer(serializers.ModelSerializer):
@@ -269,6 +276,11 @@ class UpdateZonesSerializer(serializers.Serializer):
     def validate_points(self, value):
         if not isinstance(value, list):
             raise serializers.ValidationError("Points must be a list.")
+
+        if len(value) > 2:
+            raise serializers.ValidationError(
+                "A task can have at most two points."
+            )
 
         for point in value:
             if not isinstance(point, dict) or "x" not in point or "y" not in point:

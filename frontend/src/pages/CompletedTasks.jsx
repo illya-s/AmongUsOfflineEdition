@@ -3,15 +3,16 @@ import styles from "./CompletedTasks.module.css";
 
 import List from "../components/admin/game/List";
 import { Section } from "../components/elements/Section";
+import { TaskMarkers } from "../components/game/TaskMarkers";
 import { useGameSocket } from "../lib/api/useGameSocket";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router";
 import { sendWithAck } from "../lib/api/sendWithAck";
 
 export default function CompletedTasks() {
     const { code } = useParams();
-    const { gameSocket, tasks } = useGameSocket(code);
+    const { game, gameSocket, tasks } = useGameSocket(code);
 
     const [selectedLocationId, setSelectedLocationId] = useState("all");
 
@@ -26,6 +27,27 @@ export default function CompletedTasks() {
         }
         return Array.from(locMap, ([id, name]) => ({ id, name }));
     }, [tasks]);
+
+    const [mapDimensions, setMapDimensions] = useState({ width: 0, height: 0 });
+
+    useEffect(() => {
+        if (game?.game_map) {
+            const img = new Image();
+            img.src = game.game_map;
+            img.onload = () => {
+                setMapDimensions({
+                    width: img.naturalWidth,
+                    height: img.naturalHeight,
+                });
+            };
+        }
+    }, [game?.game_map]);
+
+    const [currentTaskId, setCurrentTaskId] = useState(null);
+    const handleSelectTask = (id) => {
+        setCurrentTaskId((prev) => (prev === id ? null : id));
+    };
+    const currentTask = tasks?.find((t) => t.id === currentTaskId);
 
     const renderList = (Array.isArray(tasks) ? tasks : []).filter((task) => {
         if (!task) return false;
@@ -56,10 +78,31 @@ export default function CompletedTasks() {
                 </label>
             </Section>
 
+            <svg
+                className="zones"
+                viewBox={`0 0 ${mapDimensions.width} ${mapDimensions.height}`}
+                style={{
+                    maxHeight: "500px",
+                    transformOrigin: "0 0",
+                    willChange: "transform",
+                }}
+            >
+                <image href={game?.game_map} width="100%" height="100%" />
+                {Array.isArray(renderList) &&
+                    renderList.map((task) => {
+                        if (!task) return null;
+                        return <TaskMarkers key={`svg_task_${task.id}`} task={task} />;
+                    })}
+            </svg>
+
             <List
                 dataSource={renderList}
                 renderItem={(task) => (
-                    <div className={styles.task} key={`task_${task.id}`}>
+                    <div
+                        className={styles.task}
+                        key={`task_${task.id}`}
+                        onClick={() => handleSelectTask(task.id)}
+                    >
                         <span>{task.task.text}</span>
 
                         <button

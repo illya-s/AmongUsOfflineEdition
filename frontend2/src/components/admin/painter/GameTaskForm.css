@@ -1,0 +1,10 @@
+.game-task-form-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ant-padding);
+}
+
+.game-task-form-field-wrapper {
+    display: grid;
+    grid-template-columns: .5fr 1fr;
+}

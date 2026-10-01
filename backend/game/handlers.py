@@ -14,7 +14,7 @@ from game.serializers import (
     ToggleAutoAssignRoleSerializer,
     UpdateZonesSerializer,
 )
-from game.utils import format_remaining_time
+from game.utils import check_win_condition, format_remaining_time
 
 
 class ToggleAutoAssignRole(SocketHandler):
@@ -62,7 +62,9 @@ class ChangeCheckTask(SocketHandler):
 
         if value:
             if request.player.is_on_cooldown():
-                time_text = format_remaining_time(request.player.cooldown_until)
+                time_text = format_remaining_time(
+                    request.player.cooldown_until - timezone.now()
+                )
                 raise ValidationError(f"Задание можно изменить через {time_text}")
 
         updated_count = GameTask.objects.filter(id=task_id).update(
@@ -80,6 +82,8 @@ class ChangeCheckTask(SocketHandler):
                 )
                 request.player.save()
 
+        check_win_condition(request.game)
+
         return SocketResponse.from_request(request)
 
 
@@ -89,7 +93,7 @@ class DeleteTask(SocketHandler):
         task = GameTask.objects.filter(id=id)
 
         if not task.exists():
-            raise ValidationError("Игрок не найден")
+            raise ValidationError("Задание не найдено")
 
         task.first().delete()
         return SocketResponse.from_request(request)
@@ -163,6 +167,9 @@ class DeletePlayer(SocketHandler):
             raise ValidationError("Игрок не найден")
 
         player.first().delete()
+
+        if request.game.active:
+            check_win_condition(request.game)
 
         return SocketResponse.from_request(request)
 

@@ -1,0 +1,8 @@
+node_modules
+.next
+dist
+.pnp.*
+.yarn/install-state.gz
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

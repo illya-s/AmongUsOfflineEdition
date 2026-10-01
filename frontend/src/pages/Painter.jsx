@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useParams } from "react-router";
 import List from "../components/admin/game/List";
@@ -6,12 +6,10 @@ import { Controls } from "../components/admin/painter/Controls";
 import { GameTaskForm } from "../components/admin/painter/GameTaskForm";
 import { Task } from "../components/admin/painter/Task";
 import { Section } from "../components/elements/Section";
+import { TaskMarkers } from "../components/game/TaskMarkers";
 import { sendWithAck } from "../lib/api/sendWithAck";
 import { useGameSocket } from "../lib/api/useGameSocket";
-import { colorFromNumber } from "../lib/client/colorFromNumber";
 import styles from "./Painter.module.css";
-
-const SNAP_RADIUS = 5;
 
 const TOOLS = {
     MOVE: "move",
@@ -25,7 +23,8 @@ const PAN_SPEED = 1;
 
 export default function Painter() {
     const { code } = useParams();
-    const { gameSocket, game, players, tasks, locations, availableTasks } = useGameSocket(code);
+    const { gameSocket, game, players, tasks, locations, availableTasks } =
+        useGameSocket(code);
 
     const [mapDimensions, setMapDimensions] = useState({ width: 0, height: 0 });
 
@@ -63,7 +62,8 @@ export default function Painter() {
 
     const [currentTaskId, setCurrentTaskId] = useState(null);
     const handleSelectTask = (id) => {
-        setCurrentTaskId((prev) => (prev === id ? null : id));
+        setCurrentTaskId(id);
+        setCurrentTool(TOOLS.PEN);
     };
     const currentTask = tasks?.find((t) => t.id === currentTaskId);
     const activePoints = currentTask?.points || [];
@@ -72,46 +72,6 @@ export default function Painter() {
         setHistory([]);
         setRedoStack([]);
     }, [currentTaskId]);
-
-    const getSnappedPos = ({ x, y }) => {
-        let closest = null;
-        let minDist = SNAP_RADIUS;
-        const origin = activePoints.at(-1);
-
-        activePoints.forEach((p) => {
-            const dist = Math.hypot(p.x - x, p.y - y);
-            if (dist < minDist) {
-                closest = p;
-                minDist = dist;
-            }
-        });
-
-        if (closest) return { x: closest.x, y: closest.y, isSnapped: true };
-
-        if (origin) {
-            const dx = x - origin.x;
-            const dy = y - origin.y;
-            const absDx = Math.abs(dx);
-            const absDy = Math.abs(dy);
-
-            const threshold = SNAP_RADIUS;
-
-            if (absDy < threshold) return { x, y: origin.y, isSnapped: true };
-
-            if (absDx < threshold) return { x: origin.x, y, isSnapped: true };
-
-            if (Math.abs(absDx - absDy) < threshold) {
-                const side = (absDx + absDy) / 2;
-                return {
-                    x: origin.x + Math.sign(dx) * side,
-                    y: origin.y + Math.sign(dy) * side,
-                    isSnapped: true,
-                };
-            }
-        }
-
-        return { x, y, isSnapped: false };
-    };
 
     const getSvgPoint = (e) => {
         const svg = svgRef.current;
@@ -123,7 +83,11 @@ export default function Painter() {
     };
 
     const undo = () => {
-        if (!currentTaskId || activePoints.length === 0) return;
+        if (
+            !currentTaskId ||
+            (activePoints.length === 0 && history.length === 0)
+        )
+            return;
 
         if (history.length == 0) {
             const nextPoints = activePoints.slice(0, -1);
@@ -160,6 +124,8 @@ export default function Painter() {
     };
 
     const onDrawPoint = (point, taskId) => {
+        if (activePoints.length >= 2) return;
+
         setHistory((prev) => [...prev, activePoints]);
         setRedoStack([]);
 
@@ -167,6 +133,33 @@ export default function Painter() {
             action: "update_zones",
             data: { id: taskId, points: [...activePoints, point] },
         });
+
+        if (activePoints.length === 1) setCurrentTool(TOOLS.MOVE);
+    };
+
+    const removePoint = (index) => {
+        if (!currentTaskId) return;
+        const nextPoints = activePoints.filter(
+            (_, pointIndex) => pointIndex !== index,
+        );
+        setHistory((prev) => [...prev, activePoints]);
+        setRedoStack([]);
+        sendWithAck(gameSocket, {
+            action: "update_zones",
+            data: { id: currentTaskId, points: nextPoints },
+        });
+        setCurrentTool(TOOLS.PEN);
+    };
+
+    const clearPoints = () => {
+        if (!currentTaskId || activePoints.length === 0) return;
+        setHistory((prev) => [...prev, activePoints]);
+        setRedoStack([]);
+        sendWithAck(gameSocket, {
+            action: "update_zones",
+            data: { id: currentTaskId, points: [] },
+        });
+        setCurrentTool(TOOLS.PEN);
     };
 
     const updateDOM = useCallback(() => {
@@ -243,7 +236,10 @@ export default function Painter() {
         if (!container) return;
 
         const onMouseDown = (e) => {
-            if (e.button !== 1) return;
+            const canDrag =
+                e.button === 1 ||
+                (e.button === 0 && currentTool === TOOLS.MOVE);
+            if (!canDrag) return;
             isDragging.current = true;
             setVisualIsDragging(true);
             lastPos.current = { x: e.clientX, y: e.clientY };
@@ -261,7 +257,7 @@ export default function Painter() {
                 updateDOM();
             } else if (currentTool === TOOLS.PEN) {
                 const p = getSvgPoint(e);
-                setMousePos(getSnappedPos({ x: p.x, y: p.y }));
+                setMousePos({ x: p.x, y: p.y });
             }
         };
 
@@ -301,33 +297,39 @@ export default function Painter() {
         redo();
     });
 
-    // const handleDeleteTask = (id) => {
-    //     sendWithAck(gameSocket, {
-    //         action: "delete_task",
-    //         data: { id: id },
-    //     }).then(() => {});
-    // };
+    useHotkeys("Delete", (e) => {
+        e.preventDefault();
+        if (activePoints.length > 0) removePoint(activePoints.length - 1);
+    });
 
     const renderList = currentTaskId ? [currentTask] : tasks;
 
     return (
         <div className={styles.container}>
-            <List
-                className={styles["task-list"]}
-                dataSource={tasks}
-                renderItem={(task) => (
-                    <Task
-                        key={`task_${task.id}`}
-                        task={task}
-                        gameSocket={gameSocket}
-                        isSelected={currentTaskId === task.id}
-                        onClick={() => handleSelectTask(task.id)}
-                    // onKeyDown={(e) =>
-                    //     e.key === "Delete" && handleDeleteTask(task.id)
-                    // }
-                    />
-                )}
-            />
+            <aside className={styles.sidebar}>
+                <div className={styles["sidebar-heading"]}>
+                    <div>
+                        <strong>Задания</strong>
+                        <small>{tasks.length} на карте</small>
+                    </div>
+                    <button type="button" onClick={() => setIsOpenForm(true)}>
+                        + Добавить
+                    </button>
+                </div>
+                <List
+                    className={styles["task-list"]}
+                    dataSource={tasks}
+                    renderItem={(task) => (
+                        <Task
+                            key={`task_${task.id}`}
+                            task={task}
+                            gameSocket={gameSocket}
+                            isSelected={currentTaskId === task.id}
+                            onClick={() => handleSelectTask(task.id)}
+                        />
+                    )}
+                />
+            </aside>
 
             <GameTaskForm
                 gameSocket={gameSocket}
@@ -343,6 +345,64 @@ export default function Painter() {
                 ref={wrapperRef}
                 style={{ cursor: getCursor() }}
             >
+                <div className={styles.inspector}>
+                    {currentTask ? (
+                        <>
+                            <div className={styles["inspector-heading"]}>
+                                <span className={styles["task-number"]}>
+                                    {currentTask.sequence_number ?? currentTask.id}
+                                </span>
+                                <div>
+                                    <strong>{currentTask.task.text}</strong>
+                                    <small>{currentTask.location.name}</small>
+                                </div>
+                            </div>
+
+                            <p className={styles.hint}>
+                                {activePoints.length === 0 &&
+                                    "Нажмите на карте, чтобы поставить точку задания."}
+                                {activePoints.length === 1 &&
+                                    "Начало задано. Добавьте место доставки или оставьте одну точку."}
+                                {activePoints.length === 2 &&
+                                    "Маршрут готов: стрелка идёт от начала к месту доставки."}
+                            </p>
+
+                            {activePoints.length > 0 && (
+                                <div className={styles.points}>
+                                    {activePoints.map((point, index) => (
+                                        <button
+                                            key={`${point.x}-${point.y}-${index}`}
+                                            type="button"
+                                            onClick={() => removePoint(index)}
+                                            title="Удалить точку"
+                                        >
+                                            <span>
+                                                {index === 0
+                                                    ? "Начало"
+                                                    : "Доставка"}
+                                            </span>
+                                            <small>
+                                                {Math.round(point.x)}, {Math.round(point.y)} ×
+                                            </small>
+                                        </button>
+                                    ))}
+                                    <button
+                                        type="button"
+                                        className={styles.clear}
+                                        onClick={clearPoints}
+                                    >
+                                        Очистить
+                                    </button>
+                                </div>
+                            )}
+                        </>
+                    ) : (
+                        <p className={styles.hint}>
+                            Выберите задание слева, затем укажите его точку на карте.
+                        </p>
+                    )}
+                </div>
+
                 <svg
                     ref={svgRef}
                     id={styles.zones}
@@ -350,8 +410,11 @@ export default function Painter() {
                     onClick={(e) => {
                         if (currentTool === TOOLS.PEN) {
                             if (currentTaskId) {
-                                const p = getSnappedPos(getSvgPoint(e));
-                                onDrawPoint({ x: p.x, y: p.y }, currentTaskId);
+                                const point = getSvgPoint(e);
+                                onDrawPoint(
+                                    { x: point.x, y: point.y },
+                                    currentTaskId,
+                                );
                             } else {
                                 setIsOpenForm(true);
                             }
@@ -370,62 +433,49 @@ export default function Painter() {
                         height={mapDimensions.height}
                     />
 
-                    {Array.isArray(renderList) && renderList.map((task) => {
-                        if (!task) return null;
-                        const points = task.points;
-                        const color1 = colorFromNumber(task.id);
-                        const color2 = colorFromNumber(task.id, 0.4);
-                        return (
-                            <Fragment key={`svg_task_${task.id}`}>
-                                {Array.isArray(points) && points.length > 0 && (
-                                    <polyline
-                                        points={points
-                                            .map((p) => `${p.x},${p.y}`)
-                                            .join(" ")}
-                                        fill={color2}
-                                        stroke={color1}
+                    {Array.isArray(renderList) &&
+                        renderList.map((task) => {
+                            if (!task) return null;
+                            return (
+                                <TaskMarkers
+                                    key={`svg_task_${task.id}`}
+                                    task={task}
+                                />
+                            );
+                        })}
+
+                    {currentTool === TOOLS.PEN &&
+                        mousePos &&
+                        activePoints.length < 2 && (
+                            <>
+                                {activePoints.length === 1 && (
+                                    <line
+                                        x1={
+                                            activePoints[
+                                                activePoints.length - 1
+                                            ].x
+                                        }
+                                        y1={
+                                            activePoints[
+                                                activePoints.length - 1
+                                            ].y
+                                        }
+                                        x2={mousePos.x}
+                                        y2={mousePos.y}
+                                        stroke="var(--ant-color-primary)"
                                         strokeWidth={2}
                                     />
                                 )}
-                                {Array.isArray(points) && points.map((p, i) => (
-                                    <circle
-                                        key={i}
-                                        cx={p.x}
-                                        cy={p.y}
-                                        r="3"
-                                        fill={color1}
-                                    />
-                                ))}
-                            </Fragment>
-                        );
-                    })}
-
-                    {currentTool === TOOLS.PEN && mousePos && (
-                        <>
-                            {activePoints.length > 0 && (
-                                <line
-                                    x1={activePoints[activePoints.length - 1].x}
-                                    y1={activePoints[activePoints.length - 1].y}
-                                    x2={mousePos.x}
-                                    y2={mousePos.y}
-                                    stroke={
-                                        mousePos.isSnapped
-                                            ? "var(--ant-color-warning)"
-                                            : "var(--ant-color-primary)"
-                                    }
-                                    strokeWidth={2}
+                                <circle
+                                    cx={mousePos.x}
+                                    cy={mousePos.y}
+                                    r={2}
+                                    fill="white"
+                                    stroke="var(--ant-color-primary)"
+                                    strokeWidth={1}
                                 />
-                            )}
-                            <circle
-                                cx={mousePos.x}
-                                cy={mousePos.y}
-                                r={2}
-                                fill="white"
-                                stroke="var(--ant-color-primary)"
-                                strokeWidth={1}
-                            />
-                        </>
-                    )}
+                            </>
+                        )}
                 </svg>
 
                 <Controls
@@ -435,6 +485,10 @@ export default function Painter() {
                     resetTransform={resetTransform}
                     zoomIn={zoomIn}
                     zoomOut={zoomOut}
+                    undo={undo}
+                    redo={redo}
+                    canUndo={activePoints.length > 0 || history.length > 0}
+                    canRedo={redoStack.length > 0}
                 />
             </Section>
         </div>

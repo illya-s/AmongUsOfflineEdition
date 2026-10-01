@@ -17,6 +17,9 @@ class Location(models.Model):
     def __str__(self):
         return str(self.name)
 
+    class Meta:
+        ordering = ["id"]
+
 
 class Task(models.Model):
     arduino_id = models.CharField(max_length=64, blank=True, null=True)
@@ -29,6 +32,9 @@ class Task(models.Model):
 
     def __str__(self):
         return f"{self.text}"
+
+    class Meta:
+        ordering = ["id"]
 
 
 def content_file_name(instance, filename):
@@ -182,10 +188,6 @@ class Player(models.Model):
 
     joined_at = models.DateTimeField(auto_now_add=True)
 
-    # Position for Admin Map (0-100 relative to map size)
-    # last_location_x = models.FloatField(null=True, blank=True)
-    # last_location_y = models.FloatField(null=True, blank=True)
-
     def is_on_cooldown(self):
         if self.cooldown_until:
             if timezone.now() < self.cooldown_until:
@@ -202,6 +204,9 @@ class Player(models.Model):
             return max(0, int(delta.total_seconds()))
         return 0
 
+    class Meta:
+        ordering = ["is_alive"]
+
     def __str__(self):
         return f"{self.name} ({self.get_role_display()})"
 
@@ -217,11 +222,23 @@ class GameTask(models.Model):
     )
 
     points = models.JSONField(null=True)
+    sequence_number = models.PositiveIntegerField(null=True, blank=True, db_index=True)
 
     is_completed = models.BooleanField(default=False)
     completed_at = models.DateTimeField(null=True, blank=True)
 
     created = models.DateTimeField(auto_now_add=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if self.sequence_number is None and self.room_id:
+            last_number = GameTask.objects.filter(room_id=self.room_id).aggregate(
+                models.Max("sequence_number")
+            )["sequence_number__max"]
+            self.sequence_number = (last_number or 0) + 1
+        super().save(*args, **kwargs)
+
+    class Meta:
+        ordering = ["sequence_number", "pk"]
 
     def __str__(self):
         return f"{str(self.room)} - {str(self.location)}{str(self.task)}"
@@ -265,15 +282,16 @@ class Meeting(models.Model):
     )
 
     started_at = models.DateTimeField(auto_now_add=True)
-    duration = models.IntegerField(
-        help_text="Длительность собрания в секундах"
-    )  # 120 for emergency, 180 for body report
+    duration = models.IntegerField(help_text="Длительность собрания в секундах")
     ended_at = models.DateTimeField(null=True, blank=True)
 
     is_active = models.BooleanField(default=True)
     is_started = models.BooleanField(
         default=False, help_text="Started by admin trigger"
     )
+
+    class Meta:
+        ordering = ["-is_active"]
 
     def __str__(self):
         return f"{self.get_type_display()} - {self.room.code} at {self.started_at}"
