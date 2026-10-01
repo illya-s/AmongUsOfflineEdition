@@ -7,9 +7,8 @@ import { sendWithAck } from "../../lib/api/sendWithAck";
 import { Section } from "../elements/Section";
 import gameContStyles from "./GameContainer.module.css";
 
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { AliveIcon, KnifeIcon } from "../../assets/icons";
-import { colorFromNumber } from "../../lib/client/colorFromNumber";
 import List from "../admin/game/List";
 import gameLoadingStyles from "./GameLoading.module.css";
 import { MeetingScreen } from "./MeetingScreen";
@@ -17,6 +16,7 @@ import { Player } from "./Player";
 import { ReportButton } from "./ReportButton";
 import { SabotageMenu } from "./SabotageMenu";
 import { SelfKillButton } from "./SelfKillButton";
+import { TaskMarkers } from "./TaskMarkers";
 import { useMessageApi } from "../../providers/MessageProvider";
 
 export function GameContainer({ gameSocket, game, tasks, player, players }) {
@@ -54,14 +54,12 @@ export function GameContainer({ gameSocket, game, tasks, player, players }) {
         if (!player.is_alive) return;
 
         sendWithAck(gameSocket, {
-            action: "start_emergency_meeting",
+            action: "report_body",
             data: {},
         }).catch((error) => {
             console.error("Failed to start emergency meeting:", error);
         });
     };
-
-    const [showResults, setShowResults] = useState(activeMeeting);
 
     const activeSabotage = game?.last_sabotage_type;
     const isCommsSabotaged = activeSabotage === "comms";
@@ -70,22 +68,13 @@ export function GameContainer({ gameSocket, game, tasks, player, players }) {
     const tasksBlockedTime = new Date(game.tasks_blocked_until).getTime();
     const maxTime = Math.max(cooldownTime, tasksBlockedTime);
 
-    if (activeMeeting || showResults) {
+    if (activeMeeting && !activeMeeting.ended_at) {
         return (
             <MeetingScreen
                 gameSocket={gameSocket}
                 meeting={activeMeeting}
                 players={players}
                 player={player}
-                setShowResults={setShowResults}
-                onMeetingEnd={() => {
-                    sendWithAck(gameSocket, {
-                        action: "end_meeting",
-                        data: { meeting_id: activeMeeting.id },
-                    }).catch((err) =>
-                        console.error("Auto-ending meeting failed:", err),
-                    );
-                }}
             />
         );
     }
@@ -136,26 +125,9 @@ export function GameContainer({ gameSocket, game, tasks, player, players }) {
             </div>
 
             <div className={gameContStyles["main-buttons"]}>
-                {!activeMeeting &&
-                    game.emergency_meetings_blocked_until &&
-                    new Date(game.emergency_meetings_blocked_until) >
-                        new Date() && (
-                        <Statistic.Timer
-                            type="countdown"
-                            title="Перезарядка..."
-                            value={new Date(
-                                game.emergency_meetings_blocked_until,
-                            ).getTime()}
-                        />
-                    )}
+                <ReportButton onClick={handleStartEmergencyMeeting} />
 
-                <ReportButton
-                    onClick={handleStartEmergencyMeeting}
-                    activeMeeting={activeMeeting}
-                    blockedUntil={game.emergency_meetings_blocked_until}
-                />
-
-                {!isImposter && (
+                {!isImposter ? (
                     <SelfKillButton
                         onClick={() => {
                             sendWithAck(gameSocket, {
@@ -163,42 +135,29 @@ export function GameContainer({ gameSocket, game, tasks, player, players }) {
                             });
                         }}
                     />
+                ) : (
+                    <div>
+                        Вы сможете убить через
+                         <Statistic.Timer
+                            type="countdown"
+                            value={player.kill_cooldown_until}
+                        />
+                    </div>
                 )}
             </div>
 
-            <svg viewBox={`0 0 ${mapDimensions.width} ${mapDimensions.height}`}>
+            <svg
+                style={{
+                    maxHeight: "500px",
+                }}
+                viewBox={`0 0 ${mapDimensions.width} ${mapDimensions.height}`}
+            >
                 <image href={game?.game_map} width="100%" height="100%" />
 
                 {Array.isArray(renderList) &&
                     renderList.map((task) => {
                         if (!task) return null;
-                        const points = task.points;
-                        const color1 = colorFromNumber(task.id);
-                        const color2 = colorFromNumber(task.id, 0.4);
-                        return (
-                            <Fragment key={`svg_task_${task.id}`}>
-                                {Array.isArray(points) && points.length > 0 && (
-                                    <polyline
-                                        points={points
-                                            .map((p) => `${p.x},${p.y}`)
-                                            .join(" ")}
-                                        fill={color2}
-                                        stroke={color1}
-                                        strokeWidth={2}
-                                    />
-                                )}
-                                {Array.isArray(points) &&
-                                    points.map((p, i) => (
-                                        <circle
-                                            key={i}
-                                            cx={p.x}
-                                            cy={p.y}
-                                            r="3"
-                                            fill={color1}
-                                        />
-                                    ))}
-                            </Fragment>
-                        );
+                        return <TaskMarkers key={`svg_task_${task.id}`} task={task} />;
                     })}
             </svg>
 
@@ -247,9 +206,7 @@ export function GameContainer({ gameSocket, game, tasks, player, players }) {
                             }}
                             className={`${gameContStyles["task-complete-button"]} ${isCooldown || task.is_completed ? gameContStyles.disabled : ""}`}
                         >
-                            <CheckIcon
-                                color={task.is_completed ? "gray" : "green"}
-                            />
+                            <CheckIcon />
                         </button>
                     </div>
                 )}
@@ -297,11 +254,11 @@ export function GameLoading({ gameSocket, game, player, players }) {
 
                 <div className={gameLoadingStyles["player-list"]}>
                     {Array.isArray(players) &&
-                        players.map((p) => (
+                        players?.map((p) => (
                             <Player
                                 key={`player_${p.id}`}
                                 player={p}
-                                active={p.id == player.id}
+                                active={p.id == player?.id}
                             />
                         ))}
                 </div>

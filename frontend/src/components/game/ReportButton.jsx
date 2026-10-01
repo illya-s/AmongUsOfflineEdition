@@ -2,49 +2,16 @@ import { useEffect, useRef, useState } from "react";
 import { useMessageApi } from "../../providers/MessageProvider";
 import styles from "./ReportButton.module.css";
 
-export function ReportButton({
-    onClick,
-    activeMeeting,
-    blockedUntil,
-}) {
+export function ReportButton({ onClick }) {
     const message = useMessageApi();
 
     const [isHolding, setIsHolding] = useState(false);
     const [completed, setCompleted] = useState(false);
-    const [isBlockedByTimer, setIsBlockedByTimer] = useState(false);
 
     const timerRef = useRef(null);
-    const blockTimeoutRef = useRef(null);
 
     const HOLD_TIME = 2000;
     const RESET_TIME = 2000;
-
-    useEffect(() => {
-        if (!blockedUntil) {
-            setIsBlockedByTimer(false);
-            return;
-        }
-
-        const checkLock = () => {
-            const remaining = new Date(blockedUntil).getTime() - Date.now();
-            if (remaining > 0) {
-                setIsBlockedByTimer(true);
-                blockTimeoutRef.current = setTimeout(() => {
-                    setIsBlockedByTimer(false);
-                }, remaining);
-            } else {
-                setIsBlockedByTimer(false);
-            }
-        };
-
-        checkLock();
-
-        return () => {
-            if (blockTimeoutRef.current) clearTimeout(blockTimeoutRef.current);
-        };
-    }, [blockedUntil]);
-
-    const isEffectivelyDisabled = activeMeeting || isBlockedByTimer;
 
     const startHold = () => {
         if (completed) return;
@@ -65,7 +32,6 @@ export function ReportButton({
     const stopHold = () => {
         if (completed) return;
         setIsHolding(false);
-        clearTimeout(timerRef.current);
     };
 
     const handleAction = () => {
@@ -76,13 +42,12 @@ export function ReportButton({
     return (
         <div className={styles["button-container"]}>
             <button
-                className={`${styles["alert-button"]} ${isEffectivelyDisabled ? styles.disabled : ""}`}
-                disabled={isEffectivelyDisabled}
-                onMouseDown={isEffectivelyDisabled ? undefined : startHold}
-                onMouseUp={isEffectivelyDisabled ? undefined : stopHold}
-                onMouseLeave={isEffectivelyDisabled ? undefined : stopHold}
-                onTouchStart={isEffectivelyDisabled ? undefined : startHold}
-                onTouchEnd={isEffectivelyDisabled ? undefined : stopHold}
+                className={styles["alert-button"]}
+                onMouseDown={startHold}
+                onMouseUp={stopHold}
+                onMouseLeave={stopHold}
+                onTouchStart={startHold}
+                onTouchEnd={stopHold}
                 onContextMenu={(e) => {
                     e.preventDefault();
                 }}

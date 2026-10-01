@@ -1,7 +1,21 @@
 .wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
     min-height: 100vh;
+
+    display: grid;
+    grid-template-rows: max-content max-content;
+    gap: var(--ant-padding);
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.player-list {
+    flex: 1 1 auto;
+
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ant-padding);
+    justify-content: center;
 }

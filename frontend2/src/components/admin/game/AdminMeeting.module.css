@@ -1,0 +1,77 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ant-padding);
+}
+
+.top-wrapper {
+    display: grid;
+    grid-template-columns: auto max-content max-content;
+    align-items: center;
+    gap: var(--ant-padding);
+}
+
+.top-wrapper-title {
+    font-weight: bold;
+    font-size: var(--ant-font-size-heading-2);
+    color: var(--ant-color-text-heading);
+}
+
+.emergency-button {
+    width: 40px;
+    padding: 7px;
+
+    aspect-ratio: 1;
+
+    border: 2px solid var(--ant-color-error-border);
+    border-radius: var(--ant-border-radius);
+    background-color: var(--ant-color-error);
+
+    color: var(--ant-color-text-heading);
+
+    &.disabled {
+        border: 2px solid var(--ant-color-border);
+        background-color: var(--ant-color-bg-elevated);
+
+        color: var(--ant-color-text-heading);
+    }
+}
+
+.meeting {
+    padding: var(--ant-padding);
+
+    display: grid;
+    grid-template-columns: 32px auto max-content max-content;
+    align-items: center;
+    gap: var(--ant-padding);
+
+    border: 2px solid var(--ant-color-border);
+    border-radius: var(--ant-border-radius);
+    background-color: var(--ant-color-bg-elevated);
+
+    color: var(--ant-color-text-heading);
+}
+
+.meeting-start-wrapper {
+    display: grid;
+    grid-template-columns: 32px max-content;
+    align-items: center;
+    gap: 5px;
+}
+
+.meeting-start-button {
+    width: 32px;
+
+    display: grid;
+    aspect-ratio: 1;
+
+    border: 1px solid var(--ant-color-error-border);
+    border-radius: 50%;
+    background-color: var(--ant-color-error);
+
+    color: var(--ant-color-text-heading);
+}
+
+.meeting-start-status {
+    font-size: var(--ant-font-size-heading-3);
+}

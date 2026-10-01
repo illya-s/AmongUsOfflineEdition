@@ -1,0 +1,28 @@
+{
+  "name": "among-us-offline-next",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "yarn@4.6.0",
+  "scripts": {
+    "dev": "next dev --hostname 0.0.0.0 --port 3000",
+    "build": "next build",
+    "start": "next start --hostname 0.0.0.0 --port 3000"
+  },
+  "dependencies": {
+    "@ant-design/cssinjs": "^1.24.0",
+    "@ant-design/icons": "^5.6.1",
+    "antd": "^6.3.0",
+    "axios": "^1.13.2",
+    "jwt-decode": "^4.0.0",
+    "next": "^15.5.4",
+    "qr-code-styling": "^1.9.2",
+    "qs": "^6.14.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hotkeys-hook": "^5.2.3",
+    "react-zoom-pan-pinch": "^3.7.0"
+  },
+  "devDependencies": {
+    "@svgr/webpack": "^8.1.0"
+  }
+}

@@ -9,6 +9,16 @@ export async function getGamePlayers(code) {
     }
 }
 
+export async function postGamePlayer(code) {
+    try {
+        const res = await api.get(`game/${code}/player/`);
+        return res.data;
+    } catch {
+        return [];
+    }
+}
+
+
 export async function getPlayer(id) {
     try {
         const res = await api.get(`players/${id}/`);

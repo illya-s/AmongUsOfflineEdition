@@ -10,7 +10,8 @@ from game.serializers import (
     KillPlayerSerializer,
     UpdatePlayerLocationSerializer,
 )
-from game.utils import check_win_condition, end_game
+from game.tasks import update
+from game.utils import check_win_condition
 
 
 class CompleteTask(SocketHandler):
@@ -59,6 +60,8 @@ class CompleteTask(SocketHandler):
         request.player.cooldown_until = timezone.now() + timedelta(minutes=3)
         request.player.save(update_fields=["cooldown_until"])
 
+        update.apply_async(args=[request.game.id], eta=request.player.cooldown_until)
+
         check_win_condition(request.game)
         return SocketResponse.from_request(request)
 
@@ -106,5 +109,8 @@ class KillPlayer(SocketHandler):
             imposter.kill_cooldown_until = timezone.now() + timedelta(minutes=2)
             imposter.save(update_fields=["kill_cooldown_until"])
 
-        check_win_condition(request.game)
+            update.apply_async(args=[request.game.id], eta=imposter.kill_cooldown_until)
+
+        if (request.game.active):
+            check_win_condition(request.game)
         return SocketResponse.from_request(request)

@@ -51,16 +51,18 @@ export function sendWithAck(socket, payload) {
 export function handleSocketMessage(event) {
     const msg = JSON.parse(event.data);
 
-    if (msg.request_id && pendingRequests[msg.request_id]) {
-        const { resolve, reject } = pendingRequests[msg.request_id];
-
-        if (msg.action === "error" || msg.status === "error") {
-            reject(new Error(msg.message || "Server error"));
-        } else {
-            resolve(msg);
+    if (msg.request_id) {
+        if (pendingRequests[msg.request_id]) {
+            const { resolve, reject } = pendingRequests[msg.request_id];
+    
+            if (msg.action === "error" || msg.status === "error") {
+                reject(new Error(msg.message || "Server error"));
+            } else {
+                resolve(msg);
+            }
+    
+            delete pendingRequests[msg.request_id];
         }
-
-        delete pendingRequests[msg.request_id];
     }
 
     switch (msg.action) {

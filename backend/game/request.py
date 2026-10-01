@@ -32,7 +32,6 @@ class SocketRequest:
         pId = content.get("player_id")
         if pId:
             player = get_player_by_id(pId)
-        print(f"Player: {pId}")
 
         return cls(
             request_id=content.get("request_id"),
@@ -80,10 +79,21 @@ class SocketResponse:
         """Отправка через consumer (WebSocket)"""
         await consumer.send_json(self.to_dict())
 
-    async def broadcast(self, consumer):
+    async def broadcast(self, consumer=None, channel_layer=None, room_group_name=None):
         """Отправка всем в группе"""
-        await consumer.channel_layer.group_send(
-            consumer.room_group_name, {"type": "update", "payload": self.to_dict()}
+        if not consumer and not channel_layer:
+            raise ValueError("Необходимо предоставить consumer или channel_layer")
+
+        if channel_layer and not room_group_name:
+            raise ValueError(
+                "Необходимо предоставить room_group_name для channel_layer"
+            )
+
+        layer = consumer.channel_layer if consumer else channel_layer
+        room_group_name = consumer.room_group_name if consumer else room_group_name
+
+        await layer.group_send(
+            room_group_name, {"type": "update", "payload": self.to_dict()}
         )
 
 
@@ -109,7 +119,9 @@ class SocketHandler:
                 raise RuntimeError("Handler must return SocketResponse")
 
             if response.type == "broadcast":
-                response.data = await database_sync_to_async(get_game_data)(request.game.pk)
+                response.data = await database_sync_to_async(get_game_data)(
+                    request.game.pk
+                )
 
             if hasattr(response, response.type):
                 await getattr(response, response.type)(self.consumer)

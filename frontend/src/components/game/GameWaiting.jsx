@@ -5,7 +5,7 @@ import { AliveIcon, KnifeIcon } from "../../assets/icons";
 import styles from "./GameWaiting.module.css";
 import { useRef } from "react";
 
-const Countdown = ({ startTime, onFinish }) => {
+const Countdown = ({ startTime }) => {
     const [left, setLeft] = useState(
         Math.max(0, (startTime - Date.now()) / 1000),
     );
@@ -23,7 +23,6 @@ const Countdown = ({ startTime, onFinish }) => {
             setLeft(remaining);
 
             if (remaining <= 0) {
-                onFinish?.();
                 cancelAnimationFrame(requestRef.current);
             } else {
                 requestRef.current = requestAnimationFrame(update);
@@ -32,7 +31,7 @@ const Countdown = ({ startTime, onFinish }) => {
 
         requestRef.current = requestAnimationFrame(update);
         return () => cancelAnimationFrame(requestRef.current);
-    }, [startTime, onFinish]);
+    }, [startTime]);
 
     const percent = (left / initialLeft) * 100;
 
@@ -56,7 +55,7 @@ const Countdown = ({ startTime, onFinish }) => {
     );
 };
 
-export function GameWaiting({ player, players, startTime, onFinish }) {
+export function GameWaiting({ player, players, startTime }) {
     return (
         <div
             style={{
@@ -70,7 +69,7 @@ export function GameWaiting({ player, players, startTime, onFinish }) {
         >
             <div style={{ fontSize: 18 }}>Старт через…</div>
 
-            <Countdown startTime={startTime} onFinish={onFinish} />
+            <Countdown startTime={startTime} />
 
             <div className={styles["player-info"]}>
                 <span>Ваша роль:</span>

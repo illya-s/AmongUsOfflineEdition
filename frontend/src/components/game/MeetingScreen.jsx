@@ -1,16 +1,10 @@
 import { Avatar, Button, Card, Progress } from "antd";
 import { useEffect, useState } from "react";
 import { sendWithAck } from "../../lib/api/sendWithAck";
+import { VoteResults } from "./VoteResults";
 import styles from "./MeetingScreen.module.css";
 
-export function MeetingScreen({
-    gameSocket,
-    meeting,
-    players,
-    player,
-    setShowResults,
-    onMeetingEnd,
-}) {
+export function MeetingScreen({ gameSocket, meeting, players, player }) {
     const [timeRemaining, setTimeRemaining] = useState(meeting?.duration || 0);
     const [selectedPlayer, setSelectedPlayer] = useState(null);
 
@@ -25,25 +19,10 @@ export function MeetingScreen({
                 (Date.now() - new Date(meeting.started_at).getTime()) / 1000;
             const remaining = Math.max(0, meeting.duration - elapsed);
             setTimeRemaining(Math.floor(remaining));
-
-            if (remaining <= 0) {
-                clearInterval(timer);
-                onMeetingEnd?.();
-            }
         }, 1000);
 
         return () => clearInterval(timer);
-    }, [meeting, onMeetingEnd]);
-
-    useEffect(() => {
-        if (meeting?.is_active === false && meeting?.ended_at) {
-            const timer = setTimeout(() => {
-                setShowResults(false);
-            }, 5000);
-
-            return () => clearTimeout(timer);
-        }
-    }, [meeting?.is_active, meeting?.ended_at, setShowResults]);
+    }, [meeting]);
 
     const formatTime = (seconds) => {
         const mins = Math.floor(seconds / 60);
@@ -109,13 +88,7 @@ export function MeetingScreen({
     }
 
     if (meeting?.is_active == false && meeting?.ended_at) {
-        return (
-            <VoteResults
-                meeting={latestMeeting}
-                players={players}
-                onClose={() => setShowResults(false)}
-            />
-        );
+        return <VoteResults meeting={latestMeeting} players={players} />;
     }
 
     return (

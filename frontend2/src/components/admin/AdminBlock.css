@@ -1,0 +1,42 @@
+.admin-block-wrapper {
+    width: calc(50% - .5rem);
+    height: max-content;
+    min-height: calc(32px + (var(--ant-padding) * 2));
+
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
+.admin-block-top {
+    display: grid;
+    grid-template-columns: auto max-content;
+}
+.admin-block-top > h3 {
+    color: var(--ant-color-text-heading);
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+
+.admin-block-list {
+    overflow-y: auto;
+    max-height: 140px;
+    
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+.admin-block-wrapper-line > .admin-block-list {
+    display: flex;
+    flex-direction: column;
+}
+.admin-block-wrapper-grid > .admin-block-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
+
+.admin-block-list-empty {
+    color: var(--ant-color-warning-text);
+    text-align: center;
+}

@@ -25,6 +25,8 @@ export function GameTaskForm({
         })
             .then(() => {
                 message.success("Задача создана");
+                setTask(null);
+                setLocation(null);
                 setIsOpen(false);
             })
             .catch(() => {
@@ -39,10 +41,11 @@ export function GameTaskForm({
             open={isOpen}
             onOk={addGameTask}
             onCancel={() => setIsOpen(false)}
+            okButtonProps={{ disabled: !task || !location }}
         >
             <form className="game-task-form-wrapper">
                 <label className="game-task-form-field-wrapper">
-                    <span>Локация</span>
+                    <span>Основная локация</span>
 
                     <Select
                         value={location}
@@ -57,7 +60,7 @@ export function GameTaskForm({
                 </label>
 
                 <label className="game-task-form-field-wrapper">
-                    <span>Задача</span>
+                    <span>Описание задания</span>
 
                     <Select
                         value={task}

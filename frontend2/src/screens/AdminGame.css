@@ -1,0 +1,144 @@
+.admin-game-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ant-padding-md);
+}
+
+.admin-game-top {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0 var(--ant-padding);
+}
+
+.admin-game-top > .ant-avatar {
+    grid-row: 1 / 3;
+}
+
+.admin-game-top-middle {
+    flex: 1 1 auto;
+}
+
+.admin-game-top-middle h1 {
+    font-size: var(--ant-font-size-heading-1);
+    font-weight: bold;
+    color: var(--ant-color-text-heading);
+}
+
+.admin-game-middle {
+    display: grid;
+    grid-auto-rows: 365px;
+    grid-template-columns: 3fr 1fr;
+    gap: var(--ant-padding-md);
+}
+
+.admin-game-middle-top {
+    display: flex;
+    flex-direction: row;
+}
+
+.admin-game-middle-top h2 {
+    flex: 1;
+
+    font-size: var(--ant-font-size-heading-3);
+    font-weight: bold;
+    color: var(--ant-color-text-heading);
+}
+
+.top-edit-switch-wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: var(--ant-padding);
+}
+
+.admin-game-middle-container {
+    display: grid;
+    grid-template-rows: max-content auto;
+}
+.admin-game-middle-task-list {
+    overflow-y: auto;
+}
+
+.admin-game-middle-qr {
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.admin-game-middle-img {
+    display: flex;
+    align-items: center;
+}
+
+.admin-game-tasks-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ant-padding);
+}
+
+.admin-game-tasks-top {
+    display: grid;
+    grid-template-columns: auto max-content;
+    align-items: center;
+}
+.admin-game-tasks > h3 {
+    font-size: var(--ant-font-size-heading-3);
+    font-weight: bold;
+    color: var(--ant-color-text-heading);
+}
+
+.admin-game-map-wrapper {
+    display: grid;
+    grid-template-columns: max-content auto max-content;
+    gap: var(--ant-padding);
+}
+
+.admin-game-img-buttons {
+    /*padding: var(--ant-padding-xs);*/
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    /*border-radius: var(--ant-border-radius);
+    background-color: var(--ant-color-bg-elevated);*/
+}
+
+.admin-game-map-img {
+    user-select: none;
+}
+
+.admin-game-map-tasks {
+    overflow-y: auto;
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--ant-padding);
+}
+.admin-game-map-task {
+    padding: var(--ant-padding-xs) var(--ant-padding);
+
+    display: grid;
+    grid-template-columns: max-content auto;
+    gap: var(--ant-padding);
+    align-items: center;
+
+    border: 1px solid var(--ant-color-bg-elevated);
+    border-radius: var(--ant-border-radius);
+    background-color: var(--ant-color-bg-elevated);
+
+    cursor: pointer;
+    user-select: none;
+
+    &.active {
+        border: 1px solid var(--ant-color-border-secondary);
+        background-color: var(--ant-color-fill-tertiary);
+    }
+}
+
+
+#zones {
+    width: 100%;
+    height: auto;
+}

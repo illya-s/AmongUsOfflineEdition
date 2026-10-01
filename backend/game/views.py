@@ -2,6 +2,7 @@ import logging
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import status
@@ -23,6 +24,10 @@ from .serializers import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def health(request):
+    return JsonResponse({"status": "ok"})
 
 
 class LocationView(ModelViewSet):
@@ -136,10 +141,10 @@ class GamePlayerView(APIView):
 
         serializer = self.serializer_class(
             data={
-                "room": game.pk,
-                "user": request.user.pk,
-                "name": request.data.get("name", f"Player {request.user.pk}"),
-            }
+                "user": request.user.pk if request.user else None,
+                "name": request.data.get("name"),
+            },
+            context={"game": game},
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -150,7 +155,7 @@ class GamePlayerView(APIView):
             {
                 "type": "update",
                 "action": "update",
-                "data": get_game_data(game.id),
+                "payload": get_game_data(game.id),
             },
         )
 

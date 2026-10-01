@@ -1,0 +1,102 @@
+services:
+    db:
+        image: postgres:16-alpine
+        command: postgres -c max_connections=200
+        container_name: postgres_db
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        env_file:
+            - .env
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}",
+                ]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+
+    redis:
+        image: redis:7-alpine
+        container_name: redis_cache
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 5s
+
+    backend:
+        build: ./backend
+        container_name: django_backend
+        command: uv run uvicorn backend.asgi:application --host 0.0.0.0 --port 8000 --workers 4
+        volumes:
+            - ./backend:/app
+            - media_volume:/app/media
+        ports:
+            - "8000:8000"
+        env_file:
+            - .env
+        environment:
+            - DJANGO_SETTINGS_MODULE=config.settings.prod
+            - CELERY_BROKER_URL=redis://redis:6379/0
+            - CELERY_RESULT_BACKEND=redis://redis:6379/0
+        # healthcheck:
+        #     test:
+        #         ["CMD-SHELL", "curl -f http://localhost:8000/health/ || exit 1"]
+        #     interval: 5s
+        #     retries: 5
+        #     timeout: 3s
+        depends_on:
+            db:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+
+    celery_worker:
+        build: ./backend
+        command: uv run celery -A config.settings worker -l info --concurrency=4
+        volumes:
+            - ./backend:/app
+        env_file:
+            - .env
+        environment:
+            - DJANGO_SETTINGS_MODULE=config.settings.prod
+            - CELERY_BROKER_URL=redis://redis:6379/0
+            - CELERY_RESULT_BACKEND=redis://redis:6379/0
+        depends_on:
+            - redis
+            - db
+
+    celery_beat:
+        build: ./backend
+        command: uv run celery -A config.settings beat -l info
+        volumes:
+            - ./backend:/app
+        env_file:
+            - .env
+        environment:
+            - DJANGO_SETTINGS_MODULE=config.settings.prod
+            - CELERY_BROKER_URL=redis://redis:6379/0
+            - CELERY_RESULT_BACKEND=redis://redis:6379/0
+        depends_on:
+            - redis
+            - db
+
+    frontend:
+        build: ./frontend
+        container_name: vite_frontend
+        volumes:
+            - ./frontend:/app
+            - /app/node_modules
+        ports:
+            - "5173:5173"
+        environment:
+            - VITE_API_URL=/
+            - VITE_PROXY_TARGET=http://backend:8000
+        command: sh -c "yarn build && yarn preview --host 0.0.0.0"
+        depends_on:
+            backend:
+                condition: service_started
+
+volumes:
+    postgres_data:
+    media_volume:

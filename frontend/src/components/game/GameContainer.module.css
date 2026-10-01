@@ -67,6 +67,8 @@
 .task-complete-button {
     position: relative;
 
+    color: green;
+    
     &::after {
         content: "";
 
@@ -84,6 +86,10 @@
         background-color: var(--ant-color-fill-tertiary);
     }
 
+    &.disabled {
+        color: var(--ant-color-text-tertiary);
+    }
+    
     &.disabled::after {
         border: 2px solid var(--ant-color-border);
         background-color: var(--ant-color-fill-secondary);

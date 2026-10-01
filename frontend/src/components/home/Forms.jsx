@@ -6,7 +6,6 @@ import { useState } from "react";
 import { useMessageApi } from "../../providers/MessageProvider";
 import { api } from "../../providers/authService";
 import { getGame } from "../requests/api_game";
-import { sendWithAck } from "../../lib/api/sendWithAck";
 
 export function GameConnectForm({ setGame }) {
     const message = useMessageApi();
@@ -20,21 +19,32 @@ export function GameConnectForm({ setGame }) {
 
     const handleGetGame = async () => {
         if (!code) {
-            message.warning("Введите код")
-            return
+            message.warning("Введите код");
+            return;
         }
 
-        const game = await getGame(code);
+        api.get(`games/${code}/`).then((res) => {
+            const game = res.data;
 
-        if (!game) {
-            message.error("Что-то пошло не так!");
-        } else if (game?.active && !localStorage.getItem(code)) {
-            message.warning("Игра уже стартовыла!");
-            setCode("");
-        } else {
-            setGame(game);
-            setCode("");
-        }
+            console.log(game);
+            if (game?.active) {
+                message.warning("Игра уже стартовыла!");
+                setCode("");
+            } else {
+                setGame(game);
+                setCode("");
+            }
+        });
+        // const game = await getGame(code)?.data;
+
+        // if (!game) {
+        //     message.error("Что-то пошло не так!");
+        // } else if (game?.active && !localStorage.getItem(code)) {
+        //     message.warning("Игра уже стартовыла!");
+        //     setCode("");
+        // } else {
+
+        // }
     };
 
     return (
@@ -62,27 +72,23 @@ export function GameConnectForm({ setGame }) {
     );
 }
 
-export function GameAddUserForm({ gameSocket, code, setPId, setPlayer }) {
+export function GameAddUserForm({ code, setPlayer }) {
     const message = useMessageApi();
 
     const [name, setName] = useState("");
 
-    const handleAddGameUser = () =>
-        sendWithAck(gameSocket, {
-            action: "add_player",
-            data: { name: name },
-        })
+    const handleAddGameUser = (e) => {
+        e.preventDefault();
+
+        api.post(`game/${code}/player/`, { name: name })
             .then((res) => {
-                const players = res.data.game.players;
-                const player = players.find((p) => p.name == name);
-                localStorage.setItem(code, player.id);
-                setPId(player.id);
-                setPlayer(player);
+                setPlayer(res.data);
             })
             .catch((err) => {
-                message.error(err.message);
-                console.error(err.message);
+                // message.error(err);
+                console.error(err);
             });
+    };
 
     return (
         <div className={styles.wrapper}>

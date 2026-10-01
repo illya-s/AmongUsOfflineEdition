@@ -1,23 +1,28 @@
 import { LoadingOutlined, WarningOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useParams, useSearchParams } from "react-router";
 import { Section } from "../components/elements/Section";
 import { GameContainer, GameLoading } from "../components/game/Game";
-import { GameAddUserForm } from "../components/home/Forms";
-import { useGameSocket } from "../lib/api/useGameSocket";
-import styles from "./Game.module.css";
 import { GameWaiting } from "../components/game/GameWaiting";
 import { WinScreen } from "../components/game/WinScreen";
+import { useGameSocket } from "../lib/api/useGameSocket";
+import styles from "./Game.module.css";
 
 export default function Game() {
     const { code } = useParams();
+    const [searchParams] = useSearchParams();
+    const spId = searchParams.get("pId");
 
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const [pId, setPId] = useState(() =>
-        typeof window !== "undefined" ? localStorage.getItem(code) : null,
+        spId
+            ? spId
+            : typeof window !== "undefined"
+              ? localStorage.getItem(code)
+              : null,
     );
 
     const [player, setPlayer] = useState(null);
@@ -30,31 +35,33 @@ export default function Game() {
     );
 
     useEffect(() => {
+        console.log(game && !player?.id)
+        
+        if (game && !player?.id) {
+            localStorage.removeItem(code)
+            navigate("/");
+        }
+    }, [game, player]);
+
+    useEffect(() => {
         if (players.length == 0) return;
 
         if (player && !players.some((p) => p.id == player.id)) {
             gameSocket.close();
             navigate("/");
         }
-
-        // const pId = localStorage.getItem(code);
-        // const p = players.find((p) => p.id == pId);
-        // if (!p) localStorage.removeItem(code);
-        // setPlayer(p);
     }, [players]);
 
     const startTime = game?.start_time
         ? new Date(game.start_time).getTime()
         : 0;
 
-    const [started, setStarted] = useState(false);
-
     if (player && !player.is_alive) {
         navigate("/ghost");
     }
 
     if (game?.is_ended) {
-        return <WinScreen game={game} />;
+        return <WinScreen game={game} players={players} />;
     }
 
     return loading || loading === null ? (
@@ -77,20 +84,12 @@ export default function Game() {
                 </>
             )}
         </Section>
-    ) : !player ? (
-        <GameAddUserForm
-            gameSocket={gameSocket}
-            code={code}
-            setPId={setPId}
-            setPlayer={setPlayer}
-        />
     ) : game?.active ? (
-        !started ? (
+        startTime > Date.now() ? (
             <GameWaiting
                 player={player}
                 players={players}
                 startTime={startTime}
-                onFinish={() => setStarted(true)}
             />
         ) : (
             <GameContainer

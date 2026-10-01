@@ -1,6 +1,6 @@
 import "./AdminGame.css";
 
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { RobotFilled, ToolFilled } from "@ant-design/icons";
 import { Progress, Switch, theme } from "antd";
@@ -13,11 +13,10 @@ import List from "../components/admin/game/List";
 import Player from "../components/admin/game/Player";
 import Task from "../components/admin/game/Task";
 import { Section } from "../components/elements/Section";
+import { TaskMarkers } from "../components/game/TaskMarkers";
 import { sendWithAck } from "../lib/api/sendWithAck";
 import { useGameSocket } from "../lib/api/useGameSocket";
 import { ClientOnly } from "../lib/client/ClientOnly";
-import { colorFromNumber } from "../lib/client/colorFromNumber";
-import { useMessageApi } from "../providers/MessageProvider";
 import { useAuth } from "../providers/useAuth";
 import { AdminMeeting } from "../components/admin/game/AdminMeeting";
 import { AdminMusic } from "../components/admin/game/AdminMusic";
@@ -32,7 +31,7 @@ function QRCode({ code, image }) {
         const qrCode = new QRCodeStyling({
             width: 300,
             height: 300,
-            data: `${window.location.origin}/game/${code}/`,
+            data: `${window.location.origin}/?game=${code}`,
             image: image,
             backgroundOptions: {
                 color: "transparent",
@@ -55,9 +54,6 @@ function QRCode({ code, image }) {
 
 export default function AdminGame() {
     const { code } = useParams();
-
-    const navigate = useNavigate();
-    const { user } = useAuth();
 
     const { gameSocket, game, players, tasks, locations } = useGameSocket(code);
 
@@ -89,11 +85,11 @@ export default function AdminGame() {
                 strokeColor={{ from: "#108ee9", to: "#87d068" }}
             />
 
-            <AdminMeeting gameSocket={gameSocket} game={game} />
-
-            <AdminMusic game={game} />
-
             <div className="admin-game-middle">
+                <AdminMeeting gameSocket={gameSocket} game={game} />
+
+                <AdminMusic game={game} />
+
                 <Section className="admin-game-middle-container">
                     <div className="admin-game-middle-top">
                         <h2>Players</h2>
@@ -183,37 +179,7 @@ export default function AdminGame() {
                         {Array.isArray(tasks) &&
                             tasks.map((task) => {
                                 if (!task) return null;
-                                const points = task.points;
-                                const color1 = colorFromNumber(task.id);
-                                const color2 = colorFromNumber(task.id, 0.4);
-                                return (
-                                    <Fragment key={`svg_task_${task.id}`}>
-                                        {Array.isArray(points) &&
-                                            points.length > 0 && (
-                                                <polyline
-                                                    points={points
-                                                        .map(
-                                                            (p) =>
-                                                                `${p.x},${p.y}`,
-                                                        )
-                                                        .join(" ")}
-                                                    fill={color2}
-                                                    stroke={color1}
-                                                    strokeWidth={2}
-                                                />
-                                            )}
-                                        {Array.isArray(points) &&
-                                            points.map((p, i) => (
-                                                <circle
-                                                    key={i}
-                                                    cx={p.x}
-                                                    cy={p.y}
-                                                    r="3"
-                                                    fill={color1}
-                                                />
-                                            ))}
-                                    </Fragment>
-                                );
+                                return <TaskMarkers key={`svg_task_${task.id}`} task={task} />;
                             })}
                     </svg>
                 </Link>

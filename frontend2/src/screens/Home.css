@@ -1,0 +1,27 @@
+.home-start-wrapper {
+    height: 100%;
+
+    display: grid;
+    grid-template-rows: max-content max-content;
+    align-items: center;
+    align-content: center;
+    justify-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.home-start-title-wrapper {
+    display: inline-flex;
+    flex-direction: column;
+}
+.home-start-title-wrapper > h1 {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--ant-color-text-heading);
+    white-space: nowrap;
+}
+.home-start-title-wrapper > span {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}

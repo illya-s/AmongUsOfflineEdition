@@ -1,3 +1,11 @@
-from game.utils import generate_code
+# import os
 
-print(generate_code())
+# import django
+
+# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
+# django.setup()
+
+# from game.tasks import task
+
+# task.apply_async(args=[reminder_instance.id], eta=reminder_instance.scheduled_at)
+# print("Completed!")

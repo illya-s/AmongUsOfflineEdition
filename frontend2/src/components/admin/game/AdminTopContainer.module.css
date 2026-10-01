@@ -1,0 +1,27 @@
+.wrapper {
+    display: grid;
+    grid-template-columns: auto max-content max-content max-content max-content;
+    gap: var(--ant-padding);
+    align-items: center;
+}
+
+.info {
+    display: grid;
+    grid-template-columns: 40px max-content;
+    grid-template-rows: max-content max-content;
+    gap: 0 var(--ant-padding);
+    align-items: center;
+}
+
+.info-avatar {
+    grid-row: 1 / 3;
+}
+.info-title {
+    font-weight: bold;
+    font-size: var(--ant-font-size-heading-1);
+    color: var(--ant-color-text-heading);
+}
+.info-code {
+    font-size: var(--ant-font-size-heading-5);
+    color: var(--ant-color-text-description);
+}

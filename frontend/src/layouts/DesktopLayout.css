@@ -39,41 +39,6 @@
 }
 
 
-
-.layout-wrapper > aside {
-	overflow-y: auto;
-
-	padding: var(--ant-padding);
-
-	display: flex;
-	flex-direction: column;
-	gap: var(--ant-padding);
-	align-items: center;
-
-	border: var(--ant-line-width) var(--ant-line-type) var(--ant-color-border);
-	border-radius: var(--ant-border-radius);
-	background-color: var(--ant-color-bg-container);
-}
-
-.aside-chat-block {
-	width: 100%;
-
-	padding: var(--ant-padding);
-
-	border: var(--ant-line-width) var(--ant-line-type) var(--ant-color-border-secondary);
-	border-radius: var(--ant-border-radius);
-	background-color: var(--ant-color-bg-elevated);
-
-	transition: background-color .2s linear;
-
-	cursor: pointer;
-
-	&:hover {
-		background-color: var(--ant-color-fill-tertiary);
-	}
-}
-
-
 .layout-wrapper > .content {
 	overflow-y: auto;
 }

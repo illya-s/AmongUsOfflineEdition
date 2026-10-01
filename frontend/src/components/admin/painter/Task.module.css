@@ -1,5 +1,5 @@
 .task {
-    max-width: 250px;
+    /*max-width: 250px;*/
     padding: var(--ant-padding);
 
     display: grid;
@@ -35,4 +35,23 @@
 
 .location {
     color: var(--ant-color-text-description);
+}
+
+.meta {
+    min-width: 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: var(--ant-font-size-sm);
+}
+
+.location {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.status {
+    flex: none;
+    color: var(--ant-color-primary);
 }

@@ -1,73 +1,111 @@
 services:
     db:
         image: postgres:16-alpine
-        container_name: postgres_db
+        command: postgres -c max_connections=200
         volumes:
-            - postgres_data:/var/lib/postgresql/data
+            - postgres_data_dev:/var/lib/postgresql/data
         env_file:
             - .env
         healthcheck:
-            test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+            test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
             interval: 5s
             timeout: 5s
             retries: 5
 
     redis:
         image: redis:7-alpine
-        container_name: redis_cache
         healthcheck:
-            test: [ "CMD", "redis-cli", "ping" ]
+            test: ["CMD", "redis-cli", "ping"]
             interval: 5s
+            timeout: 5s
+            retries: 5
 
     backend:
         build: ./backend
-        container_name: django_backend
+        command: uv run python manage.py runserver 0.0.0.0:8000
         volumes:
             - ./backend:/app
-            - static_volume:/app/staticfiles
-            - media_volume:/app/media
+            - backend_venv:/app/.venv
+            - media_volume_dev:/app/media
         ports:
             - "8000:8000"
         env_file:
             - .env
         environment:
-            - DJANGO_SETTINGS_MODULE=config.settings.prod
+            DJANGO_SETTINGS_MODULE: config.settings.dev
+            CELERY_BROKER_URL: redis://redis:6379/0
+            CELERY_RESULT_BACKEND: redis://redis:6379/0
         depends_on:
             db:
                 condition: service_healthy
             redis:
                 condition: service_healthy
 
-    frontend:
-        build: ./frontend
-        container_name: vite_frontend_builder
+    celery_worker:
+        build: ./backend
+        entrypoint: []
+        command: uv run celery -A config.settings worker -l info --concurrency=2
         volumes:
-            - ./frontend:/app
-            - frontend_build:/app/dist
-            - /app/node_modules
+            - ./backend:/app
+            - backend_venv:/app/.venv
+        env_file:
+            - .env
         environment:
-            - VITE_API_URL=/api
-        command: npm run build
-
-    nginx:
-        image: nginx:latest
-        container_name: nginx_proxy
-        ports:
-            - "80:80"
-            - "443:443"
-        volumes:
-            - ./nginx/conf.d:/etc/nginx/conf.d
-            - frontend_build:/app/frontend/dist
-            - static_volume:/app/static
-            - media_volume:/app/media
+            DJANGO_SETTINGS_MODULE: config.settings.dev
+            CELERY_BROKER_URL: redis://redis:6379/0
+            CELERY_RESULT_BACKEND: redis://redis:6379/0
         depends_on:
             backend:
                 condition: service_started
-            frontend:
-                condition: service_completed_successfully
+
+    celery_beat:
+        build: ./backend
+        entrypoint: []
+        command: uv run celery -A config.settings beat -l info
+        volumes:
+            - ./backend:/app
+            - backend_venv:/app/.venv
+        env_file:
+            - .env
+        environment:
+            DJANGO_SETTINGS_MODULE: config.settings.dev
+            CELERY_BROKER_URL: redis://redis:6379/0
+            CELERY_RESULT_BACKEND: redis://redis:6379/0
+        depends_on:
+            backend:
+                condition: service_started
+
+    frontend:
+        build: ./frontend
+        command: yarn dev --host 0.0.0.0
+        volumes:
+            - ./frontend:/app
+            - frontend_node_modules:/app/node_modules
+        ports:
+            - "5173:5173"
+        environment:
+            VITE_API_URL: /
+            VITE_PROXY_TARGET: http://backend:8000
+        depends_on:
+            - backend
+
+    frontend2:
+        build: ./frontend2
+        command: yarn dev
+        volumes:
+            - ./frontend2:/app
+            - frontend2_node_modules:/app/node_modules
+        ports:
+            - "3000:3000"
+        environment:
+            NEXT_PUBLIC_API_URL: /
+            PROXY_TARGET: http://backend:8000
+        depends_on:
+            - backend
 
 volumes:
-    postgres_data:
-    static_volume:
-    media_volume:
-    frontend_build:
+    postgres_data_dev:
+    backend_venv:
+    frontend_node_modules:
+    frontend2_node_modules:
+    media_volume_dev:

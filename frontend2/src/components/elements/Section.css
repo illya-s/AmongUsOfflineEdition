@@ -1,0 +1,7 @@
+.m-section {
+	padding: var(--ant-padding);
+
+	border: var(--ant-line-width) var(--ant-line-type) var(--ant-color-border);
+	border-radius: var(--ant-border-radius-lg);
+	background-color: var(--ant-color-bg-container);
+}
