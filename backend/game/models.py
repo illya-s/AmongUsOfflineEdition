@@ -13,6 +13,7 @@ class GameLocation(models.Model):
     )
     x = models.FloatField(default=0)
     y = models.FloatField(default=0)
+    size = models.FloatField(default=1)
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
@@ -231,6 +232,7 @@ class GameTask(models.Model):
     )
 
     points = models.JSONField(null=True)
+    size = models.FloatField(default=1)
     sequence_number = models.PositiveIntegerField(null=True, blank=True, db_index=True)
 
     is_completed = models.BooleanField(default=False)

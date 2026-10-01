@@ -3,7 +3,7 @@
     padding: var(--ant-padding);
 
     display: grid;
-    grid-template-columns: 32px 1fr;
+    grid-template-columns: 32px minmax(0, 1fr) 24px;
     align-items: center;
     gap: var(--ant-padding);
 
@@ -18,6 +18,20 @@
         background-color: var(--ant-color-primary);
         color: var(--ant-color-text-heading);
     }
+}
+
+.delete {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    color: var(--ant-color-text-description);
+    font-size: 18px;
+    line-height: 1;
+}
+
+.delete:hover {
+    color: var(--ant-color-error);
+    background: var(--ant-color-error-bg);
 }
 
 .center {

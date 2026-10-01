@@ -13,6 +13,11 @@ handlepatterns: dict[str, Type[SocketHandler]] = {
     "change_check_task": handlers.ChangeCheckTask,
     "delete_task": handlers.DeleteTask,
     "update_zones": handlers.UpdateZones,
+    "update_task_size": handlers.UpdateTaskSize,
+    # locations
+    "add_location": handlers.AddLocation,
+    "update_location": handlers.UpdateLocation,
+    "delete_location": handlers.DeleteLocation,
     # players
     "add_player": handlers.AddPlayer,
     "change_player_role": handlers.ChangePlayerRole,
