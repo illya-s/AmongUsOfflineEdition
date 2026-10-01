@@ -6,7 +6,7 @@ from django.core.files import File
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
-from game.models import GameRoom, GameTask, Location, Task
+from game.models import GameLocation, GameRoom, GameTask, Task
 
 
 DEFAULT_GAME_CODE = "DEFAULT"
@@ -29,6 +29,16 @@ LOCATION_POINTS = {
     ],
     "Коффетерий": [(48, 650), (123, 684), (57, 785), (145, 842), (94, 923)],
     "Улица": [(57, 1021), (132, 1063), (215, 1019), (284, 1082), (336, 1037)],
+}
+
+LOCATION_COORDINATES = {
+    "Склад": (290, 195),
+    "Игровая": (475, 195),
+    "Офис": (478, 450),
+    "Коридор": (285, 735),
+    "Командный центр": (480, 780),
+    "Коффетерий": (100, 790),
+    "Улица": (185, 1060),
 }
 
 # A destination turns a task into a transport task with an arrow.
@@ -104,19 +114,6 @@ class Command(BaseCommand):
         if not map_path.is_file():
             raise CommandError(f"Файл карты не найден: {map_path}")
 
-        locations = {}
-        for name, points in LOCATION_POINTS.items():
-            location, _ = Location.objects.update_or_create(
-                name=name,
-                defaults={
-                    "position": (
-                        f'{MAP_SIZE["width"]}x{MAP_SIZE["height"]}:'
-                        f"{points[0][0]},{points[0][1]}"
-                    ),
-                },
-            )
-            locations[name] = location
-
         room, created = GameRoom.objects.get_or_create(
             code=DEFAULT_GAME_CODE,
             defaults={"name": DEFAULT_GAME_NAME, "progress": 0},
@@ -130,6 +127,16 @@ class Command(BaseCommand):
         with map_path.open("rb") as map_file:
             room.game_map.save("map.svg", File(map_file), save=False)
         room.save()
+
+        locations = {}
+        for name in LOCATION_POINTS:
+            x, y = LOCATION_COORDINATES[name]
+            location, _ = GameLocation.objects.update_or_create(
+                room=room,
+                name=name,
+                defaults={"x": x, "y": y},
+            )
+            locations[name] = location
 
         # A fixed seed makes repeated runs stable while distributing markers.
         randomizer = random.Random(20261001)

@@ -6,9 +6,13 @@ from game.utils import generate_code
 from user.models import User
 
 
-class Location(models.Model):
+class GameLocation(models.Model):
     name = models.CharField(max_length=255, blank=True, null=False)
-    position = models.CharField(max_length=255, blank=True, null=True)
+    room = models.ForeignKey(
+        "GameRoom", on_delete=models.CASCADE, related_name="locations"
+    )
+    x = models.FloatField(default=0)
+    y = models.FloatField(default=0)
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
@@ -19,6 +23,11 @@ class Location(models.Model):
 
     class Meta:
         ordering = ["id"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["room", "name"], name="unique_location_name_per_game"
+            )
+        ]
 
 
 class Task(models.Model):
@@ -214,7 +223,7 @@ class Player(models.Model):
 class GameTask(models.Model):
     room = models.ForeignKey(GameRoom, on_delete=models.CASCADE, related_name="tasks")
     location = models.ForeignKey(
-        Location, on_delete=models.SET_NULL, null=True, related_name="room_locations"
+        GameLocation, on_delete=models.SET_NULL, null=True, related_name="tasks"
     )
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="room_tasks")
     player = models.ForeignKey(

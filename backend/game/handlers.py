@@ -45,7 +45,9 @@ class AddTask(SocketHandler):
     def handle(self, request: SocketRequest) -> SocketResponse:
         request.data["room"] = request.game.pk
 
-        serializer = self.serializer_class(data=request.data)
+        serializer = self.serializer_class(
+            data=request.data, context={"game": request.game}
+        )
         serializer.is_valid(raise_exception=True)
         serializer.save()
 

@@ -14,6 +14,7 @@ import Player from "../components/admin/game/Player";
 import Task from "../components/admin/game/Task";
 import { Section } from "../components/elements/Section";
 import { TaskMarkers } from "../components/game/TaskMarkers";
+import { GameLocations } from "../components/game/GameLocations";
 import { sendWithAck } from "../lib/api/sendWithAck";
 import { useGameSocket } from "../lib/api/useGameSocket";
 import { ClientOnly } from "../lib/client/ClientOnly";
@@ -176,6 +177,7 @@ export default function AdminGame() {
                             width="100%"
                             height="100%"
                         />
+                        <GameLocations locations={locations} />
                         {Array.isArray(tasks) &&
                             tasks.map((task) => {
                                 if (!task) return null;

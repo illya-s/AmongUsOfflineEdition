@@ -9,7 +9,7 @@ from game.management.commands.seed_game_data import (
     LOCATION_POINTS,
     TASKS,
 )
-from game.models import GameRoom, Location
+from game.models import GameLocation, GameRoom
 
 
 class SeedGameDataCommandTest(TestCase):
@@ -27,7 +27,18 @@ class SeedGameDataCommandTest(TestCase):
                 self.assertEqual(GameRoom.objects.filter(code=DEFAULT_GAME_CODE).count(), 1)
                 self.assertEqual(room.name, "Дефолтная игра")
                 self.assertEqual(len(tasks), len(TASKS))
-                self.assertEqual(Location.objects.filter(name__in=LOCATION_POINTS).count(), 7)
+                self.assertEqual(
+                    GameLocation.objects.filter(
+                        room=room, name__in=LOCATION_POINTS
+                    ).count(),
+                    7,
+                )
+                self.assertTrue(
+                    all(
+                        location.x > 0 and location.y > 0
+                        for location in room.locations.all()
+                    )
+                )
                 self.assertTrue(room.game_map.name.endswith("map.svg"))
                 self.assertTrue(Path(room.game_map.path).is_file())
                 self.assertEqual(

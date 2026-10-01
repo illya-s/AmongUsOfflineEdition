@@ -8,7 +8,7 @@ from rest_framework.routers import DefaultRouter
 from . import views
 
 router = DefaultRouter()
-router.register("locations", views.LocationView, basename="location")
+router.register("locations", views.GameLocationView, basename="location")
 router.register("tasks", views.TasksView, basename="task")
 router.register("games", views.GameRoomView, basename="root")
 
