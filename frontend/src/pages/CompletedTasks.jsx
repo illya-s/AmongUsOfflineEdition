@@ -4,6 +4,7 @@ import styles from "./CompletedTasks.module.css";
 import List from "../components/admin/game/List";
 import { Section } from "../components/elements/Section";
 import { TaskMarkers } from "../components/game/TaskMarkers";
+import { GameLocations } from "../components/game/GameLocations";
 import { useGameSocket } from "../lib/api/useGameSocket";
 
 import { useEffect, useMemo, useState } from "react";
@@ -88,6 +89,7 @@ export default function CompletedTasks() {
                 }}
             >
                 <image href={game?.game_map} width="100%" height="100%" />
+                <GameLocations locations={game?.locations} />
                 {Array.isArray(renderList) &&
                     renderList.map((task) => {
                         if (!task) return null;

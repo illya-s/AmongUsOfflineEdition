@@ -18,11 +18,11 @@ export default function Admin() {
     const { TaskForm, taskFormData, reset: resetTaskForm } = useTaskForm();
     const [tasks, setTasks] = useState([]);
 
-    const { LocationForm, locationFormData, reset: resetLocationForm } = useLocationForm();
-    const [locations, setLocations] = useState([]);
-
     const { GameForm, gameFormData, reset: resetGameForm } = useGameForm();
     const [games, setGames] = useState([]);
+    const { LocationForm, locationFormData, reset: resetLocationForm } =
+        useLocationForm(games);
+    const [locations, setLocations] = useState([]);
 
     useEffect(() => {
         updateLocationList();
@@ -147,7 +147,7 @@ export default function Admin() {
                                 {location.name}
                             </span>
                             <p>
-                                {location.position || "Положение отсутствует"}
+                                Игра #{location.room} · {Math.round(location.x)}, {Math.round(location.y)}
                             </p>
                         </div>
 

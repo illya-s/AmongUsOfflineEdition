@@ -14,11 +14,11 @@ from rest_framework.viewsets import ModelViewSet
 
 from game.utils import generate_code, get_game_data
 
-from .models import GameRoom, Location, Player, Task
+from .models import GameLocation, GameRoom, Player, Task
 from .serializers import (
     GameRoomSerializer,
     GameTaskSerializer,
-    LocationSerializer,
+    GameLocationSerializer,
     PlayerSerializer,
     TaskSerializer,
 )
@@ -30,9 +30,14 @@ def health(request):
     return JsonResponse({"status": "ok"})
 
 
-class LocationView(ModelViewSet):
-    queryset = Location.objects.all()
-    serializer_class = LocationSerializer
+class GameLocationView(ModelViewSet):
+    queryset = GameLocation.objects.select_related("room").all()
+    serializer_class = GameLocationSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        room = self.request.query_params.get("room")
+        return queryset.filter(room_id=room) if room else queryset
 
     def get_permissions(self):
         if self.action in ["list", "retrieve"]:

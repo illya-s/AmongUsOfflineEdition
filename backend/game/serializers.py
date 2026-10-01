@@ -19,7 +19,7 @@ from game.exceptions import (
 from game.request import SocketRequest
 from user.models import User
 
-from .models import GameRoom, GameTask, Location, Meeting, Player, Task, Vote
+from .models import GameLocation, GameRoom, GameTask, Meeting, Player, Task, Vote
 
 
 class ToggleAutoAssignRoleSerializer(serializers.Serializer):
@@ -145,9 +145,9 @@ class ChangePlayerRoleSerializer(serializers.Serializer):
         return instance
 
 
-class LocationSerializer(serializers.ModelSerializer):
+class GameLocationSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Location
+        model = GameLocation
         fields = "__all__"
         read_only_fields = ("id", "updated", "created")
 
@@ -218,7 +218,7 @@ class MeetingSerializer(serializers.ModelSerializer):
 
 class GameTaskSerializer(serializers.ModelSerializer):
     task = serializers.PrimaryKeyRelatedField(queryset=Task.objects.all())
-    location = serializers.PrimaryKeyRelatedField(queryset=Location.objects.all())
+    location = serializers.PrimaryKeyRelatedField(queryset=GameLocation.objects.all())
     player = serializers.PrimaryKeyRelatedField(
         queryset=Player.objects.all(), required=False
     )
@@ -230,7 +230,7 @@ class GameTaskSerializer(serializers.ModelSerializer):
             representation["task"] = TaskSerializer(instance.task).data
 
         if instance.location:
-            representation["location"] = LocationSerializer(instance.location).data
+            representation["location"] = GameLocationSerializer(instance.location).data
 
         if instance.player:
             representation["player"] = PlayerSerializer(instance.player).data
@@ -252,6 +252,15 @@ class GameTaskSerializer(serializers.ModelSerializer):
             "created",
         ]
         read_only_fields = ("sequence_number",)
+
+    def validate(self, attrs):
+        room = attrs.get("room") or self.context.get("game")
+        location = attrs.get("location")
+        if room and location and location.room_id != room.pk:
+            raise serializers.ValidationError(
+                {"location": "Локация должна принадлежать выбранной игре."}
+            )
+        return attrs
 
 
 class PersonalDataSerializer(serializers.ModelSerializer):
@@ -307,13 +316,10 @@ class GameRoomSerializer(serializers.ModelSerializer):
     players = PlayerSerializer(many=True, read_only=True)
     meetings = MeetingSerializer(many=True, read_only=True)
 
-    locations = serializers.SerializerMethodField(read_only=True)
+    locations = GameLocationSerializer(many=True, read_only=True)
     available_tasks = serializers.SerializerMethodField(read_only=True)
 
     game_map = serializers.SerializerMethodField(read_only=True)
-
-    def get_locations(self, obj: GameRoom):
-        return LocationSerializer(Location.objects.all(), many=True).data
 
     def get_available_tasks(self, obj: GameRoom):
         return TaskSerializer(Task.objects.all(), many=True).data

@@ -7,6 +7,7 @@ import { GameTaskForm } from "../components/admin/painter/GameTaskForm";
 import { Task } from "../components/admin/painter/Task";
 import { Section } from "../components/elements/Section";
 import { TaskMarkers } from "../components/game/TaskMarkers";
+import { GameLocations } from "../components/game/GameLocations";
 import { sendWithAck } from "../lib/api/sendWithAck";
 import { useGameSocket } from "../lib/api/useGameSocket";
 import styles from "./Painter.module.css";
@@ -432,6 +433,7 @@ export default function Painter() {
                         width={mapDimensions.width}
                         height={mapDimensions.height}
                     />
+                    <GameLocations locations={locations} />
 
                     {Array.isArray(renderList) &&
                         renderList.map((task) => {

@@ -12,6 +12,7 @@ import { AliveIcon, KnifeIcon } from "../../assets/icons";
 import List from "../admin/game/List";
 import gameLoadingStyles from "./GameLoading.module.css";
 import { MeetingScreen } from "./MeetingScreen";
+import { GameLocations } from "./GameLocations";
 import { Player } from "./Player";
 import { ReportButton } from "./ReportButton";
 import { SabotageMenu } from "./SabotageMenu";
@@ -153,6 +154,7 @@ export function GameContainer({ gameSocket, game, tasks, player, players }) {
                 viewBox={`0 0 ${mapDimensions.width} ${mapDimensions.height}`}
             >
                 <image href={game?.game_map} width="100%" height="100%" />
+                <GameLocations locations={game?.locations} />
 
                 {Array.isArray(renderList) &&
                     renderList.map((task) => {
