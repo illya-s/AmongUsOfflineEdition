@@ -3,16 +3,19 @@ import datetime
 from django.utils import timezone
 from rest_framework.serializers import ValidationError
 
-from game.models import GameTask, Player
+from game.models import GameLocation, GameTask, Player
 from game.request import SocketHandler, SocketRequest, SocketResponse
 from game.serializers import (
     ChangeGameSerializer,
     ChangeMapSerializer,
     ChangePlayerRoleSerializer,
     GameTaskSerializer,
+    GameLocationSerializer,
     PlayerSerializer,
     ToggleAutoAssignRoleSerializer,
     UpdateZonesSerializer,
+    UpdateGameLocationSerializer,
+    UpdateGameTaskSizeSerializer,
 )
 from game.utils import check_win_condition, format_remaining_time
 
@@ -92,12 +95,71 @@ class ChangeCheckTask(SocketHandler):
 class DeleteTask(SocketHandler):
     def handle(self, request: SocketRequest) -> SocketResponse:
         id = request.data.get("id")
-        task = GameTask.objects.filter(id=id)
+        task = GameTask.objects.filter(id=id, room=request.game)
 
         if not task.exists():
             raise ValidationError("Задание не найдено")
 
         task.first().delete()
+        for sequence_number, game_task in enumerate(
+            request.game.tasks.order_by("sequence_number", "pk"), start=1
+        ):
+            if game_task.sequence_number != sequence_number:
+                GameTask.objects.filter(pk=game_task.pk).update(
+                    sequence_number=sequence_number
+                )
+        return SocketResponse.from_request(request)
+
+
+class UpdateTaskSize(SocketHandler):
+    serializer_class = UpdateGameTaskSizeSerializer
+
+    def handle(self, request: SocketRequest) -> SocketResponse:
+        task = GameTask.objects.filter(
+            id=request.data.get("id"), room=request.game
+        ).first()
+        if not task:
+            raise ValidationError("Задание не найдено")
+        serializer = self.serializer_class(task, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return SocketResponse.from_request(request)
+
+
+class AddLocation(SocketHandler):
+    serializer_class = GameLocationSerializer
+
+    def handle(self, request: SocketRequest) -> SocketResponse:
+        data = {**request.data, "room": request.game.pk}
+        serializer = self.serializer_class(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user if request.user.is_authenticated else None)
+        return SocketResponse.from_request(request)
+
+
+class UpdateLocation(SocketHandler):
+    serializer_class = UpdateGameLocationSerializer
+
+    def handle(self, request: SocketRequest) -> SocketResponse:
+        location = GameLocation.objects.filter(
+            id=request.data.get("id"), room=request.game
+        ).first()
+        if not location:
+            raise ValidationError("Локация не найдена")
+        serializer = self.serializer_class(location, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return SocketResponse.from_request(request)
+
+
+class DeleteLocation(SocketHandler):
+    def handle(self, request: SocketRequest) -> SocketResponse:
+        location = GameLocation.objects.filter(
+            id=request.data.get("id"), room=request.game
+        ).first()
+        if not location:
+            raise ValidationError("Локация не найдена")
+        location.delete()
         return SocketResponse.from_request(request)
 
 
@@ -106,7 +168,7 @@ class UpdateZones(SocketHandler):
 
     def handle(self, request: SocketRequest) -> SocketResponse:
         id = request.data.get("id")
-        task = GameTask.objects.filter(id=id)
+        task = GameTask.objects.filter(id=id, room=request.game)
 
         if not task.exists():
             raise ValidationError("Игрок не найден")

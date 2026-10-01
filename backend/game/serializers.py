@@ -146,6 +146,11 @@ class ChangePlayerRoleSerializer(serializers.Serializer):
 
 
 class GameLocationSerializer(serializers.ModelSerializer):
+    def validate_size(self, value):
+        if not 0.5 <= value <= 3:
+            raise serializers.ValidationError("Размер должен быть от 0.5 до 3.")
+        return value
+
     class Meta:
         model = GameLocation
         fields = "__all__"
@@ -247,6 +252,7 @@ class GameTaskSerializer(serializers.ModelSerializer):
             "task_id",
             "player",
             "points",
+            "size",
             "sequence_number",
             "is_completed",
             "created",
@@ -308,6 +314,31 @@ class UpdateZonesSerializer(serializers.Serializer):
     def update(self, instance: GameTask, validated_data):
         instance.points = validated_data.get("points", instance.points)
         instance.save()
+        return instance
+
+
+class UpdateGameTaskSizeSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    size = serializers.FloatField(min_value=0.5, max_value=3)
+
+    def update(self, instance: GameTask, validated_data):
+        instance.size = validated_data["size"]
+        instance.save(update_fields=["size"])
+        return instance
+
+
+class UpdateGameLocationSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField(max_length=255, required=False)
+    x = serializers.FloatField(required=False)
+    y = serializers.FloatField(required=False)
+    size = serializers.FloatField(min_value=0.5, max_value=3, required=False)
+
+    def update(self, instance: GameLocation, validated_data):
+        validated_data.pop("id", None)
+        for field, value in validated_data.items():
+            setattr(instance, field, value)
+        instance.save(update_fields=validated_data.keys())
         return instance
 
 

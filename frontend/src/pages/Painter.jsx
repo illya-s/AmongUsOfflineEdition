@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Input, Modal } from "antd";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useParams } from "react-router";
 import List from "../components/admin/game/List";
@@ -50,6 +51,10 @@ export default function Painter() {
     const [redoStack, setRedoStack] = useState([]);
 
     const [isOpenForm, setIsOpenForm] = useState(false);
+    const [isLocationFormOpen, setIsLocationFormOpen] = useState(false);
+    const [newLocationName, setNewLocationName] = useState("");
+    const [currentLocationId, setCurrentLocationId] = useState(null);
+    const [dragLocation, setDragLocation] = useState(null);
 
     useEffect(() => {
         setIsOpenForm(tasks.length == 0);
@@ -59,15 +64,58 @@ export default function Painter() {
     const wrapperRef = useRef(null);
     const svgRef = useRef(null);
     const isDragging = useRef(false);
+    const dragLocationRef = useRef(null);
     const lastPos = useRef({ x: 0, y: 0 });
 
     const [currentTaskId, setCurrentTaskId] = useState(null);
     const handleSelectTask = (id) => {
         setCurrentTaskId(id);
+        setCurrentLocationId(null);
         setCurrentTool(TOOLS.PEN);
     };
     const currentTask = tasks?.find((t) => t.id === currentTaskId);
     const activePoints = currentTask?.points || [];
+    const currentLocation = locations?.find(
+        (location) => location.id === currentLocationId,
+    );
+    const renderedLocations = locations.map((location) =>
+        dragLocation?.id === location.id
+            ? { ...location, x: dragLocation.x, y: dragLocation.y }
+            : location,
+    );
+
+    const handleSelectLocation = (id) => {
+        setCurrentLocationId(id);
+        setCurrentTaskId(null);
+        setCurrentTool(TOOLS.MOVE);
+    };
+
+    const sendAction = (action, data) =>
+        sendWithAck(gameSocket, { action, data });
+
+    const deleteTask = (id) => {
+        sendAction("delete_task", { id });
+        if (currentTaskId === id) setCurrentTaskId(null);
+    };
+
+    const deleteLocation = (id) => {
+        sendAction("delete_location", { id });
+        if (currentLocationId === id) setCurrentLocationId(null);
+    };
+
+    const addLocation = () => {
+        const name = newLocationName.trim();
+        if (!name) return;
+        sendAction("add_location", {
+            name,
+            x: mapDimensions.width / 2,
+            y: mapDimensions.height / 2,
+            size: 1,
+        }).then(() => {
+            setNewLocationName("");
+            setIsLocationFormOpen(false);
+        });
+    };
 
     useEffect(() => {
         setHistory([]);
@@ -247,7 +295,16 @@ export default function Painter() {
         };
 
         const onMouseMove = (e) => {
-            if (isDragging.current) {
+            if (dragLocationRef.current) {
+                const point = getSvgPoint(e);
+                const nextLocation = {
+                    id: dragLocationRef.current.id,
+                    x: point.x,
+                    y: point.y,
+                };
+                dragLocationRef.current = nextLocation;
+                setDragLocation(nextLocation);
+            } else if (isDragging.current) {
                 const dx = e.clientX - lastPos.current.x;
                 const dy = e.clientY - lastPos.current.y;
 
@@ -263,6 +320,11 @@ export default function Painter() {
         };
 
         const onMouseUp = () => {
+            if (dragLocationRef.current) {
+                sendAction("update_location", dragLocationRef.current);
+                dragLocationRef.current = null;
+                setDragLocation(null);
+            }
             isDragging.current = false;
             setVisualIsDragging(false);
         };
@@ -308,28 +370,77 @@ export default function Painter() {
     return (
         <div className={styles.container}>
             <aside className={styles.sidebar}>
-                <div className={styles["sidebar-heading"]}>
-                    <div>
-                        <strong>Задания</strong>
-                        <small>{tasks.length} на карте</small>
-                    </div>
-                    <button type="button" onClick={() => setIsOpenForm(true)}>
-                        + Добавить
+                <details className={styles.group} open>
+                    <summary>
+                        <span>Задания</span>
+                        <small>{tasks.length}</small>
+                    </summary>
+                    <button
+                        type="button"
+                        className={styles.add}
+                        onClick={() => setIsOpenForm(true)}
+                    >
+                        + Добавить задание
                     </button>
-                </div>
-                <List
-                    className={styles["task-list"]}
-                    dataSource={tasks}
-                    renderItem={(task) => (
-                        <Task
-                            key={`task_${task.id}`}
-                            task={task}
-                            gameSocket={gameSocket}
-                            isSelected={currentTaskId === task.id}
-                            onClick={() => handleSelectTask(task.id)}
-                        />
-                    )}
-                />
+                    <List
+                        className={styles["task-list"]}
+                        dataSource={tasks}
+                        renderItem={(task) => (
+                            <Task
+                                key={`task_${task.id}`}
+                                task={task}
+                                gameSocket={gameSocket}
+                                isSelected={currentTaskId === task.id}
+                                onClick={() => handleSelectTask(task.id)}
+                                onDelete={() => deleteTask(task.id)}
+                            />
+                        )}
+                    />
+                </details>
+
+                <details className={styles.group} open>
+                    <summary>
+                        <span>Локации</span>
+                        <small>{locations.length}</small>
+                    </summary>
+                    <button
+                        type="button"
+                        className={styles.add}
+                        onClick={() => setIsLocationFormOpen(true)}
+                    >
+                        + Добавить локацию
+                    </button>
+                    <div className={styles["location-list"]}>
+                        {locations.map((location) => (
+                            <button
+                                type="button"
+                                key={location.id}
+                                className={`${styles["location-item"]} ${
+                                    currentLocationId === location.id
+                                        ? styles.active
+                                        : ""
+                                }`}
+                                onClick={() => handleSelectLocation(location.id)}
+                            >
+                                <span className={styles["location-dot"]} />
+                                <span>{location.name}</span>
+                                <small>
+                                    {Math.round(location.x)}, {Math.round(location.y)}
+                                </small>
+                                <span
+                                    className={styles["delete-location"]}
+                                    title="Удалить локацию"
+                                    onClick={(event) => {
+                                        event.stopPropagation();
+                                        deleteLocation(location.id);
+                                    }}
+                                >
+                                    ×
+                                </span>
+                            </button>
+                        ))}
+                    </div>
+                </details>
             </aside>
 
             <GameTaskForm
@@ -340,6 +451,24 @@ export default function Painter() {
                 locations={locations}
                 tasks={availableTasks}
             />
+
+            <Modal
+                title="Добавить локацию"
+                open={isLocationFormOpen}
+                onOk={addLocation}
+                okButtonProps={{ disabled: !newLocationName.trim() }}
+                onCancel={() => setIsLocationFormOpen(false)}
+            >
+                <Input
+                    value={newLocationName}
+                    onChange={(event) => setNewLocationName(event.target.value)}
+                    placeholder="Название локации"
+                    onPressEnter={addLocation}
+                />
+                <p className={styles.hint}>
+                    Локация появится в центре карты. Перетащите её в нужное место.
+                </p>
+            </Modal>
 
             <Section
                 className={styles.wrapper}
@@ -355,7 +484,9 @@ export default function Painter() {
                                 </span>
                                 <div>
                                     <strong>{currentTask.task.text}</strong>
-                                    <small>{currentTask.location.name}</small>
+                                    <small>
+                                        {currentTask.location?.name || "Без локации"}
+                                    </small>
                                 </div>
                             </div>
 
@@ -396,10 +527,111 @@ export default function Painter() {
                                     </button>
                                 </div>
                             )}
+
+                            <div className={styles["entity-controls"]}>
+                                <label>
+                                    <span>Размер</span>
+                                    <input
+                                        type="range"
+                                        min="0.5"
+                                        max="3"
+                                        step="0.1"
+                                        defaultValue={currentTask.size ?? 1}
+                                        key={`task-size-${currentTask.id}-${currentTask.size}`}
+                                        onPointerUp={(event) =>
+                                            sendAction("update_task_size", {
+                                                id: currentTask.id,
+                                                size: Number(event.currentTarget.value),
+                                            })
+                                        }
+                                        onKeyUp={(event) =>
+                                            sendAction("update_task_size", {
+                                                id: currentTask.id,
+                                                size: Number(event.currentTarget.value),
+                                            })
+                                        }
+                                    />
+                                </label>
+                                <button
+                                    type="button"
+                                    className={styles.danger}
+                                    onClick={() => deleteTask(currentTask.id)}
+                                >
+                                    Удалить задание
+                                </button>
+                            </div>
+                        </>
+                    ) : currentLocation ? (
+                        <>
+                            <div className={styles["inspector-heading"]}>
+                                <span className={styles["location-symbol"]}>⌖</span>
+                                <div>
+                                    <strong>{currentLocation.name}</strong>
+                                    <small>
+                                        {Math.round(currentLocation.x)}, {Math.round(currentLocation.y)}
+                                    </small>
+                                </div>
+                            </div>
+                            <p className={styles.hint}>
+                                Перетащите маркер локации по карте для изменения координат.
+                            </p>
+                            <div className={styles["entity-controls"]}>
+                                <label>
+                                    <span>Название</span>
+                                    <Input
+                                        defaultValue={currentLocation.name}
+                                        key={`location-name-${currentLocation.id}-${currentLocation.name}`}
+                                        onPressEnter={(event) =>
+                                            sendAction("update_location", {
+                                                id: currentLocation.id,
+                                                name: event.currentTarget.value,
+                                            })
+                                        }
+                                        onBlur={(event) => {
+                                            const name = event.currentTarget.value.trim();
+                                            if (name && name !== currentLocation.name)
+                                                sendAction("update_location", {
+                                                    id: currentLocation.id,
+                                                    name,
+                                                });
+                                        }}
+                                    />
+                                </label>
+                                <label>
+                                    <span>Размер</span>
+                                    <input
+                                        type="range"
+                                        min="0.5"
+                                        max="3"
+                                        step="0.1"
+                                        defaultValue={currentLocation.size ?? 1}
+                                        key={`location-size-${currentLocation.id}-${currentLocation.size}`}
+                                        onPointerUp={(event) =>
+                                            sendAction("update_location", {
+                                                id: currentLocation.id,
+                                                size: Number(event.currentTarget.value),
+                                            })
+                                        }
+                                        onKeyUp={(event) =>
+                                            sendAction("update_location", {
+                                                id: currentLocation.id,
+                                                size: Number(event.currentTarget.value),
+                                            })
+                                        }
+                                    />
+                                </label>
+                                <button
+                                    type="button"
+                                    className={styles.danger}
+                                    onClick={() => deleteLocation(currentLocation.id)}
+                                >
+                                    Удалить локацию
+                                </button>
+                            </div>
                         </>
                     ) : (
                         <p className={styles.hint}>
-                            Выберите задание слева, затем укажите его точку на карте.
+                            Выберите задание или локацию в панели слева.
                         </p>
                     )}
                 </div>
@@ -433,7 +665,22 @@ export default function Painter() {
                         width={mapDimensions.width}
                         height={mapDimensions.height}
                     />
-                    <GameLocations locations={locations} />
+                    <GameLocations
+                        locations={renderedLocations}
+                        editable
+                        selectedId={currentLocationId}
+                        onPointerDown={(event, location) => {
+                            event.stopPropagation();
+                            handleSelectLocation(location.id);
+                            const initial = {
+                                id: location.id,
+                                x: location.x,
+                                y: location.y,
+                            };
+                            dragLocationRef.current = initial;
+                            setDragLocation(initial);
+                        }}
+                    />
 
                     {Array.isArray(renderList) &&
                         renderList.map((task) => {
