@@ -3,7 +3,7 @@
 
     display: grid;
     grid-template-rows: max-content max-content;
-    gap: var(--ant-padding);
+    gap: var(--padding);
     align-items: center;
     align-content: center;
     justify-content: center;
@@ -16,6 +16,6 @@
 
     display: flex;
     flex-wrap: wrap;
-    gap: var(--ant-padding);
+    gap: var(--padding);
     justify-content: center;
 }

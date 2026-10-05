@@ -333,6 +333,20 @@ class UpdateGameLocationSerializer(serializers.Serializer):
     x = serializers.FloatField(required=False)
     y = serializers.FloatField(required=False)
     size = serializers.FloatField(min_value=0.5, max_value=3, required=False)
+    rotation = serializers.FloatField(min_value=-180, max_value=180, required=False)
+    font_size = serializers.FloatField(min_value=6, max_value=200, required=False)
+    line_height = serializers.FloatField(
+        min_value=6, max_value=400, required=False, allow_null=True
+    )
+    letter_spacing = serializers.FloatField(
+        min_value=-20, max_value=100, required=False
+    )
+    text_align = serializers.ChoiceField(
+        choices=("left", "center", "right"), required=False
+    )
+    vertical_align = serializers.ChoiceField(
+        choices=("top", "middle", "bottom"), required=False
+    )
 
     def update(self, instance: GameLocation, validated_data):
         validated_data.pop("id", None)

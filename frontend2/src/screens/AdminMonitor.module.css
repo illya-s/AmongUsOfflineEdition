@@ -12,7 +12,7 @@
 .main-wrapper {
     display: flex;
     flex-direction: column;
-    gap: var(--ant-padding);
+    gap: var(--padding);
 }
 
 
@@ -21,10 +21,10 @@
 
     display: flex;
     flex-direction: row;
-    gap: var(--ant-padding);
+    gap: var(--padding);
     align-items: center;
 
-    font-size: var(--ant-font-size-heading-1);
+    font-size: var(--font-size-heading-1);
 }
 
 .player-list {
@@ -32,7 +32,7 @@
 
     display: flex;
     flex-wrap: wrap;
-    gap: var(--ant-padding);
+    gap: var(--padding);
     justify-content: center;
 }
 
@@ -49,16 +49,16 @@
 }
 
 .player {
-    padding: var(--ant-padding-lg) var(--ant-padding-xl);
+    padding: var(--padding-lg) var(--padding-xl);
     
     display: grid;
     grid-template-columns: 48px max-content;
-    gap: var(--ant-padding);
+    gap: var(--padding);
     align-items: center;
     
-    border: 2px solid var(--ant-color-border);
-    border-radius: var(--ant-border-radius-lg);
-    background-color: var(--ant-color-bg-elevated);
+    border: 2px solid var(--color-border);
+    border-radius: var(--border-radius-lg);
+    background-color: var(--color-bg-elevated);
     
     font-weight: bolder;
     font-size: 3rem;

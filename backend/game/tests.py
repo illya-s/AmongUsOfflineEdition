@@ -1,22 +1,20 @@
 from unittest.mock import patch
 
-from django.test import TestCase, override_settings
+from django.test import TestCase
 
-from .tasks import task
+from .models import GameRoom
+from .tasks import update
 
 
 class CeleryTaskTestCase(TestCase):
-    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-    def test_task_execution_logic(self):
-        """Проверяем, что логика внутри задачи работает (Unit Test)"""
-        with self.assertLogs("game.tasks", level="INFO") as cm:
-            task.delay()  # Вызываем через .delay(), но из-за EAGER она выполнится сразу
-            self.assertIn("First task", cm.output[0])
+    @patch("game.tasks.reset_expired_timers")
+    def test_update_resets_expired_timers_and_broadcasts(self, reset_timers):
+        room = GameRoom.objects.create(code="TASK01", name="Task test room")
 
-    def test_task_routing(self):
-        """Проверяем, что задача отправляется в правильную очередь (Integration Test)"""
-        with patch("game.tasks.task.apply_async") as mock_apply:
-            task.delay()
+        self.assertTrue(update(room.id))
+        reset_timers.assert_called_once()
+        self.assertEqual(reset_timers.call_args.args[0].pk, room.pk)
 
-            args, kwargs = mock_apply.call_args
-            self.assertEqual(kwargs.get("queue"), "fast")
+    def test_update_skips_missing_room(self):
+        with self.assertLogs("game.tasks", level="WARNING"):
+            self.assertIsNone(update(999999))

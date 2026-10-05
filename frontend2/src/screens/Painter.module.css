@@ -2,11 +2,11 @@
     display: grid;
     grid-template-columns: max-content auto;
     grid-template-rows: max-content;
-    gap: var(--ant-padding);
+    gap: var(--padding);
 }
 
 .task-list {
-    height: calc(100vh - 46px - (var(--ant-padding) * 3));
+    height: calc(100vh - 46px - (var(--padding) * 3));
     overflow-y: auto;
 }
 
@@ -16,7 +16,7 @@
     touch-action: none;
 
     flex: 1;
-    height: calc(100vh - 46px - (var(--ant-padding) * 3));
+    height: calc(100vh - 46px - (var(--padding) * 3));
     min-height: 0;
 
     display: flex;
@@ -28,9 +28,9 @@
     align-items: center;
 }
 .top-title {
-    font-size: var(--ant-font-size-heading-2);
+    font-size: var(--font-size-heading-2);
     font-weight: 700;
-    color: var(--ant-color-text-heading);
+    color: var(--color-text-heading);
 }
 
 .content {
@@ -42,7 +42,7 @@
 .tasks {
     display: flex;
     flex-direction: column;
-    gap: var(--ant-padding-xs);
+    gap: var(--padding-xs);
 }
 
 .button-tool-icon {

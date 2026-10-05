@@ -1,13 +1,13 @@
 .block {
-    padding: var(--ant-padding);
+    padding: var(--padding);
 
     display: flex;
     flex-direction: row;
-    gap: var(--ant-padding);
+    gap: var(--padding);
     align-items: center;
 
-    border-radius: var(--ant-border-radius);
-    background-color: var(--ant-color-bg-elevated);
+    border-radius: var(--border-radius);
+    background-color: var(--color-bg-elevated);
 }
 
 .middle {

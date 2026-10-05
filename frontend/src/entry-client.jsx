@@ -1,4 +1,5 @@
 import "./components/base/Base.css";
+import "./Theme.css";
 
 import { createCache, StyleProvider } from "@ant-design/cssinjs";
 import { ConfigProvider } from "antd";

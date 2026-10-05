@@ -133,7 +133,7 @@ export function AdminTopContainer({ gameSocket, game }) {
                 open={isMapModalVisible}
                 onCancel={() => setIsMapModalVisible(false)}
                 footer={null}
-                destroyOnClose
+                destroyOnHidden
             >
                 <Upload.Dragger
                     accept="image/*"

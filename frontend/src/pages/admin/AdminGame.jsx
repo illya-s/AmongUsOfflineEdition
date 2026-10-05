@@ -1,26 +1,30 @@
 import "./AdminGame.css";
+import styles from "./AdminGame.module.css"
 
 import { useEffect, useState } from "react";
 
+import Progress from "../../components/ui/Progress";
+
 import { RobotFilled, ToolFilled } from "@ant-design/icons";
-import { Progress, Switch, theme } from "antd";
+import { Switch, theme } from "antd";
+
 import QRCodeStyling from "qr-code-styling";
 import { Link, useNavigate, useParams } from "react-router";
 
 import { useRef } from "react";
-import { AdminTopContainer } from "../components/admin/game/AdminTopContainer";
-import List from "../components/admin/game/List";
-import Player from "../components/admin/game/Player";
-import Task from "../components/admin/game/Task";
-import { Section } from "../components/elements/Section";
-import { TaskMarkers } from "../components/game/TaskMarkers";
-import { GameLocations } from "../components/game/GameLocations";
-import { sendWithAck } from "../lib/api/sendWithAck";
-import { useGameSocket } from "../lib/api/useGameSocket";
-import { ClientOnly } from "../lib/client/ClientOnly";
-import { useAuth } from "../providers/useAuth";
-import { AdminMeeting } from "../components/admin/game/AdminMeeting";
-import { AdminMusic } from "../components/admin/game/AdminMusic";
+import { AdminTopContainer } from "../../components/admin/game/AdminTopContainer";
+import List from "../../components/admin/game/List";
+import Player from "../../components/admin/game/Player";
+import Task from "../../components/admin/game/Task";
+import { Section } from "../../components/elements/Section";
+import { TaskMarkers } from "../../components/game/TaskMarkers";
+import { GameLocations } from "../../components/game/GameLocations";
+import { sendWithAck } from "../../lib/api/sendWithAck";
+import { useGameSocket } from "../../lib/api/useGameSocket";
+import { ClientOnly } from "../../lib/client/ClientOnly";
+import { useAuth } from "../../providers/useAuth";
+import { AdminMeeting } from "../../components/admin/game/AdminMeeting";
+import { AdminMusic } from "../../components/admin/game/AdminMusic";
 
 function QRCode({ code, image }) {
     const { token } = theme.useToken();
@@ -76,17 +80,14 @@ export default function AdminGame() {
     const [isLoadingAutoMode, setIsLoadingAutoMode] = useState(false);
 
     return (
-        <div className="admin-game-wrapper">
+        <div className={styles.wrapper}>
             <AdminTopContainer gameSocket={gameSocket} game={game} />
 
             <Progress
-                percent={game?.progress}
-                status="active"
-                size={[null, 20]}
-                strokeColor={{ from: "#108ee9", to: "#87d068" }}
+                value={game?.progress}
             />
 
-            <div className="admin-game-middle">
+            <div className={styles.content}>
                 <AdminMeeting gameSocket={gameSocket} game={game} />
 
                 <AdminMusic game={game} />
@@ -159,7 +160,8 @@ export default function AdminGame() {
                             <Task key={`task_${task.id}`} task={task} />
                         )}
                     />
-                </Section>
+				</Section>
+
                 <Link
                     className="admin-game-middle-img"
                     to={`/admin/game/${code}/map`}

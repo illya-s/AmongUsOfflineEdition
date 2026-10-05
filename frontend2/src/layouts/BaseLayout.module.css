@@ -1,16 +1,16 @@
 .layout-wrapper {
     width: 100%;
     height: 100%;
-    padding: var(--ant-padding);
+    padding: var(--padding);
 
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
-    gap: var(--ant-padding);
+    gap: var(--padding);
 
-    background-color: var(--ant-color-bg-layout);
+    background-color: var(--color-bg-layout);
 
-    color: var(--ant-color-text);
+    color: var(--color-text);
 }
 
 .content {

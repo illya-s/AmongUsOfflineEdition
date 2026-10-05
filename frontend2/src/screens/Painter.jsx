@@ -417,8 +417,8 @@ export default function Painter() {
                                     y2={mousePos.y}
                                     stroke={
                                         mousePos.isSnapped
-                                            ? "var(--ant-color-warning)"
-                                            : "var(--ant-color-primary)"
+                                            ? "var(--color-warning)"
+                                            : "var(--color-primary)"
                                     }
                                     strokeWidth={2}
                                 />
@@ -428,7 +428,7 @@ export default function Painter() {
                                 cy={mousePos.y}
                                 r={2}
                                 fill="white"
-                                stroke="var(--ant-color-primary)"
+                                stroke="var(--color-primary)"
                                 strokeWidth={1}
                             />
                         </>

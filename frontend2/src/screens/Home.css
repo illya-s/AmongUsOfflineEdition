@@ -17,7 +17,7 @@
 .home-start-title-wrapper > h1 {
     font-size: 2rem;
     font-weight: bold;
-    color: var(--ant-color-text-heading);
+    color: var(--color-text-heading);
     white-space: nowrap;
 }
 .home-start-title-wrapper > span {

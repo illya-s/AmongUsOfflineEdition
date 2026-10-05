@@ -7,13 +7,13 @@
 }
 
 .form {
-    padding: var(--ant-padding-lg);
+    padding: var(--padding-lg);
     
     display: flex;
     flex-direction: column;
-    gap: var(--ant-padding);
+    gap: var(--padding);
     
-    border: solid 1px var(--ant-color-border);
-    border-radius: var(--ant-border-radius);
-    background-color: var(--ant-color-bg-container);
+    border: solid 1px var(--color-border);
+    border-radius: var(--border-radius);
+    background-color: var(--color-bg-container);
 }

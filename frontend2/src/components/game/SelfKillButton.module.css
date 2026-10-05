@@ -9,9 +9,9 @@
     height: 75px;
     padding: 20px;
 
-    border: 2px solid var(--ant-color-error-border);
-    border-radius: var(--ant-border-radius);
-    background-color: var(--ant-color-error);
+    border: 2px solid var(--color-error-border);
+    border-radius: var(--border-radius);
+    background-color: var(--color-error);
 
     color: #000;
 }

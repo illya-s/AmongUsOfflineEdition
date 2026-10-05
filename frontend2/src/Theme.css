@@ -1,14 +1,65 @@
 :root {
-    --color-info:                 hsl(217, 80%, 60%);
-    --color-info-hover:           hsl(217, 100%, 60%);
-    --color-info-active:          hsl(217, 100%, 60%);
-    --color-info-bg:              hsl(217, 100%, 9%);
-    --color-info-bg-active:       hsl(217, 100%, 15%);
-    --color-info-bg-hover:        hsl(217, 100%, 15%);
+    color-scheme: dark;
+
+    --color-info: hsl(217, 80%, 70%);
+    --color-info-hover: hsl(217, 100%, 60%);
+    --color-info-active: hsl(217, 100%, 60%);
+    --color-info-bg: hsl(217, 100%, 9%);
+    --color-info-bg-active: hsl(217, 100%, 15%);
+    --color-info-bg-hover: hsl(217, 100%, 15%);
     --color-info-bg-filled-hover: hsl(217, 100%, 25%);
-    --color-info-border:          hsl(217, 100%, 50%);
-    --color-info-border-hover:    hsl(217, 100%, 60%);
-    --color-info-text:            hsl(217, 100%, 70%);
-    --color-info-text-active:     hsl(217, 100%, 85%);
-    --color-info-text-hover:      hsl(217, 100%, 85%);
+    --color-info-border: hsl(217, 100%, 50%);
+    --color-info-border-hover: hsl(217, 100%, 60%);
+    --color-info-text: hsl(217, 100%, 70%);
+    --color-info-text-active: hsl(217, 100%, 85%);
+    --color-info-text-hover: hsl(217, 100%, 85%);
+
+    --color-bg-layout: hsl(225, 7%, 0%);
+    --color-bg-container: hsl(225, 7%, 10%);
+    --color-bg-elevated: hsl(225, 7%, 17%);
+    --color-border: hsl(225, 7%, 20%);
+    --color-border-secondary: hsl(225, 7%, 40%);
+    --color-split: hsl(225, 7%, 20%);
+    --color-fill-secondary: hsl(225, 7%, 17%);
+    --color-fill-tertiary: hsl(225, 7%, 25%);
+    --color-fill-quaternary: hsl(225, 7%, 40%);
+
+    --color-text: hsl(225, 7%, 70%);
+    --color-text-heading: hsl(225, 44%, 96%);
+    --color-text-secondary: hsl(225, 7%, 55%);
+    --color-text-tertiary: hsl(225, 7%, 45%);
+    --color-text-quaternary: hsl(225, 7%, 35%);
+    --color-text-description: hsl(225, 7%, 55%);
+
+    --color-primary: hsl(217, 100%, 70%);
+    --color-primary-hover: hsl(217, 100%, 60%);
+    --color-primary-bg: hsl(217, 100%, 9%);
+    --color-primary-border: hsl(217, 100%, 50%);
+    --color-primary-text: hsl(217, 100%, 70%);
+
+    --color-error: hsl(4, 100%, 70%);
+    --color-error-bg: hsl(4, 100%, 7%);
+    --color-error-border: hsl(4, 100%, 50%);
+    --color-warning: hsl(30, 100%, 70%);
+    --color-warning-text: hsl(30, 100%, 70%);
+
+    --border-radius: 10px;
+    --border-radius-lg: 15px;
+    --box-shadow-secondary: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+    --line-width: 1px;
+    --line-type: solid;
+
+    --font-size-heading-1: 20px;
+    --font-size-heading-2: 18px;
+    --font-size-heading-3: 16px;
+    --font-size-heading-5: 12px;
+    --font-size-sm: 12px;
+
+    --padding: 10px;
+    --padding-xs: 5px;
+    --padding-sm: 10px;
+    --padding-md: 14px;
+    --padding-lg: 16px;
+    --padding-xl: 20px;
+    --margin-sm: 12px;
 }

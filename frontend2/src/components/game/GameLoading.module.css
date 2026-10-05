@@ -4,7 +4,7 @@
 
     display: grid;
     grid-template-rows: max-content auto;
-    gap: var(--ant-padding);
+    gap: var(--padding);
 }
 
 .top-wrapper {
@@ -26,7 +26,7 @@
 .title {
     display: flex;
     flex-direction: row;
-    gap: var(--ant-padding);
+    gap: var(--padding);
     align-items: center;
 }
 
@@ -35,6 +35,6 @@
 
     display: flex;
     flex-wrap: wrap;
-    gap: var(--ant-padding);
+    gap: var(--padding);
     justify-content: center;
 }
