@@ -1,6 +1,8 @@
 .layout-wrapper {
+	overflow-y: auto;
+	
 	height: 100%;
-	padding: 0 var(--padding) var(--padding) var(--padding);
+	padding: var(--padding);
 
 	display: grid;
 	grid-template-rows: max-content auto;
