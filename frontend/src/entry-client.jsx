@@ -10,7 +10,6 @@ import { createBrowserRouter, RouterProvider } from "react-router";
 import { MessageProvider } from "./providers/MessageProvider.jsx";
 import { routes } from "./routes.jsx";
 
-import { AuthProvider } from "./providers/AuthContext.jsx";
 import { darkTheme } from "./Theme.jsx";
 
 import { config } from "./config";
@@ -24,11 +23,9 @@ function Root() {
     return (
         <StyleProvider cache={cache}>
             <ConfigProvider theme={darkTheme}>
-                <AuthProvider>
-                    <MessageProvider>
-                        <RouterProvider router={router} />
-                    </MessageProvider>
-                </AuthProvider>
+                <MessageProvider>
+                    <RouterProvider router={router} />
+                </MessageProvider>
             </ConfigProvider>
         </StyleProvider>
     );

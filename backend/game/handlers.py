@@ -133,7 +133,7 @@ class AddLocation(SocketHandler):
         data = {**request.data, "room": request.game.pk}
         serializer = self.serializer_class(data=data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(user=request.user if request.user.is_authenticated else None)
+        serializer.save(user=None)
         return SocketResponse.from_request(request)
 
 

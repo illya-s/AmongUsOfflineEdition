@@ -1,4 +1,4 @@
-import { api } from "../../providers/authService";
+import { api } from "../../providers/apiClient";
 
 export async function getGame(code) {
     try {

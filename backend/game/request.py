@@ -5,7 +5,6 @@ from typing import Any, Literal
 from channels.db import database_sync_to_async
 from django.contrib.auth.models import AnonymousUser
 
-from game.auth import JWTAuthentication
 from game.models import GameRoom, Player
 from game.utils import get_game_data, get_player_by_id
 from user.models import User
@@ -25,8 +24,7 @@ class SocketRequest:
 
     @classmethod
     def from_content(cls, content: dict[str, Any], game: GameRoom) -> "SocketRequest":
-        auth = JWTAuthentication()
-        user, payload = auth.authenticate(content)
+        user, payload = AnonymousUser(), None
 
         player = None
         pId = content.get("player_id")

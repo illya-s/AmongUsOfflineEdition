@@ -3,7 +3,6 @@ import DesktopLayout from "./layouts/DesktopLayout.jsx";
 import Admin from "./pages/Admin.jsx";
 import AdminGame from "./pages/admin/AdminGame.jsx";
 import AdminMonitor from "./pages/AdminMonitor.jsx";
-import Auth from "./pages/Auth.jsx";
 import CompletedTasks from "./pages/CompletedTasks.jsx";
 import Game from "./pages/Game.jsx";
 import Ghost from "./pages/Ghost.jsx";
@@ -63,16 +62,6 @@ export const routes = [
                         element: <CompletedTasks />,
                     },
                 ],
-            },
-        ],
-    },
-    {
-        path: "/auth",
-        element: <BaseLayout />,
-        children: [
-            {
-                index: true,
-                element: <Auth />,
             },
         ],
     },

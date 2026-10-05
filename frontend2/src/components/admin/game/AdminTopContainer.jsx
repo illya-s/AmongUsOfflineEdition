@@ -8,7 +8,7 @@ import { Avatar, Badge, Button, Modal, Statistic, Upload } from "antd";
 import { useState } from "react";
 import { useNavigate } from "@/lib/router";
 import { sendWithAck } from "../../../lib/api/sendWithAck";
-import { api } from "../../../providers/authService";
+import { api } from "../../../providers/apiClient";
 import { Section } from "../../elements/Section";
 import styles from "./AdminTopContainer.module.css";
 import { useMessageApi } from "../../../providers/MessageProvider";
