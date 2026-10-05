@@ -26,7 +26,6 @@ from drf_spectacular.views import (
 
 
 urlpatterns = [
-    path("user/", include("user.urls")),
     path("", include("game.urls")),
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
     path("docs/swagger/", SpectacularSwaggerView.as_view(url_name="schema")),

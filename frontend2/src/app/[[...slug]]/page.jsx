@@ -8,14 +8,12 @@ import DesktopLayout from "@/layouts/DesktopLayout";
 import Admin from "@/screens/Admin";
 import AdminGame from "@/screens/AdminGame";
 import AdminMonitor from "@/screens/AdminMonitor";
-import Auth from "@/screens/Auth";
 import CompletedTasks from "@/screens/CompletedTasks";
 import Game from "@/screens/Game";
 import Ghost from "@/screens/Ghost";
 import Home from "@/screens/Home";
 import NotFound from "@/screens/NotFound";
 import Painter from "@/screens/Painter";
-import { AuthProvider } from "@/providers/AuthContext";
 import { MessageProvider } from "@/providers/MessageProvider";
 import { darkTheme } from "@/Theme";
 import { RouteProvider } from "@/lib/router";
@@ -30,7 +28,6 @@ function CurrentRoute() {
 
     if (parts.length === 0) page = <Home />;
     else if (parts[0] === "ghost" && parts.length === 1) page = <Ghost />;
-    else if (parts[0] === "auth" && parts.length === 1) page = <Auth />;
     else if (parts[0] === "game" && parts[1]) {
         params = { code: parts[1] };
         page = parts[2] === "monitor" ? <AdminMonitor /> : parts.length === 2 ? <Game /> : <NotFound />;
@@ -52,7 +49,7 @@ export default function AppPage() {
     return (
         <StyleProvider cache={cache}>
             <ConfigProvider theme={darkTheme}>
-                <AuthProvider><MessageProvider><CurrentRoute /></MessageProvider></AuthProvider>
+                <MessageProvider><CurrentRoute /></MessageProvider>
             </ConfigProvider>
         </StyleProvider>
     );

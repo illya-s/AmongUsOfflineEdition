@@ -5,7 +5,7 @@ import { Avatar, Button } from "antd";
 import { useEffect, useState } from "react";
 import { Link } from "@/lib/router";
 
-import { api } from "../providers/authService";
+import { api } from "../providers/apiClient";
 
 import { AdminBlock } from "../components/admin/AdminBlock";
 import { useGameForm } from "../components/admin/GameForm";

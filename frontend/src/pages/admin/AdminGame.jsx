@@ -22,7 +22,6 @@ import { GameLocations } from "../../components/game/GameLocations";
 import { sendWithAck } from "../../lib/api/sendWithAck";
 import { useGameSocket } from "../../lib/api/useGameSocket";
 import { ClientOnly } from "../../lib/client/ClientOnly";
-import { useAuth } from "../../providers/useAuth";
 import { AdminMeeting } from "../../components/admin/game/AdminMeeting";
 import { AdminMusic } from "../../components/admin/game/AdminMusic";
 

@@ -3,7 +3,6 @@ import "../Theme.css";
 import "../layouts/DesktopLayout.css";
 import "../screens/Admin.css";
 import "../screens/AdminGame.css";
-import "../screens/Auth.css";
 import "../screens/Home.css";
 import "../components/elements/Section.css";
 import "../components/admin/AdminBlock.css";

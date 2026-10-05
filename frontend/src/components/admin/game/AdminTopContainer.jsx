@@ -13,7 +13,7 @@ import { Badge, Button, Modal, Statistic, Upload } from "antd";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { sendWithAck } from "../../../lib/api/sendWithAck";
-import { api } from "../../../providers/authService";
+import { api } from "../../../providers/apiClient";
 import { Section } from "../../elements/Section";
 import { useMessageApi } from "../../../providers/MessageProvider";
 

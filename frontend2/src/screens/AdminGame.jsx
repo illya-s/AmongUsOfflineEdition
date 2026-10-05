@@ -17,7 +17,6 @@ import { sendWithAck } from "../lib/api/sendWithAck";
 import { useGameSocket } from "../lib/api/useGameSocket";
 import { ClientOnly } from "../lib/client/ClientOnly";
 import { colorFromNumber } from "../lib/client/colorFromNumber";
-import { useAuth } from "../providers/useAuth";
 import { AdminMeeting } from "../components/admin/game/AdminMeeting";
 import { AdminMusic } from "../components/admin/game/AdminMusic";
 

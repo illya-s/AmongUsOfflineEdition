@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import status
-from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -39,40 +39,16 @@ class GameLocationView(ModelViewSet):
         room = self.request.query_params.get("room")
         return queryset.filter(room_id=room) if room else queryset
 
-    def get_permissions(self):
-        if self.action in ["list", "retrieve"]:
-            permission_classes = [AllowAny]
-        elif self.action in ["create", "update", "partial_update"]:
-            permission_classes = [IsAdminUser]
-        elif self.action == "destroy":
-            permission_classes = [IsAdminUser]
-        else:
-            permission_classes = [AllowAny]
-
-        return [permission() for permission in permission_classes]
-
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(user=None)
 
 
 class TasksView(ModelViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
 
-    def get_permissions(self):
-        if self.action in ["list", "retrieve"]:
-            permission_classes = [AllowAny]
-        elif self.action in ["create", "update", "partial_update"]:
-            permission_classes = [AllowAny]
-        elif self.action == "destroy":
-            permission_classes = [AllowAny]
-        else:
-            permission_classes = [AllowAny]
-
-        return [permission() for permission in permission_classes]
-
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(user=None)
 
 
 class GameRoomView(ModelViewSet):
@@ -80,20 +56,8 @@ class GameRoomView(ModelViewSet):
     serializer_class = GameRoomSerializer
     lookup_field = "code"
 
-    def get_permissions(self):
-        if self.action in ["list", "retrieve"]:
-            permission_classes = [AllowAny]
-        elif self.action in ["create", "update", "partial_update"]:
-            permission_classes = [IsAuthenticated]
-        elif self.action == "destroy":
-            permission_classes = [IsAuthenticated]
-        else:
-            permission_classes = [AllowAny]
-
-        return [permission() for permission in permission_classes]
-
     def perform_create(self, serializer):
-        serializer.save(code=generate_code(length=8), user=self.request.user)
+        serializer.save(code=generate_code(length=8), user=None)
 
 
 class PlayersView(APIView):

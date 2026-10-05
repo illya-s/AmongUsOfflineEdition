@@ -29,13 +29,11 @@ export const useGameSocket = (code, pId = null, setPlayer = null, setLoading) =>
         let isMounted = true;
 
         const init = async () => {
-            const token = localStorage.getItem("access_token");
-
             const connect = () => {
                 const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
                 const host = window.location.host;
                 ws = new WebSocket(
-                    `${protocol}//${host}/ws/game/${code}/?access_token=${token}&pId=${pId}`,
+                    `${protocol}//${host}/ws/game/${code}/?pId=${pId}`,
                 );
 
                 ws.onopen = () => {
