@@ -1,22 +1,22 @@
 .task {
     max-width: 250px;
-    padding: var(--ant-padding);
+    padding: var(--padding);
 
     display: grid;
     grid-template-columns: 32px 1fr;
     align-items: center;
-    gap: var(--ant-padding);
+    gap: var(--padding);
 
-    border: 1px solid var(--ant-color-border);
-    border-radius: var(--ant-border-radius);
-    background-color: var(--ant-color-bg-container);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    background-color: var(--color-bg-container);
     
     cursor: pointer;
     user-select: none;
     
     &.active {
-        background-color: var(--ant-color-primary);
-        color: var(--ant-color-text-heading);
+        background-color: var(--color-primary);
+        color: var(--color-text-heading);
     }
 }
 
@@ -27,12 +27,12 @@
 
 .name {
     display: -webkit-box;
-    color: var(--ant-color-text-heading);
+    color: var(--color-text-heading);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .location {
-    color: var(--ant-color-text-description);
+    color: var(--color-text-description);
 }

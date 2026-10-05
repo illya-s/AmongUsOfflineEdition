@@ -48,3 +48,9 @@ import GhostIcon from "./icons/ghost.svg?react";
 import KnifeIcon from "./icons/knife.svg?react";
 
 export { AliveIcon, GhostIcon, KnifeIcon };
+
+import AlignLeftIcon from "./icons/align-left.svg?react";
+import AlignCenterIcon from "./icons/align-center.svg?react";
+import AlignRightIcon from "./icons/align-right.svg?react";
+
+export { AlignLeftIcon, AlignCenterIcon, AlignRightIcon }

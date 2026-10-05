@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from channels.routing import URLRouter
 from channels.testing import WebsocketCommunicator
 from django.test import TransactionTestCase, override_settings
@@ -95,6 +96,29 @@ class GameConsumerTests(TransactionTestCase):
 
     def test_broadcast_action_reaches_every_client_in_the_room(self):
         async_to_sync(self._assert_broadcast_reaches_room)()
+
+    def test_direct_game_data_event_is_wrapped_for_frontend(self):
+        async_to_sync(self._assert_direct_game_data_event)()
+
+    async def _assert_direct_game_data_event(self):
+        communicator = WebsocketCommunicator(
+            self.application, f"/ws/game/{self.game.code}/"
+        )
+        self.assertTrue((await communicator.connect())[0])
+        await communicator.receive_json_from()  # init
+
+        await get_channel_layer().group_send(
+            f"game_{self.game.code}",
+            {
+                "type": "update",
+                "data": {"game": {"code": self.game.code}},
+            },
+        )
+
+        response = await communicator.receive_json_from()
+        self.assertEqual(response["action"], "update")
+        self.assertEqual(response["data"]["game"]["code"], self.game.code)
+        await communicator.disconnect()
 
     async def _assert_broadcast_reaches_room(self):
         action = next(iter(handlepatterns))

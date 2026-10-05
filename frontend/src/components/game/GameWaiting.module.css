@@ -1,10 +1,10 @@
 .player-info {
     display: flex;
     flex-direction: row;
-    gap: var(--ant-padding);
+    gap: var(--padding);
     align-items: center;
 }
 
 .player-info-name {
-    font-size: var(--ant-font-size-heading-3);
+    font-size: var(--font-size-heading-3);
 }

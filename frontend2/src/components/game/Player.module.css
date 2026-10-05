@@ -5,22 +5,22 @@
 
     display: flex;
     flex-direction: column;
-    gap: var(--ant-padding);
+    gap: var(--padding);
     align-items: center;
 
-    border: solid 1px var(--ant-color-border);
-    border-radius: var(--ant-border-radius);
-    background-color: var(--ant-color-bg-elevated);
+    border: solid 1px var(--color-border);
+    border-radius: var(--border-radius);
+    background-color: var(--color-bg-elevated);
 
     text-align: center;
     word-break: break-all;
     font-size: 1.2em;
-    color: var(--ant-color-text-heading);
+    color: var(--color-text-heading);
 }
 
 .me {
-    border-color: var(--ant-color-primary-border);
-    background-color: var(--ant-color-primary);
+    border-color: var(--color-primary-border);
+    background-color: var(--color-primary);
 
-    color: var(--ant-color-text-heading);
+    color: var(--color-text-heading);
 }

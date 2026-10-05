@@ -1,40 +1,40 @@
 .layout-wrapper {
 	height: 100%;
-	padding: 0 var(--ant-padding) var(--ant-padding) var(--ant-padding);
+	padding: 0 var(--padding) var(--padding) var(--padding);
 
 	display: grid;
 	grid-template-rows: max-content auto;
-	gap: var(--ant-padding);
+	gap: var(--padding);
 
-	background-color: var(--ant-color-bg-layout);
+	background-color: var(--color-bg-layout);
 
-	color: var(--ant-color-text);
+	color: var(--color-text);
 }
 
 .layout-wrapper > header {
-	margin-top: var(--ant-padding);
-	padding: var(--ant-padding);
+	margin-top: var(--padding);
+	padding: var(--padding);
 
 	display: grid;
 	grid-template-columns: 24px auto max-content;
-	gap: var(--ant-padding);
+	gap: var(--padding);
 	align-items: center;
 
-	border: var(--ant-line-width) var(--ant-line-type) var(--ant-color-border);
-	border-radius: var(--ant-border-radius);
-	background-color: var(--ant-color-bg-container);
+	border: var(--line-width) var(--line-type) var(--color-border);
+	border-radius: var(--border-radius);
+	background-color: var(--color-bg-container);
 }
 
 .layout-wrapper > header > h2 {
-	color: var(--ant-color-text-heading);
-	font-size: var(--ant-font-size-heading-3);
+	color: var(--color-text-heading);
+	font-size: var(--font-size-heading-3);
 	font-weight: normal;
 }
 
 .layout-header-user-wrapper {
 	display: grid;
 	grid-template-columns: max-content 24px;
-	gap: var(--ant-padding);
+	gap: var(--padding);
 	align-items: center;
 }
 

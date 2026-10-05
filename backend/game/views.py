@@ -160,7 +160,7 @@ class GamePlayerView(APIView):
             {
                 "type": "update",
                 "action": "update",
-                "payload": get_game_data(game.id),
+                "data": get_game_data(game.id),
             },
         )
 

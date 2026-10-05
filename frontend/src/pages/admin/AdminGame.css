@@ -1,14 +1,8 @@
-.admin-game-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: var(--ant-padding-md);
-}
-
 .admin-game-top {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 0 var(--ant-padding);
+    gap: 0 var(--padding);
 }
 
 .admin-game-top > .ant-avatar {
@@ -20,16 +14,9 @@
 }
 
 .admin-game-top-middle h1 {
-    font-size: var(--ant-font-size-heading-1);
+    font-size: var(--font-size-heading-1);
     font-weight: bold;
-    color: var(--ant-color-text-heading);
-}
-
-.admin-game-middle {
-    display: grid;
-    grid-auto-rows: 365px;
-    grid-template-columns: 3fr 1fr;
-    gap: var(--ant-padding-md);
+    color: var(--color-text-heading);
 }
 
 .admin-game-middle-top {
@@ -40,15 +27,15 @@
 .admin-game-middle-top h2 {
     flex: 1;
 
-    font-size: var(--ant-font-size-heading-3);
+    font-size: var(--font-size-heading-3);
     font-weight: bold;
-    color: var(--ant-color-text-heading);
+    color: var(--color-text-heading);
 }
 
 .top-edit-switch-wrapper {
     display: flex;
     flex-direction: row;
-    gap: var(--ant-padding);
+    gap: var(--padding);
 }
 
 .admin-game-middle-container {
@@ -67,14 +54,22 @@
 }
 
 .admin-game-middle-img {
+	overflow: hidden;
+
     display: flex;
     align-items: center;
+    justify-content: center;
+}
+
+.admin-game-middle-img > .zones {
+	width: auto;
+	height: 100%;
 }
 
 .admin-game-tasks-wrapper {
     display: flex;
     flex-direction: column;
-    gap: var(--ant-padding);
+    gap: var(--padding);
 }
 
 .admin-game-tasks-top {
@@ -83,26 +78,26 @@
     align-items: center;
 }
 .admin-game-tasks > h3 {
-    font-size: var(--ant-font-size-heading-3);
+    font-size: var(--font-size-heading-3);
     font-weight: bold;
-    color: var(--ant-color-text-heading);
+    color: var(--color-text-heading);
 }
 
 .admin-game-map-wrapper {
     display: grid;
     grid-template-columns: max-content auto max-content;
-    gap: var(--ant-padding);
+    gap: var(--padding);
 }
 
 .admin-game-img-buttons {
-    /*padding: var(--ant-padding-xs);*/
+    /*padding: var(--padding-xs);*/
 
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
 
-    /*border-radius: var(--ant-border-radius);
-    background-color: var(--ant-color-bg-elevated);*/
+    /*border-radius: var(--border-radius);
+    background-color: var(--color-bg-elevated);*/
 }
 
 .admin-game-map-img {
@@ -114,26 +109,26 @@
 
     display: flex;
     flex-direction: column;
-    gap: var(--ant-padding);
+    gap: var(--padding);
 }
 .admin-game-map-task {
-    padding: var(--ant-padding-xs) var(--ant-padding);
+    padding: var(--padding-xs) var(--padding);
 
     display: grid;
     grid-template-columns: max-content auto;
-    gap: var(--ant-padding);
+    gap: var(--padding);
     align-items: center;
 
-    border: 1px solid var(--ant-color-bg-elevated);
-    border-radius: var(--ant-border-radius);
-    background-color: var(--ant-color-bg-elevated);
+    border: 1px solid var(--color-bg-elevated);
+    border-radius: var(--border-radius);
+    background-color: var(--color-bg-elevated);
 
     cursor: pointer;
     user-select: none;
 
     &.active {
-        border: 1px solid var(--ant-color-border-secondary);
-        background-color: var(--ant-color-fill-tertiary);
+        border: 1px solid var(--color-border-secondary);
+        background-color: var(--color-fill-tertiary);
     }
 }
 

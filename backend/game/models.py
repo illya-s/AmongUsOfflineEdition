@@ -14,6 +14,12 @@ class GameLocation(models.Model):
     x = models.FloatField(default=0)
     y = models.FloatField(default=0)
     size = models.FloatField(default=1)
+    rotation = models.FloatField(default=0)
+    font_size = models.FloatField(default=13)
+    line_height = models.FloatField(null=True, blank=True)
+    letter_spacing = models.FloatField(default=0)
+    text_align = models.CharField(max_length=10, default="center")
+    vertical_align = models.CharField(max_length=10, default="middle")
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True, null=True)

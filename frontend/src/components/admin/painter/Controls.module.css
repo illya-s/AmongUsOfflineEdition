@@ -10,7 +10,7 @@
     align-items: center;
     gap: 4px;
 
-    box-shadow: var(--ant-box-shadow-secondary);
+    box-shadow: var(--box-shadow-secondary);
 }
 
 .tools button {
@@ -19,23 +19,23 @@
     padding: 7px;
     display: grid;
     place-content: center;
-    border-radius: var(--ant-border-radius);
-    color: var(--ant-color-text);
+    border-radius: var(--border-radius);
+    color: var(--color-text);
     font-weight: 700;
 }
 
 .tools button:hover:not(:disabled) {
-    background: var(--ant-color-fill-tertiary);
+    background: var(--color-fill-tertiary);
 }
 
 .tools button:disabled {
-    color: var(--ant-color-text-quaternary);
+    color: var(--color-text-quaternary);
     cursor: not-allowed;
 }
 
 .button.active,
 .button.active:hover {
-    background: var(--ant-color-primary) !important;
+    background: var(--color-primary) !important;
 }
 
 .button img {
@@ -48,5 +48,5 @@
     width: 1px;
     height: 24px;
     margin: 0 3px;
-    background: var(--ant-color-split);
+    background: var(--color-split);
 }

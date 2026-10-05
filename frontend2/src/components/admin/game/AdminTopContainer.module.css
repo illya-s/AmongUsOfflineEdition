@@ -1,7 +1,7 @@
 .wrapper {
     display: grid;
     grid-template-columns: auto max-content max-content max-content max-content;
-    gap: var(--ant-padding);
+    gap: var(--padding);
     align-items: center;
 }
 
@@ -9,7 +9,7 @@
     display: grid;
     grid-template-columns: 40px max-content;
     grid-template-rows: max-content max-content;
-    gap: 0 var(--ant-padding);
+    gap: 0 var(--padding);
     align-items: center;
 }
 
@@ -18,10 +18,10 @@
 }
 .info-title {
     font-weight: bold;
-    font-size: var(--ant-font-size-heading-1);
-    color: var(--ant-color-text-heading);
+    font-size: var(--font-size-heading-1);
+    color: var(--color-text-heading);
 }
 .info-code {
-    font-size: var(--ant-font-size-heading-5);
-    color: var(--ant-color-text-description);
+    font-size: var(--font-size-heading-5);
+    color: var(--color-text-description);
 }

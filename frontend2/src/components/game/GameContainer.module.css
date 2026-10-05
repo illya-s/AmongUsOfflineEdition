@@ -1,13 +1,13 @@
 .wrapper {
     display: flex;
     flex-direction: column;
-    gap: var(--ant-padding);
+    gap: var(--padding);
 }
 
 .top-wrapper {
     display: grid;
     grid-template-columns: auto max-content;
-    gap: var(--ant-padding);
+    gap: var(--padding);
     align-items: center;
 }
 
@@ -18,7 +18,7 @@
 .role-wrapper {
     display: flex;
     flex-direction: column;
-    gap: var(--ant-padding);
+    gap: var(--padding);
     align-items: center;
 }
 
@@ -32,7 +32,7 @@
 .imposter, .crew {
     display: grid;
     grid-template-columns: max-content auto;
-    gap: var(--ant-padding);
+    gap: var(--padding);
     align-items: center;
 }
 .imposter {
@@ -45,22 +45,22 @@
 .main-buttons {
     display: flex;
     flex-direction: row;
-    gap: var(--ant-padding);
+    gap: var(--padding);
 }
 
 .task {
-    padding: var(--ant-padding);
+    padding: var(--padding);
 
     display: grid;
     grid-template-columns: auto 48px;
 
-    border: 2px solid var(--ant-color-border);
-    border-radius: var(--ant-border-radius);
-    background-color: var(--ant-color-bg-container);
+    border: 2px solid var(--color-border);
+    border-radius: var(--border-radius);
+    background-color: var(--color-bg-container);
 
     &.active {
-        background-color: var(--ant-color-bg-elevated);
-        color: var(--ant-color-text-heading);
+        background-color: var(--color-bg-elevated);
+        color: var(--color-text-heading);
     }
 }
 
@@ -81,18 +81,18 @@
 
         aspect-ratio: 1;
 
-        border: 2px solid var(--ant-color-border-secondary);
-        border-radius: var(--ant-border-radius);
-        background-color: var(--ant-color-fill-tertiary);
+        border: 2px solid var(--color-border-secondary);
+        border-radius: var(--border-radius);
+        background-color: var(--color-fill-tertiary);
     }
 
     &.disabled {
-        color: var(--ant-color-text-tertiary);
+        color: var(--color-text-tertiary);
     }
     
     &.disabled::after {
-        border: 2px solid var(--ant-color-border);
-        background-color: var(--ant-color-fill-secondary);
+        border: 2px solid var(--color-border);
+        background-color: var(--color-fill-secondary);
     }
 
     &>svg {

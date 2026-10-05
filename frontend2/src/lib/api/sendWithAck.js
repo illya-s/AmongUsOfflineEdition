@@ -68,12 +68,17 @@ export function handleSocketMessage(event) {
     switch (msg.action) {
         case "init":
         case "update":
-            updateGame?.(msg.data.game);
-            updateTasks?.(Array.isArray(msg.data.game.tasks) ? msg.data.game.tasks : []);
-            updatePlayers?.(Array.isArray(msg.data.game.players) ? msg.data.game.players : []);
+            const game = msg.data?.game;
+            if (!game) {
+                console.error("Invalid game socket message: missing data.game", msg);
+                break;
+            }
+            updateGame?.(game);
+            updateTasks?.(Array.isArray(game.tasks) ? game.tasks : []);
+            updatePlayers?.(Array.isArray(game.players) ? game.players : []);
             updatePlayer?.(msg.player)
-            updateLocations?.(Array.isArray(msg.data.game.locations) ? msg.data.game.locations : []);
-            updateAvailableTasks?.(Array.isArray(msg.data.game.available_tasks) ? msg.data.game.available_tasks : []);
+            updateLocations?.(Array.isArray(game.locations) ? game.locations : []);
+            updateAvailableTasks?.(Array.isArray(game.available_tasks) ? game.available_tasks : []);
             break;
 
         case "error":

@@ -78,7 +78,22 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
             await response.send(self)
 
     async def update(self, event):
-        data = event["payload"].copy()
+        # Group events have historically used both `data` and `payload`.
+        # SocketResponse broadcasts already wrap the game under `data`, while
+        # direct game-state broadcasts put `game` at the top level.
+        payload = event.get("data", event.get("payload", {})) or {}
+        if not isinstance(payload, dict):
+            return
+
+        if "data" not in payload and "game" in payload:
+            payload = {"data": {"game": payload["game"]}, **{
+                key: value for key, value in payload.items() if key != "game"
+            }}
+
+        if not isinstance(payload.get("data"), dict) or "game" not in payload["data"]:
+            return
+
+        data = payload.copy()
         data["action"] = "update"
 
         player = self.scope.get("player")
