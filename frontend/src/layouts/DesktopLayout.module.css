@@ -1,0 +1,11 @@
+.content {
+	overflow-y: auto;
+	height: 100%;
+
+	display: grid;
+	grid-template-rows: max-content auto;
+	gap: var(--padding);
+
+	background-color: var(--color-bg-layout);
+
+	color: var(--color-text);

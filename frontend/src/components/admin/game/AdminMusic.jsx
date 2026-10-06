@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Section } from "../../elements/Section";
+import { Section } from "@/components/elements/Section";
 import { Button, Slider } from "antd";
 import {
     MuteIcon,
@@ -9,7 +9,7 @@ import {
     PrevIcon,
     StopIcon,
     UnMuteIcon,
-} from "../../../assets/icons";
+} from "@/assets/icons";
 
 const BG_TRACKS = [
     "/sounds/background/Music Track Abby - Nancy Drew Message in a Haunted Mansion.wav",
@@ -39,6 +39,9 @@ const BG_TRACKS = [
 export function AdminMusic({ game }) {
     const bgRef = useRef(null);
     const sfxRef = useRef(null);
+    const trackIndexRef = useRef(0);
+    const fadeTimersRef = useRef(new Map());
+    const switchTimerRef = useRef(null);
 
     /* ------------------- volume ------------------- */
 
@@ -57,6 +60,8 @@ export function AdminMusic({ game }) {
     /* ------------------- bg playlist ------------------- */
 
     const [trackIndex, setTrackIndex] = useState(0);
+    const activeMeeting = game?.meetings?.find((meeting) => meeting.is_active);
+    const lastActiveMeetingIdRef = useRef(activeMeeting?.id ?? null);
 
     /* ------------------- helpers ------------------- */
 
@@ -80,6 +85,9 @@ export function AdminMusic({ game }) {
     const fade = (audio, target, time = 800) => {
         if (!audio) return;
 
+        const oldTimer = fadeTimersRef.current.get(audio);
+        if (oldTimer) clearInterval(oldTimer);
+
         const steps = 20;
         const stepTime = time / steps;
         const start = audio.volume;
@@ -89,13 +97,20 @@ export function AdminMusic({ game }) {
         let i = 0;
         const id = setInterval(() => {
             i++;
-            audio.volume += diff;
+            audio.volume = Math.max(0, Math.min(1, start + diff * i));
             if (i >= steps) {
                 audio.volume = end;
                 clearInterval(id);
+                fadeTimersRef.current.delete(audio);
             }
         }, stepTime);
+        fadeTimersRef.current.set(audio, id);
     };
+
+    useEffect(() => () => {
+        fadeTimersRef.current.forEach(clearInterval);
+        if (switchTimerRef.current) clearTimeout(switchTimerRef.current);
+    }, []);
 
     /* ------------------- bg controls ------------------- */
 
@@ -107,17 +122,33 @@ export function AdminMusic({ game }) {
 
         fade(bg, 0, 400);
 
-        setTimeout(() => {
+        if (switchTimerRef.current) clearTimeout(switchTimerRef.current);
+        switchTimerRef.current = setTimeout(() => {
             bg.src = BG_TRACKS[next];
-            bg.play();
+            const playback = bg.play();
+            playback?.catch(() => {});
             bg.volume = 0;
             fade(bg, bgVol, 800);
+            trackIndexRef.current = next;
             setTrackIndex(next);
         }, 400);
     };
 
-    const nextTrack = () => playTrack(trackIndex + 1);
-    const prevTrack = () => playTrack(trackIndex - 1);
+    const nextTrack = () => playTrack(trackIndexRef.current + 1);
+    const prevTrack = () => playTrack(trackIndexRef.current - 1);
+
+    const playAudio = (audio) => {
+        if (!audio?.src) return;
+        audio.play()?.catch(() => {});
+    };
+
+    const pauseAudio = (audio) => audio?.pause();
+
+    const stopAudio = (audio) => {
+        if (!audio) return;
+        audio.pause();
+        audio.currentTime = 0;
+    };
 
     /* ------------------- autoplay bg ------------------- */
 
@@ -160,10 +191,32 @@ export function AdminMusic({ game }) {
         }, 900);
     }, [game?.is_ended]);
 
+    /* ------------------- meeting sounds ------------------- */
+
+    useEffect(() => {
+        if (!activeMeeting) {
+            lastActiveMeetingIdRef.current = null;
+            return;
+        }
+
+        if (lastActiveMeetingIdRef.current === activeMeeting.id) return;
+        lastActiveMeetingIdRef.current = activeMeeting.id;
+
+        const sfx = sfxRef.current;
+        if (!sfx) return;
+
+        sfx.src =
+            activeMeeting.type === "body_report"
+                ? "/sounds/as_report.wav"
+                : "/sounds/as_emergency.wav";
+        sfx.currentTime = 0;
+        sfx.play()?.catch(() => {});
+    }, [activeMeeting?.id, activeMeeting?.type]);
+
     /* ===================================================== */
 
     return (
-        <Section>
+        <div>
             <audio ref={bgRef} />
             <audio ref={sfxRef} />
 
@@ -175,18 +228,25 @@ export function AdminMusic({ game }) {
 
             <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
                 <Button
-                    onClick={() => sfxRef.current.play()}
+                    onClick={() => {
+                        if (!bgRef.current?.src)
+                            playTrack(trackIndexRef.current);
+                        else playAudio(bgRef.current);
+                        playAudio(sfxRef.current);
+                    }}
                     icon={<PlayIcon />}
                 />
                 <Button
-                    onClick={() => sfxRef.current.pause()}
+                    onClick={() => {
+                        pauseAudio(bgRef.current);
+                        pauseAudio(sfxRef.current);
+                    }}
                     icon={<PauseIcon />}
                 />
                 <Button
                     onClick={() => {
-                        const a = sfxRef.current;
-                        a.pause();
-                        a.currentTime = 0;
+                        stopAudio(bgRef.current);
+                        stopAudio(sfxRef.current);
                     }}
                     icon={<StopIcon />}
                 />
@@ -230,6 +290,6 @@ export function AdminMusic({ game }) {
                     onChange={(v) => setSfxVol(v / 100)}
                 />
             </div>
-        </Section>
+        </div>
     );
 }

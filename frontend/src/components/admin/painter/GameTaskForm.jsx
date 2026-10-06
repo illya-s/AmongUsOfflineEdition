@@ -2,8 +2,8 @@ import "./GameTaskForm.css";
 
 import { Modal, Select } from "antd";
 import { useState } from "react";
-import { sendWithAck } from "../../../lib/api/sendWithAck";
-import { useMessageApi } from "../../../providers/MessageProvider";
+import { sendWithAck } from "@/lib/api/sendWithAck";
+import { useMessageApi } from "@/providers/MessageProvider";
 
 export function GameTaskForm({
     gameSocket,

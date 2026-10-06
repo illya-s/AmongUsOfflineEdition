@@ -1,4 +1,4 @@
-import { colorFromNumber } from "../../lib/client/colorFromNumber";
+import { colorFromNumber } from "@/lib/client/colorFromNumber";
 
 function shortenedLine(from, to, radius) {
     const dx = to.x - from.x;

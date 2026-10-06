@@ -1,7 +1,0 @@
-.m-section {
-	padding: var(--padding);
-
-	border: var(--line-width) var(--line-type) var(--color-border);
-	border-radius: var(--border-radius-lg);
-	background-color: var(--color-bg-container);
-}

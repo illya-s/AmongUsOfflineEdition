@@ -1,7 +1,7 @@
 import { Progress } from "antd";
 import { useMemo, useEffect, useState, memo } from "react";
 import { Player } from "./Player";
-import { AliveIcon, KnifeIcon } from "../../assets/icons";
+import { AliveIcon, KnifeIcon } from "@/assets/icons";
 import styles from "./GameWaiting.module.css";
 import { useRef } from "react";
 

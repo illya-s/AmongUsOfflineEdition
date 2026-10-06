@@ -1,14 +1,14 @@
-import { CheckIcon } from "../../assets/icons/";
+import { CheckIcon } from "@/assets/icons";
 
 import { InfoCircleOutlined, LoadingOutlined } from "@ant-design/icons";
 import { Button, Popover, Progress, Spin, Statistic } from "antd";
 
-import { sendWithAck } from "../../lib/api/sendWithAck";
-import { Section } from "../elements/Section";
+import { sendWithAck } from "@/lib/api/sendWithAck";
+import { Section } from "@/components/elements/Section";
 import gameContStyles from "./GameContainer.module.css";
 
 import { useEffect, useState } from "react";
-import { AliveIcon, KnifeIcon } from "../../assets/icons";
+import { AliveIcon, KnifeIcon } from "@/assets/icons";
 import List from "../admin/game/List";
 import gameLoadingStyles from "./GameLoading.module.css";
 import { MeetingScreen } from "./MeetingScreen";
@@ -18,7 +18,7 @@ import { ReportButton } from "./ReportButton";
 import { SabotageMenu } from "./SabotageMenu";
 import { SelfKillButton } from "./SelfKillButton";
 import { TaskMarkers } from "./TaskMarkers";
-import { useMessageApi } from "../../providers/MessageProvider";
+import { useMessageApi } from "@/providers/MessageProvider";
 
 export function GameContainer({ gameSocket, game, tasks, player, players }) {
     const message = useMessageApi();

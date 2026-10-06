@@ -14,7 +14,7 @@ import {
 import { Avatar, Button, Divider, Switch } from "antd";
 import { useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
-import { Section } from "../../elements/Section";
+import { Section } from "@/components/elements/Section";
 import { GameTaskForm } from "./GameTaskForm";
 import { useEffect } from "react";
 

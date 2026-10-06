@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useMessageApi } from "../../providers/MessageProvider";
+import { useMessageApi } from "@/providers/MessageProvider";
 import styles from "./ReportButton.module.css";
 
 export function ReportButton({ onClick }) {

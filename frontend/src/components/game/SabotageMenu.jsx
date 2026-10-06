@@ -3,7 +3,7 @@ import {
     ThunderboltOutlined
 } from "@ant-design/icons";
 import { Button, Statistic } from "antd";
-import { sendWithAck } from "../../lib/api/sendWithAck";
+import { sendWithAck } from "@/lib/api/sendWithAck";
 import styles from "./SabotageMenu.module.css";
 
 export function SabotageMenu({ gameSocket, game, player }) {

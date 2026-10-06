@@ -3,12 +3,12 @@ import "./Home.css";
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 
-import { useMessageApi } from "../providers/MessageProvider";
+import { useMessageApi } from "@/providers/MessageProvider";
 
-import { Section } from "../components/elements/Section";
-import { GameAddUserForm, GameConnectForm } from "../components/home/Forms";
-import { isPlayerExists } from "../components/requests/api_player";
-import { getGame } from "../components/requests/api_game";
+import { Section } from "@/components/elements/Section";
+import { GameAddUserForm, GameConnectForm } from "@/components/home/Forms";
+import { isPlayerExists } from "@/components/requests/api_player";
+import { getGame } from "@/components/requests/api_game";
 
 export default function Home() {
     const navigate = useNavigate();

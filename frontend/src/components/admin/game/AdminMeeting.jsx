@@ -1,10 +1,10 @@
 import { Avatar, Button, Statistic } from "antd";
 import { PlayCircleFilled } from "@ant-design/icons";
-import { Section } from "../../elements/Section";
+import { Section } from "@/components/elements/Section";
 import styles from "./AdminMeeting.module.css";
-import { sendWithAck } from "../../../lib/api/sendWithAck";
-import { useMessageApi } from "../../../providers/MessageProvider";
-import { WarningIcon } from "../../../assets/icons";
+import { sendWithAck } from "@/lib/api/sendWithAck";
+import { useMessageApi } from "@/providers/MessageProvider";
+import { WarningIcon } from "@/assets/icons";
 import List from "./List";
 
 export function AdminMeeting({ gameSocket, game }) {
@@ -12,6 +12,15 @@ export function AdminMeeting({ gameSocket, game }) {
 
     const activeMeeting = game?.meetings.find((m) => m.is_active);
     const activeMeetingId = activeMeeting?.id;
+
+    const getMeetingType = (type) =>
+        type === "body_report" ? "Найдено тело" : "Созыв собрания";
+
+    const getMeetingStatus = (meeting) => {
+        if (meeting.ended_at) return "Окончено";
+        if (meeting.is_started) return "Собрание";
+        return getMeetingType(meeting.type);
+    };
 
     return (
         <Section className={styles.wrapper}>
@@ -57,7 +66,7 @@ export function AdminMeeting({ gameSocket, game }) {
                     >
                         <Avatar>{meeting.id}</Avatar>
 
-                        <span>{meeting.type}</span>
+                        <span>{getMeetingType(meeting.type)}</span>
                         <span>
                             {meeting.id == activeMeetingId ? (
                                 <Statistic.Timer
@@ -106,29 +115,12 @@ export function AdminMeeting({ gameSocket, game }) {
                             )}
 
                             <span className={styles["meeting-start-status"]}>
-                                {meeting.ended_at
-                                    ? "Окончено"
-                                    : meeting.is_started
-                                      ? "Начато"
-                                      : "Не начато"}
+                                {getMeetingStatus(meeting)}
                             </span>
                         </div>
                     </div>
                 )}
             />
         </Section>
-    );
-
-    return !activeMeeting.is_started ? (
-        <Section className={styles.wrapper}>
-            <div>
-                <h2 style={{ margin: 0 }}>Активное собрание</h2>
-                <p style={{ margin: 0, opacity: 0.7 }}>
-                    Игроки ожидают в Командном центре
-                </p>
-            </div>
-        </Section>
-    ) : (
-        <Section></Section>
     );
 }

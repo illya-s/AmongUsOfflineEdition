@@ -1,6 +1,6 @@
 import { useRef } from "react";
-import { KnifeIcon } from "../../assets/icons";
-import { useMessageApi } from "../../providers/MessageProvider";
+import { KnifeIcon } from "@/assets/icons";
+import { useMessageApi } from "@/providers/MessageProvider";
 import styles from "./SelfKillButton.module.css";
 import { useState } from "react";
 

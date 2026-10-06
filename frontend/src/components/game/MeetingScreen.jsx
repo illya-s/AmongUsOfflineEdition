@@ -1,6 +1,6 @@
 import { Avatar, Button, Card, Progress } from "antd";
 import { useEffect, useState } from "react";
-import { sendWithAck } from "../../lib/api/sendWithAck";
+import { sendWithAck } from "@/lib/api/sendWithAck";
 import { VoteResults } from "./VoteResults";
 import styles from "./MeetingScreen.module.css";
 

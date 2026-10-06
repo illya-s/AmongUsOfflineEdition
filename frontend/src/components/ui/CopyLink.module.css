@@ -1,0 +1,14 @@
+.link {
+	position: relative;
+
+	width: 32px;
+
+	display: grid;
+	aspect-ratio: 1;
+	align-items: center;
+	justify-content: center;
+
+	border: 1px solid var(--color-primary);
+	border-radius: var(--border-radius);
+	background-color: var(--color-primary-bg);
+}

@@ -1,9 +1,9 @@
 import { DeleteFilled } from "@ant-design/icons";
 import { Avatar, Button, Popconfirm, Select } from "antd";
 import { useState } from "react";
-import { sendWithAck } from "../../../lib/api/sendWithAck";
+import { sendWithAck } from "@/lib/api/sendWithAck";
 import styles from "./Player.module.css";
-import { AliveIcon, GhostIcon, KnifeIcon } from "../../../assets/icons";
+import { AliveIcon, GhostIcon, KnifeIcon } from "@/assets/icons";
 
 export default function Player({ player, game, gameSocket, editable = false }) {
     const [isLoading, setIsLoading] = useState(false);

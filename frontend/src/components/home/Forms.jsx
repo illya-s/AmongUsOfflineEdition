@@ -3,8 +3,8 @@ import styles from "./Forms.module.css";
 import { Button, Input } from "antd";
 import { useEffect } from "react";
 import { useState } from "react";
-import { useMessageApi } from "../../providers/MessageProvider";
-import { api } from "../../providers/apiClient";
+import { useMessageApi } from "@/providers/MessageProvider";
+import { api } from "@/providers/apiClient";
 import { getGame } from "../requests/api_game";
 
 export function GameConnectForm({ setGame }) {
