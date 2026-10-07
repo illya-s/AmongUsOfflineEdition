@@ -19,7 +19,6 @@ import {
 
 import { Badge, Button, Modal, Statistic, Upload } from "antd";
 
-
 const Aside = ({ gameSocket, game }) => {
 	const [isMapModalVisible, setIsMapModalVisible] = useState(false);
 	const [isUploadingMap, setIsUploadingMap] = useState(false);
@@ -106,18 +105,27 @@ const Aside = ({ gameSocket, game }) => {
 					title="Изменить карту"
 				/>
 
-				{game?.active ? (
-					<div>
-						<Badge color="green" text="Активна" />
+				<div>
+					<Badge
+						color={
+							game?.active && !game?.is_ended ? "green" : "red"
+						}
+						text={
+							game?.active
+								? !game?.is_ended
+									? "Активна"
+									: "Завершена"
+								: "Не активна"
+						}
+					/>
 
+					{game?.active && !game?.is_ended && (
 						<Statistic.Timer
 							type="countup"
 							value={new Date(game?.start_time).getTime()}
 						/>
-					</div>
-				) : (
-					<Badge color="red" text="Не активна" />
-				)}
+					)}
+				</div>
 
 				<Button
 					variant="solid"
