@@ -26,6 +26,7 @@ export const useGameSocket = (code, pId = null, setPlayer = null, setLoading) =>
     useEffect(() => {
         let ws;
         let timerId;
+        let pingId;
         let isMounted = true;
 
         const init = async () => {
@@ -39,11 +40,18 @@ export const useGameSocket = (code, pId = null, setPlayer = null, setLoading) =>
                 ws.onopen = () => {
                     console.log("WS Connected");
                     reconnectAttempts.current = 0;
+                    setLoading?.(false);
                     setGameSocket(ws);
+                    pingId = setInterval(() => {
+                        if (ws.readyState === WebSocket.OPEN) {
+                            ws.send(JSON.stringify({ action: "ping" }));
+                        }
+                    }, 50_000);
                 };
 
                 ws.onclose = (e) => {
                     console.log("WS Disconnected");
+                    clearInterval(pingId);
 
                     if (e.code === 1000 || !isMounted) {
                         setLoading?.(null);
@@ -80,9 +88,10 @@ export const useGameSocket = (code, pId = null, setPlayer = null, setLoading) =>
         return () => {
             isMounted = false;
             clearTimeout(timerId);
+            clearInterval(pingId);
             if (ws) ws.close(1000);
         };
-    }, [code]);
+    }, [code, pId]);
 
     return { gameSocket, game, players, tasks, locations, availableTasks };
 };

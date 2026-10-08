@@ -35,8 +35,6 @@ export default function Game() {
     );
 
     useEffect(() => {
-        console.log(game && !player?.id)
-        
         if (game && !player?.id) {
             localStorage.removeItem(code)
             navigate("/");

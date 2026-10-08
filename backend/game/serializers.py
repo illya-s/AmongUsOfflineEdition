@@ -5,6 +5,7 @@ from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import transaction
 from django.utils import timezone
+from django.core.cache import cache
 from game.tasks import update
 from rest_framework import serializers
 
@@ -166,6 +167,10 @@ class TaskSerializer(serializers.ModelSerializer):
 
 class PlayerSerializer(serializers.ModelSerializer):
     roleList = serializers.SerializerMethodField(read_only=True)
+    is_online = serializers.SerializerMethodField(read_only=True)
+
+    def get_is_online(self, obj: Player):
+        return cache.get(f"player_online:{obj.id}")
 
     def get_roleList(self, obj: Player):
         return [{"value": ch[0], "name": ch[1]} for ch in Player.Roles.choices]

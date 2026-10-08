@@ -50,7 +50,6 @@ def get_game_data(game_id):
 
 def get_player_by_id(player_id):
     from .models import Player
-
     return Player.objects.filter(id=player_id).first()
 
 

@@ -77,7 +77,9 @@ class SocketResponse:
         """Отправка через consumer (WebSocket)"""
         await consumer.send_json(self.to_dict())
 
-    async def broadcast(self, consumer=None, channel_layer=None, room_group_name=None):
+    async def broadcast(
+        self, consumer=None, channel_layer=None, room_group_name=None, type="update"
+    ):
         """Отправка всем в группе"""
         if not consumer and not channel_layer:
             raise ValueError("Необходимо предоставить consumer или channel_layer")
@@ -91,7 +93,7 @@ class SocketResponse:
         room_group_name = consumer.room_group_name if consumer else room_group_name
 
         await layer.group_send(
-            room_group_name, {"type": "update", "payload": self.to_dict()}
+            room_group_name, {"type": type, "payload": self.to_dict()}
         )
 
 

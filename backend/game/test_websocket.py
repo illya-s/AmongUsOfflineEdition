@@ -4,9 +4,10 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from channels.routing import URLRouter
 from channels.testing import WebsocketCommunicator
+from django.core.cache import cache
 from django.test import TransactionTestCase, override_settings
 
-from game.models import GameRoom
+from game.models import GameRoom, Player
 from game.request import SocketResponse
 from game.router import handlepatterns
 from game.routing import websocket_urlpatterns
@@ -17,15 +18,23 @@ TEST_CHANNEL_LAYERS = {
 }
 
 
-@override_settings(CHANNEL_LAYERS=TEST_CHANNEL_LAYERS)
+@override_settings(
+    CHANNEL_LAYERS=TEST_CHANNEL_LAYERS,
+    CACHES={"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}},
+)
 class GameConsumerTests(TransactionTestCase):
     """Integration tests for the websocket route and every registered action."""
 
     reset_sequences = True
 
     def setUp(self):
+        cache.clear()
         self.game = GameRoom.objects.create(code="ROOM42", name="Test room")
         self.application = URLRouter(websocket_urlpatterns)
+
+    def tearDown(self):
+        cache.clear()
+        super().tearDown()
 
     def test_connection_returns_initial_game_state(self):
         async_to_sync(self._assert_initial_message)()
@@ -43,6 +52,33 @@ class GameConsumerTests(TransactionTestCase):
         self.assertEqual(response["data"]["game"]["code"], self.game.code)
         self.assertIsNone(response["player"])
         await communicator.disconnect()
+
+    def test_player_connection_updates_admin_presence_until_disconnect(self):
+        player = Player.objects.create(room=self.game, name="Crewmate")
+        async_to_sync(self._assert_player_presence_is_broadcast)(player.pk)
+
+    async def _assert_player_presence_is_broadcast(self, player_id):
+        admin = WebsocketCommunicator(
+            self.application, f"/ws/game/{self.game.code}/"
+        )
+        player_client = WebsocketCommunicator(
+            self.application,
+            f"/ws/game/{self.game.code}/?pId={player_id}",
+        )
+
+        self.assertTrue((await admin.connect())[0])
+        await admin.receive_json_from()  # admin init
+        self.assertTrue((await player_client.connect())[0])
+
+        player_init = await player_client.receive_json_from()
+        self.assertEqual(player_init["player"]["id"], player_id)
+        online_update = await admin.receive_json_from()
+        self.assertTrue(online_update["data"]["game"]["players"][0]["is_online"])
+
+        await player_client.disconnect()
+        offline_update = await admin.receive_json_from()
+        self.assertFalse(offline_update["data"]["game"]["players"][0]["is_online"])
+        await admin.disconnect()
 
     def test_every_registered_action_is_dispatched_over_websocket(self):
         async_to_sync(self._assert_all_actions_are_dispatched)()
