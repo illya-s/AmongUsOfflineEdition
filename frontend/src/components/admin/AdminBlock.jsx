@@ -1,4 +1,4 @@
-import "./AdminBlock.css";
+import styles from "./AdminBlock.module.css";
 
 import { Avatar, Button, Modal } from "antd";
 import { Section } from "../elements/Section";
@@ -17,12 +17,12 @@ export function AdminBlock({
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     return (
-        <Section className={`admin-block-wrapper admin-block-wrapper-${layout} ${className ? className : ""}`}>
-            <div className="admin-block-top">
+        <Section className={`${styles.adminBlockWrapper} ${layout === "grid" ? styles.adminBlockWrapperGrid : styles.adminBlockWrapperLine} ${className ?? ""}`}>
+            <div className={styles.adminBlockTop}>
                 <h3>{title}</h3>
 
                 <Button
-                    className="admin-tasks-add-button"
+                    className={styles.adminTasksAddButton}
                     size="small"
                     type="primary"
                     shape="circle"
@@ -48,13 +48,13 @@ export function AdminBlock({
                 </Modal>
             </div>
 
-            <div className="admin-block-list">
+            <div className={styles.adminBlockList}>
                 {Array.isArray(dataSource) &&
                 dataSource.length > 0 &&
                 renderItem ? (
                     dataSource.map(renderItem)
                 ) : (
-                    <div className="admin-block-list-empty">Тут пусто ;(</div>
+                    <div className={styles.adminBlockListEmpty}>Тут пусто ;(</div>
                 )}
             </div>
         </Section>

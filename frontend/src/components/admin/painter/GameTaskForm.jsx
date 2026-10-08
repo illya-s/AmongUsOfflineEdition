@@ -1,4 +1,4 @@
-import "./GameTaskForm.css";
+import styles from "./GameTaskForm.module.css";
 
 import { Modal, Select } from "antd";
 import { useState } from "react";
@@ -43,8 +43,8 @@ export function GameTaskForm({
             onCancel={() => setIsOpen(false)}
             okButtonProps={{ disabled: !task || !location }}
         >
-            <form className="game-task-form-wrapper">
-                <label className="game-task-form-field-wrapper">
+            <form className={styles.gameTaskFormWrapper}>
+                <label className={styles.gameTaskFormFieldWrapper}>
                     <span>Основная локация</span>
 
                     <Select
@@ -59,7 +59,7 @@ export function GameTaskForm({
                     />
                 </label>
 
-                <label className="game-task-form-field-wrapper">
+                <label className={styles.gameTaskFormFieldWrapper}>
                     <span>Описание задания</span>
 
                     <Select

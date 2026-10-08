@@ -1,4 +1,3 @@
-import "./Game.css";
 import styles from "./Game.module.css";
 
 import { useEffect, useState } from "react";
@@ -13,6 +12,7 @@ import QRCodeStyling from "qr-code-styling";
 import { useParams } from "react-router";
 
 import { useRef } from "react";
+import adminStyles from "./AdminGame.module.css";
 import List from "@/components/admin/game/List";
 import Player from "@/components/admin/game/Player";
 import Task from "@/components/admin/game/Task";
@@ -68,12 +68,12 @@ export default function AdminGame() {
 
 				<AdminMeeting gameSocket={gameSocket} game={game} />
 
-				<Section className="admin-game-middle-container">
-					<div className="admin-game-middle-top">
+				<Section className={adminStyles.adminGameMiddleContainer}>
+					<div className={adminStyles.adminGameMiddleTop}>
 						<h2>Players</h2>
 
 						<label
-							className="top-edit-switch-wrapper"
+							className={adminStyles.topEditSwitchWrapper}
 							title="Авто / Ручное назначение ролей"
 						>
 							{game?.auto_assign_role ? (
@@ -119,13 +119,13 @@ export default function AdminGame() {
 					/>
 				</Section>
 
-				<Section className="admin-game-middle-container">
-					<div className="admin-game-middle-top">
+				<Section className={adminStyles.adminGameMiddleContainer}>
+					<div className={adminStyles.adminGameMiddleTop}>
 						<h2>Tasks</h2>
 					</div>
 
 					<List
-						className="admin-game-middle-task-list"
+						className={adminStyles.adminGameMiddleTaskList}
 						dataSource={tasks}
 						renderItem={(task) => (
 							<Task key={`task_${task.id}`} task={task} />

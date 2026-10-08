@@ -1,4 +1,4 @@
-import "./Home.css";
+import styles from "./Home.module.css";
 
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router";
@@ -46,8 +46,8 @@ export default function Home() {
     }, [player]);
 
     return (
-        <Section className="home-start-wrapper">
-            <div className="home-start-title-wrapper">
+        <Section className={styles.homeStartWrapper}>
+            <div className={styles.homeStartTitleWrapper}>
                 <h1>Among Us</h1>
                 <span>
                     {[..."Offline Edition"].map((char, i) => (

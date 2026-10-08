@@ -1,4 +1,4 @@
-.home-start-wrapper {
+.homeStartWrapper {
     height: 100%;
 
     display: grid;
@@ -10,17 +10,17 @@
     gap: 1rem;
 }
 
-.home-start-title-wrapper {
+.homeStartTitleWrapper {
     display: inline-flex;
     flex-direction: column;
 }
-.home-start-title-wrapper > h1 {
+.homeStartTitleWrapper > h1 {
     font-size: 2rem;
     font-weight: bold;
     color: var(--color-text-heading);
     white-space: nowrap;
 }
-.home-start-title-wrapper > span {
+.homeStartTitleWrapper > span {
     display: flex;
     flex-direction: row;
     justify-content: space-between;

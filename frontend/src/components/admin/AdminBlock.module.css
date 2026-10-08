@@ -1,4 +1,4 @@
-.admin-block-wrapper {
+.adminBlockWrapper {
     width: calc(50% - .5rem);
     height: max-content;
     min-height: calc(32px + (var(--padding) * 2));
@@ -8,18 +8,23 @@
     gap: .5rem;
 }
 
-.admin-block-top {
+.adminBlockTop {
     display: grid;
     grid-template-columns: auto max-content;
 }
-.admin-block-top > h3 {
+.adminBlockTop > h3 {
     color: var(--color-text-heading);
     font-size: 1.1rem;
     font-weight: 700;
 }
 
+.adminTasksAddButton {
+    font-size: 1.3rem;
+    font-weight: 600;
+}
 
-.admin-block-list {
+
+.adminBlockList {
     overflow-y: auto;
     max-height: 140px;
     
@@ -27,16 +32,25 @@
     flex-direction: column;
     gap: .5rem;
 }
-.admin-block-wrapper-line > .admin-block-list {
+.adminBlockWrapperLine > .adminBlockList {
     display: flex;
     flex-direction: column;
 }
-.admin-block-wrapper-grid > .admin-block-list {
+.adminBlockWrapperGrid > .adminBlockList {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 }
 
-.admin-block-list-empty {
+.adminBlockListEmpty {
     color: var(--color-warning-text);
     text-align: center;
+}
+
+.gameBlock {
+    width: 100% !important;
+}
+
+.gameBlock .adminBlockList {
+    max-height: none !important;
+    justify-content: space-between;
 }

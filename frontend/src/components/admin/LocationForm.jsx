@@ -1,4 +1,4 @@
-import "./LocationForm.css";
+import styles from "./LocationForm.module.css";
 
 import { Input, InputNumber, Select } from "antd";
 import { useState } from "react";
@@ -10,7 +10,7 @@ export function useLocationForm(games = []) {
     const [y, setY] = useState(0);
 
     const LocationForm = (
-        <form className="admin-form-wrapper">
+        <form className={styles.adminFormWrapper}>
             <label>
                 <span>Игра</span>
                 <Select

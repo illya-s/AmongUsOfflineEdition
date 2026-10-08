@@ -1,5 +1,5 @@
-import "./components/base/Base.css";
-import "./Theme.css";
+import baseStyles from "./components/base/Base.module.css";
+import themeStyles from "./Theme.module.css";
 
 import { createCache, StyleProvider } from "@ant-design/cssinjs";
 import { ConfigProvider } from "antd";
@@ -31,4 +31,7 @@ function Root() {
     );
 }
 
-createRoot(document.getElementById("root")).render(<Root />);
+const rootElement = document.getElementById("root");
+rootElement.className = `${baseStyles.root} ${themeStyles.themeScope}`;
+
+createRoot(rootElement).render(<Root />);

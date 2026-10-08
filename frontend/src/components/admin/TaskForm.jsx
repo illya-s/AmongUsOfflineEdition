@@ -1,6 +1,6 @@
 // admin/TaskForm
 
-import "./LocationForm.css";
+import styles from "./LocationForm.module.css";
 
 import { Input } from "antd";
 import { useState } from "react";
@@ -9,7 +9,7 @@ export function useTaskForm() {
     const [text, setText] = useState("");
 
     const TaskForm = (
-        <form className="admin-form-wrapper">
+        <form className={styles.adminFormWrapper}>
             <Input.TextArea
                 value={text}
                 onInput={(e) => setText(e.target.value)}

@@ -1,4 +1,4 @@
-import "./Admin.css";
+import styles from "./Admin.module.css";
 
 import { DeleteOutlined } from "@ant-design/icons";
 import { Avatar, Button } from "antd";
@@ -8,6 +8,7 @@ import { Link } from "react-router";
 import { api } from "@/providers/apiClient";
 
 import { AdminBlock } from "@/components/admin/AdminBlock";
+import blockStyles from "@/components/admin/AdminBlock.module.css";
 import { useGameForm } from "@/components/admin/GameForm";
 import { useLocationForm } from "@/components/admin/LocationForm";
 import { useTaskForm } from "@/components/admin/TaskForm";
@@ -122,9 +123,9 @@ export default function Admin() {
     };
 
     return (
-        <section className="admin-wrapper">
-            <Section className="admin-title-wrapper">
-                <h1 className="admin-title">Admin Panel</h1>
+        <section className={styles.adminWrapper}>
+            <Section className={styles.adminTitleWrapper}>
+                <h1 className={styles.adminTitle}>Admin Panel</h1>
             </Section>
 
             <AdminBlock
@@ -138,12 +139,12 @@ export default function Admin() {
                 renderItem={(location) => (
                     <div
                         key={`location_${location.id}`}
-                        className="location-block"
+                        className={styles.locationBlock}
                     >
                         <Avatar>{location.id}</Avatar>
 
-                        <div className="location-block-middle">
-                            <span className="location-block-title">
+                        <div className={styles.locationBlockMiddle}>
+                            <span className={styles.locationBlockTitle}>
                                 {location.name}
                             </span>
                             <p>
@@ -172,7 +173,7 @@ export default function Admin() {
 
                 dataSource={tasks}
                 renderItem={(task) => (
-                    <div key={`task_${task.id}`} className="task-block">
+                    <div key={`task_${task.id}`} className={styles.taskBlock}>
                         <Avatar>{task.id}</Avatar>
 
                         <p>{task.text}</p>
@@ -190,7 +191,7 @@ export default function Admin() {
             />
 
             <AdminBlock
-                className="admin-game-block"
+                className={blockStyles.gameBlock}
 
                 layout="grid"
 
@@ -202,15 +203,15 @@ export default function Admin() {
 
                 dataSource={games}
                 renderItem={(game) => (
-                    <Link key={`game_${game.id}`} to={`/admin/game/${game.code}/`} className="game-block">
+                    <Link key={`game_${game.id}`} to={`/admin/game/${game.code}/`} className={styles.gameBlock}>
                         <img height={100} src={game.game_map} />
 
                         <div>
-                            <h4 className="game-block-title">{game.name}</h4>
+                            <h4 className={styles.gameBlockTitle}>{game.name}</h4>
                             <p>{game.code}</p>
                         </div>
 
-                        <div className="game-block-buttons">
+                        <div className={styles.gameBlockButtons}>
                             <Button
                                 size="small"
                                 variant="solid"

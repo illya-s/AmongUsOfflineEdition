@@ -1,4 +1,4 @@
-:root {
+:global(:root) {
     color-scheme: dark;
 
     --color-info: hsl(217, 80%, 70%);
@@ -64,3 +64,5 @@
 
     --margin-sm: 12px;
 }
+
+.themeScope {}

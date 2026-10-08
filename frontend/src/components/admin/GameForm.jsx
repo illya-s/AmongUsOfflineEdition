@@ -1,6 +1,6 @@
 // admin/TaskForm
 
-import "./LocationForm.css";
+import styles from "./LocationForm.module.css";
 
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { Input, Upload } from "antd";
@@ -49,7 +49,7 @@ export function useGameForm() {
     }
 
     const GameForm = (
-        <form className="admin-form-wrapper">
+        <form className={styles.adminFormWrapper}>
             <label>
                 <span>Название</span>
 

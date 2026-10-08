@@ -1,4 +1,4 @@
-.admin-wrapper {
+.adminWrapper {
     display: flex;
     flex-wrap: wrap;
 
@@ -10,17 +10,17 @@
 }
 
 
-.admin-title-wrapper {
+.adminTitleWrapper {
     width: 100%;
 }
-.admin-title {
+.adminTitle {
     color: var(--color-text-heading);
     font-size: 1.2rem;
     font-weight: bold;
 }
 
 
-.location-block {
+.locationBlock {
     padding: var(--padding);
     
     display: grid;
@@ -31,24 +31,19 @@
     border-radius: 1rem;
     background-color: var(--color-bg-elevated);
 }
-.location-block-title {
+.locationBlockTitle {
     font-size: .9rem;
     font-weight: 700;
     color: var(--color-text-heading);
 }
 
-.location-block-middle {
+.locationBlockMiddle {
     display: flex;
     flex-direction: column;
 }
 
 
-.admin-tasks-add-button {
-    font-size: 1.3rem;
-    font-weight: 600;
-}
-
-.task-block {
+.taskBlock {
     padding: var(--padding);
     
     display: grid;
@@ -61,15 +56,7 @@
 }
 
 
-.admin-game-block {
-    width: 100% !important;
-}
-.admin-game-block > .admin-block-list {
-    max-height: none !important;
-    justify-content: space-between;
-}
-
-.game-block {
+.gameBlock {
     padding: var(--padding);
 
     display: grid;
@@ -82,16 +69,16 @@
     background-color: var(--color-bg-elevated);
 }
 
-.game-block > img {
+.gameBlock > img {
     border-radius: var(--border-radius);
 }
 
-.game-block-title {
+.gameBlockTitle {
     font-weight: 700;
     color: var(--color-text-heading);
 }
 
-.game-block-buttons {
+.gameBlockButtons {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: var(--padding);
