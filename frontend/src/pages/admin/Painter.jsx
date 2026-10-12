@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Input, Modal } from "antd";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useParams } from "react-router";
@@ -7,7 +7,11 @@ import { Controls } from "@/components/admin/painter/Controls";
 import { GameTaskForm } from "@/components/admin/painter/GameTaskForm";
 import { Task } from "@/components/admin/painter/Task";
 import { Section } from "@/components/elements/Section";
-import { TaskMarkers } from "@/components/game/TaskMarkers";
+import {
+    MapSvgLayer,
+    TaskEndpoints,
+    TaskRoute,
+} from "@/components/game/TaskMarkers";
 import { GameLocations } from "@/components/game/GameLocations";
 import { sendWithAck } from "@/lib/api/sendWithAck";
 import { useGameSocket } from "@/lib/api/useGameSocket";
@@ -951,8 +955,8 @@ export default function Painter() {
 					}}
 					preserveAspectRatio="xMidYMid meet"
 				>
-					<image
-						href={game?.game_map}
+					<MapSvgLayer
+						mapUrl={game?.game_map}
 						width={mapDimensions.width}
 						height={mapDimensions.height}
 					/>
@@ -977,10 +981,17 @@ export default function Painter() {
 						renderList.map((task) => {
 							if (!task) return null;
 							return (
-								<TaskMarkers
-									key={`svg_task_${task.id}`}
-									task={task}
-								/>
+								<React.Fragment key={`svg_task_${task.id}`}>
+									<TaskRoute
+										task={task}
+										mapUrl={game?.game_map}
+										mapWidth={mapDimensions.width}
+										mapHeight={mapDimensions.height}
+									/>
+									<TaskEndpoints
+										task={task}
+									/>
+								</React.Fragment>
 							);
 						})}
 

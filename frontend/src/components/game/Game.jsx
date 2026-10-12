@@ -18,7 +18,7 @@ import { Player } from "./Player";
 import { ReportButton } from "./ReportButton";
 import { SabotageMenu } from "./SabotageMenu";
 import { SelfKillButton } from "./SelfKillButton";
-import { TaskMarkers } from "./TaskMarkers";
+import { MapSvgLayer, TaskEndpoints, TaskRoute } from "./TaskMarkers";
 import { useMessageApi } from "@/providers/MessageProvider";
 
 export function GameContainer({ gameSocket, game, tasks, player, players }) {
@@ -149,17 +149,26 @@ export function GameContainer({ gameSocket, game, tasks, player, players }) {
 				}}
 				viewBox={`0 0 ${mapDimensions.width} ${mapDimensions.height}`}
 			>
-				<image href={game?.game_map} width="100%" height="100%" />
+				<MapSvgLayer
+					mapUrl={game?.game_map}
+					width={mapDimensions.width}
+					height={mapDimensions.height}
+				/>
 				<GameLocations locations={game?.locations} />
 
 				{Array.isArray(renderList) &&
 					renderList.map((task) => {
 						if (!task) return null;
 						return (
-							<TaskMarkers
-								key={`svg_task_${task.id}`}
-								task={task}
-							/>
+							<React.Fragment key={`svg_task_${task.id}`}>
+								<TaskRoute
+									task={task}
+									mapUrl={game?.game_map}
+									mapWidth={mapDimensions.width}
+									mapHeight={mapDimensions.height}
+								/>
+								<TaskEndpoints task={task} />
+							</React.Fragment>
 						);
 					})}
 			</svg>

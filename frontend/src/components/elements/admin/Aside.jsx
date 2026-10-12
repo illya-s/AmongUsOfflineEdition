@@ -2,11 +2,15 @@
 
 import styles from "./Aside.module.css";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router";
 
 import { GameLocations } from "@/components/game/GameLocations";
-import { TaskMarkers } from "@/components/game/TaskMarkers";
+import {
+    MapSvgLayer,
+    TaskEndpoints,
+    TaskRoute,
+} from "@/components/game/TaskMarkers";
 
 import { Avatar, CopyLink } from "@/components/ui";
 import { AdminMusic } from "@/components/admin/game/AdminMusic";
@@ -203,17 +207,26 @@ const Aside = ({ gameSocket, game }) => {
 					}}
 					viewBox={`0 0 ${mapDimensions.width} ${mapDimensions.height}`}
 				>
-					<image href={game?.game_map} width="100%" height="100%" />
+					<MapSvgLayer
+						mapUrl={game?.game_map}
+						width={mapDimensions.width}
+						height={mapDimensions.height}
+					/>
 					<GameLocations locations={game?.locations} />
 
 					{Array.isArray(game?.tasks) &&
 						game?.tasks.map((task) => {
 							if (!task) return null;
 							return (
-								<TaskMarkers
-									key={`svg_task_${task.id}`}
-									task={task}
-								/>
+								<React.Fragment key={`svg_task_${task.id}`}>
+									<TaskRoute
+										task={task}
+										mapUrl={game?.game_map}
+										mapWidth={mapDimensions.width}
+										mapHeight={mapDimensions.height}
+									/>
+									<TaskEndpoints task={task} />
+								</React.Fragment>
 							);
 						})}
 				</svg>

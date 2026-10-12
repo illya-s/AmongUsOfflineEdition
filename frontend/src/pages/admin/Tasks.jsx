@@ -3,7 +3,11 @@ import styles from "./Tasks.module.css";
 
 import List from "@/components/admin/game/List";
 import { Section } from "@/components/elements/Section";
-import { TaskMarkers } from "@/components/game/TaskMarkers";
+import {
+    MapSvgLayer,
+    TaskEndpoints,
+    TaskRoute,
+} from "@/components/game/TaskMarkers";
 import { GameLocations } from "@/components/game/GameLocations";
 import { useGameSocket } from "@/lib/api/useGameSocket";
 
@@ -70,16 +74,25 @@ export default function CompletedTasks() {
 					willChange: "transform",
 				}}
 			>
-				<image href={game?.game_map} width="100%" height="100%" />
+				<MapSvgLayer
+					mapUrl={game?.game_map}
+					width={mapDimensions.width}
+					height={mapDimensions.height}
+				/>
 				<GameLocations locations={game?.locations} />
 				{Array.isArray(renderList) &&
 					renderList.map((task) => {
 						if (!task) return null;
 						return (
-							<TaskMarkers
-								key={`svg_task_${task.id}`}
-								task={task}
-							/>
+							<React.Fragment key={`svg_task_${task.id}`}>
+								<TaskRoute
+									task={task}
+									mapUrl={game?.game_map}
+									mapWidth={mapDimensions.width}
+									mapHeight={mapDimensions.height}
+								/>
+								<TaskEndpoints task={task} />
+							</React.Fragment>
 						);
 					})}
 			</svg>
