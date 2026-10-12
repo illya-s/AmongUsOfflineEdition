@@ -1,17 +1,15 @@
 import styles from "./Game.module.css";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Progress } from "@/components/ui";
 import Aside from "@/components/elements/admin/Aside";
 
 import { RobotFilled, ToolFilled } from "@ant-design/icons";
-import { Switch, theme } from "antd";
+import { Switch } from "antd";
 
-import QRCodeStyling from "qr-code-styling";
 import { useParams } from "react-router";
 
-import { useRef } from "react";
 import adminStyles from "./AdminGame.module.css";
 import List from "@/components/admin/game/List";
 import Player from "@/components/admin/game/Player";
@@ -20,37 +18,6 @@ import { Section } from "@/components/elements/Section";
 import { sendWithAck } from "@/lib/api/sendWithAck";
 import { useGameSocket } from "@/lib/api/useGameSocket";
 import { AdminMeeting } from "@/components/admin/game/AdminMeeting";
-
-function QRCode({ code, image }) {
-	const { token } = theme.useToken();
-	const ref = useRef(null);
-
-	useEffect(() => {
-		ref.current.innerHTML = "";
-
-		const qrCode = new QRCodeStyling({
-			width: 300,
-			height: 300,
-			data: `${window.location.origin}/?game=${code}`,
-			image: image,
-			backgroundOptions: {
-				color: "transparent",
-			},
-			dotsOptions: {
-				color: token.colorPrimary,
-				type: "rounded",
-			},
-			imageOptions: {
-				crossOrigin: "anonymous",
-				margin: 20,
-			},
-		});
-
-		qrCode.append(ref.current);
-	}, []);
-
-	return <div ref={ref} />;
-}
 
 export default function AdminGame() {
 	const { code } = useParams();

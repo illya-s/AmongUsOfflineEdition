@@ -1,40 +1,36 @@
 .wrapper {
-    width: 100%;
-    min-height: 100%;
+	padding: var(--padding);
 
-    display: grid;
-    grid-template-rows: max-content auto;
-    gap: var(--padding);
+	width: 100%;
+	min-height: 100%;
+
+	display: grid;
+	grid-template-rows: max-content auto;
+	gap: var(--padding);
 }
 
 .top-wrapper {
-    display: grid;
-    grid-template-columns: auto max-content;
-}
-
-.content {
-    align-self: center;
-
-    display: flex;
-    flex-direction: column;
-    gap: 4rem;
-    align-items: center;
-
-    font-size: 1.2rem;
+	display: grid;
+	grid-template-columns: 32px auto max-content;
+	align-items: center;
+	justify-content: space-between;
 }
 
 .title {
-    display: flex;
-    flex-direction: row;
-    gap: var(--padding);
-    align-items: center;
+	display: flex;
+	flex-direction: row;
+	gap: var(--padding);
+	align-items: center;
 }
 
-.player-list {
-    flex: 1 1 auto;
+.content {
+	align-self: center;
 
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--padding);
-    justify-content: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--padding);
+	align-items: center;
+	justify-content: center;
+
+	font-size: 1.2rem;
 }

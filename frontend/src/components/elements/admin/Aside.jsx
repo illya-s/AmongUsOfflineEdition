@@ -2,7 +2,11 @@
 
 import styles from "./Aside.module.css";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link } from "react-router";
+
+import { GameLocations } from "@/components/game/GameLocations";
+import { TaskMarkers } from "@/components/game/TaskMarkers";
 
 import { Avatar, CopyLink } from "@/components/ui";
 import { AdminMusic } from "@/components/admin/game/AdminMusic";
@@ -22,6 +26,20 @@ import { Badge, Button, Modal, Statistic, Upload } from "antd";
 const Aside = ({ gameSocket, game }) => {
 	const [isMapModalVisible, setIsMapModalVisible] = useState(false);
 	const [isUploadingMap, setIsUploadingMap] = useState(false);
+	const [mapDimensions, setMapDimensions] = useState({ width: 0, height: 0 });
+
+	useEffect(() => {
+		if (game?.game_map) {
+			const img = new Image();
+			img.src = game.game_map;
+			img.onload = () => {
+				setMapDimensions({
+					width: img.naturalWidth,
+					height: img.naturalHeight,
+				});
+			};
+		}
+	}, [game?.game_map]);
 
 	const handleMapUpload = (file) => {
 		const reader = new FileReader();
@@ -177,6 +195,29 @@ const Aside = ({ gameSocket, game }) => {
 			</nav>
 
 			<AdminMusic game={game} />
+
+			<Link to={`/admin/game/${game?.code}/map`} target="_blank">
+				<svg
+					style={{
+						maxHeight: "500px",
+					}}
+					viewBox={`0 0 ${mapDimensions.width} ${mapDimensions.height}`}
+				>
+					<image href={game?.game_map} width="100%" height="100%" />
+					<GameLocations locations={game?.locations} />
+
+					{Array.isArray(game?.tasks) &&
+						game?.tasks.map((task) => {
+							if (!task) return null;
+							return (
+								<TaskMarkers
+									key={`svg_task_${task.id}`}
+									task={task}
+								/>
+							);
+						})}
+				</svg>
+			</Link>
 		</div>
 	);
 };

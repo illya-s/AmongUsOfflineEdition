@@ -17,8 +17,6 @@ import { config } from "./config";
 const router = createBrowserRouter(routes);
 const cache = createCache({ hashPriority: "high" });
 
-console.log("Environment Config:", config);
-
 function Root() {
     return (
         <StyleProvider cache={cache}>
@@ -34,4 +32,9 @@ function Root() {
 const rootElement = document.getElementById("root");
 rootElement.className = `${baseStyles.root} ${themeStyles.themeScope}`;
 
-createRoot(rootElement).render(<Root />);
+const reactRoot = import.meta.hot?.data.reactRoot ?? createRoot(rootElement);
+if (import.meta.hot) {
+    import.meta.hot.data.reactRoot = reactRoot;
+}
+
+reactRoot.render(<Root />);
