@@ -1,23 +1,8 @@
 import { colorFromNumber } from "@/lib/client/colorFromNumber";
-
-function shortenedLine(from, to, radius) {
-    const dx = to.x - from.x;
-    const dy = to.y - from.y;
-    const distance = Math.hypot(dx, dy);
-    if (!distance) return null;
-
-    const ux = dx / distance;
-    const uy = dy / distance;
-    return {
-        x1: from.x + ux * radius,
-        y1: from.y + uy * radius,
-        x2: to.x - ux * (radius + 5),
-        y2: to.y - uy * (radius + 5),
-    };
-}
+import { buildShortestRoute, orderWaypointsByShortestRoute } from "@/lib/map/route";
 
 export function TaskMarkers({ task, editable = false, onPointPointerDown }) {
-    const points = Array.isArray(task?.points) ? task.points.slice(0, 2) : [];
+    const points = orderWaypointsByShortestRoute(task?.points || []);
     if (points.length === 0) return null;
 
     const color = colorFromNumber(task.id);
@@ -25,17 +10,14 @@ export function TaskMarkers({ task, editable = false, onPointPointerDown }) {
     const markerRadius = 13 * size;
     const taskNumber = task.sequence_number ?? task.id;
     const markerId = `task-arrow-${task.id}`;
-    const line =
-        points.length === 2
-            ? shortenedLine(points[0], points[1], markerRadius)
-            : null;
+    const route = buildShortestRoute(points, markerRadius);
 
     return (
         <g
             aria-label={`Задание ${taskNumber}`}
             pointerEvents={editable ? "auto" : "none"}
         >
-            {line && (
+            {route.length > 0 && (
                 <>
                     <defs>
                         <marker
@@ -50,13 +32,20 @@ export function TaskMarkers({ task, editable = false, onPointPointerDown }) {
                             <path d="M 0 0 L 10 5 L 0 10 z" fill={color} />
                         </marker>
                     </defs>
-                    <line
-                        {...line}
-                        stroke={color}
-                        strokeWidth="4"
-                        strokeLinecap="round"
-                        markerEnd={`url(#${markerId})`}
-                    />
+                    {route.map((segment, index) => (
+                        <line
+                            key={`route-${task.id}-${index}`}
+                            {...segment}
+                            stroke={color}
+                            strokeWidth="4"
+                            strokeLinecap="round"
+                            markerEnd={
+                                index === route.length - 1
+                                    ? `url(#${markerId})`
+                                    : undefined
+                            }
+                        />
+                    ))}
                 </>
             )}
 
