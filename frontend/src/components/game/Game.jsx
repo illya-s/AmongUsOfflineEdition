@@ -8,7 +8,8 @@ import gameContStyles from "./GameContainer.module.css";
 
 import { Progress } from "@/components/ui";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { AliveIcon, KnifeIcon } from "@/assets/icons";
 import List from "../admin/game/List";
 import gameLoadingStyles from "./GameLoading.module.css";
@@ -228,14 +229,16 @@ export function GameContainer({ gameSocket, game, tasks, player, players }) {
 }
 
 export function GameLoading({ gameSocket, game, player, players }) {
+	const navigate = useNavigate();
+
 	const handleExit = () => {
-		gameSocket.close();
-		localStorage.removeItem(game.code);
 		sendWithAck(gameSocket, {
 			action: "delete_player",
 			data: { id: player?.id },
 		})
 			.then((res) => {
+				gameSocket.close();
+				localStorage.removeItem(game.code);
 				navigate("/");
 			})
 			.catch((err) => {
