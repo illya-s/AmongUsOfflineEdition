@@ -53,7 +53,7 @@ export const useGameSocket = (code, pId = null, setPlayer = null, setLoading) =>
                     console.log("WS Disconnected");
                     clearInterval(pingId);
 
-                    if (e.code === 1000 || !isMounted) {
+                    if (e.code === 1000 || e.code === 4004 || !isMounted) {
                         setLoading?.(null);
                         return;
                     }

@@ -57,4 +57,23 @@ describe("useGameSocket", () => {
 
         unmount();
     });
+
+    it("does not reconnect when the server rejects a deleted room", async () => {
+        const setLoading = vi.fn();
+        const { unmount } = renderHook(() =>
+            useGameSocket("ROOM42", "player-1", vi.fn(), setLoading),
+        );
+
+        const socket = MockWebSocket.instances[0];
+        act(() => socket.onopen());
+        act(() => socket.onclose({ code: 4004 }));
+
+        expect(setLoading).toHaveBeenLastCalledWith(null);
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(10_000);
+        });
+        expect(MockWebSocket.instances).toHaveLength(1);
+
+        unmount();
+    });
 });
