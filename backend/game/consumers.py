@@ -1,5 +1,3 @@
-from game.serializers import GameRoomSerializer
-from game.models import GameRoom
 from typing import Any
 from urllib.parse import parse_qs
 
@@ -8,6 +6,7 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 from django.core.cache import cache
 
+from game.serializers import GameRoomSerializer
 from game.request import SocketHandler, SocketRequest, SocketResponse
 
 from .router import handlepatterns
@@ -64,13 +63,29 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
             await self.channel_layer.group_discard(self.admin_group_name, self.channel_name)
         else:
             await cache.adelete(f"player_online:{self.player.id}")
-            await SocketResponse(
-                action="update",
-                request_id="-1",
-                data={"game": await database_sync_to_async(lambda: GameRoomSerializer(self.game).data)()},
-            ).broadcast(type="admin_update", channel_layer=self.channel_layer, room_group_name=self.admin_group_name)
+            game = await database_sync_to_async(get_game_by_code)(self.room_name)
+            if game:
+                await SocketResponse(
+                    action="update",
+                    request_id="-1",
+                    data={
+                        "game": await database_sync_to_async(
+                            lambda: GameRoomSerializer(game).data
+                        )()
+                    },
+                ).broadcast(
+                    type="admin_update",
+                    channel_layer=self.channel_layer,
+                    room_group_name=self.admin_group_name,
+                )
 
     async def receive_json(self, content: dict[str, Any]):
+        game = await database_sync_to_async(get_game_by_code)(self.room_name)
+        if not game:
+            await self.close(code=4004)
+            return
+        self.game = game
+
         if self.player:
             await cache.atouch(f"player_online:{self.player.id}", timeout=ONLINE_TTL)
 
