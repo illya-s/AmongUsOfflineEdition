@@ -93,6 +93,24 @@ services:
         depends_on:
             - backend
 
+    backend_test:
+        build: ./backend
+        entrypoint: []
+        command: ["uv", "run", "manage.py", "test"]
+        profiles: ["test"]
+        environment:
+            DJANGO_SETTINGS_MODULE: config.settings.test
+            CELERY_BROKER_URL: redis://redis:6379/0
+            CELERY_RESULT_BACKEND: redis://redis:6379/0
+        depends_on:
+            redis:
+                condition: service_healthy
+
+    frontend_test:
+        build: ./frontend
+        command: ["yarn", "test"]
+        profiles: ["test"]
+
 volumes:
     postgres_data_dev:
     backend_venv:
