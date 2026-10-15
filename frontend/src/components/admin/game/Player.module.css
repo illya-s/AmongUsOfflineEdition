@@ -1,15 +1,15 @@
 .block {
-    padding: var(--padding);
+  padding: var(--padding);
 
-    display: flex;
-    flex-direction: row;
-    gap: var(--padding);
-    align-items: center;
+  display: flex;
+  flex-direction: row;
+  gap: var(--padding);
+  align-items: center;
 
-    border-radius: var(--border-radius);
-    background-color: var(--color-bg-elevated);
+  border-radius: var(--border-radius);
+  background-color: var(--color-bg-elevated);
 }
 
 .middle {
-    flex: 1 1 auto;
+  flex: 1 1 auto;
 }

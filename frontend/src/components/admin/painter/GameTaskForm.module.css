@@ -1,10 +1,10 @@
 .gameTaskFormWrapper {
-    display: flex;
-    flex-direction: column;
-    gap: var(--padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--padding);
 }
 
 .gameTaskFormFieldWrapper {
-    display: grid;
-    grid-template-columns: .5fr 1fr;
+  display: grid;
+  grid-template-columns: 0.5fr 1fr;
 }

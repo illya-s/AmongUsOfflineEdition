@@ -14,231 +14,237 @@ import { useLocationForm } from "@/components/admin/LocationForm";
 import { useTaskForm } from "@/components/admin/TaskForm";
 import { Section } from "@/components/elements/Section";
 
-
 export default function Admin() {
-    const { TaskForm, taskFormData, reset: resetTaskForm } = useTaskForm();
-    const [tasks, setTasks] = useState([]);
+  const { TaskForm, taskFormData, reset: resetTaskForm } = useTaskForm();
+  const [tasks, setTasks] = useState([]);
 
-    const { GameForm, gameFormData, reset: resetGameForm } = useGameForm();
-    const [games, setGames] = useState([]);
-    const { LocationForm, locationFormData, reset: resetLocationForm } =
-        useLocationForm(games);
-    const [locations, setLocations] = useState([]);
+  const { GameForm, gameFormData, reset: resetGameForm } = useGameForm();
+  const [games, setGames] = useState([]);
+  const { LocationForm, locationFormData, reset: resetLocationForm } = useLocationForm(games);
+  const [locations, setLocations] = useState([]);
 
-    useEffect(() => {
-        updateLocationList();
+  useEffect(() => {
+    updateLocationList();
+    updateTaskList();
+    updateGameList();
+  }, []);
+
+  const updateTaskList = () => {
+    api
+      .get("tasks/")
+      .then((res) => {
+        setTasks(res.data);
+      })
+      .catch((exc) => {
+        console.error(exc);
+      });
+  };
+  const handleAddTask = (data) => {
+    api
+      .post("tasks/", { ...data })
+      .then((res) => {
         updateTaskList();
+        resetTaskForm();
+      })
+      .catch((exc) => {
+        console.error(exc);
+      });
+  };
+  const handleRemoveTask = (id) => {
+    api
+      .delete(`tasks/${id}/`)
+      .then((res) => {
+        updateTaskList();
+      })
+      .catch((exc) => {
+        console.error(exc);
+      });
+  };
+
+  const updateLocationList = () => {
+    api
+      .get("locations/")
+      .then((res) => {
+        setLocations(res.data);
+      })
+      .catch((exc) => {
+        console.error(exc);
+      });
+  };
+  const handleAddLocation = (data) => {
+    api
+      .post("locations/", { ...data })
+      .then((res) => {
+        updateLocationList();
+        resetLocationForm();
+      })
+      .catch((exc) => {
+        console.error(exc);
+      });
+  };
+  const handleRemoveLocation = (id) => {
+    api
+      .delete(`locations/${id}/`)
+      .then((res) => {
+        updateLocationList();
+      })
+      .catch((exc) => {
+        console.error(exc);
+      });
+  };
+
+  const updateGameList = () => {
+    api
+      .get("games/")
+      .then((res) => {
+        setGames(res.data);
+      })
+      .catch((exc) => {
+        console.error(exc);
+      });
+  };
+  const handleAddGame = (data) => {
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("map", data.map);
+
+    api
+      .post("games/", formData)
+      .then((res) => {
         updateGameList();
-    }, []);
+        resetGameForm();
+      })
+      .catch((exc) => {
+        console.error(exc);
+      });
+  };
+  const handleRemoveGame = (id) => {
+    api
+      .delete(`games/${id}/`)
+      .then((res) => {
+        updateGameList();
+      })
+      .catch((exc) => {
+        console.error(exc);
+      });
+  };
 
-    const updateTaskList = () => {
-        api.get("tasks/")
-            .then((res) => {
-                setTasks(res.data);
-            })
-            .catch((exc) => {
-                console.error(exc);
-            });
-    }
-    const handleAddTask = (data) => {
-        api.post("tasks/", { ...data })
-            .then((res) => {
-                updateTaskList();
-                resetTaskForm();
-            })
-            .catch((exc) => {
-                console.error(exc);
-            });
-    };
-    const handleRemoveTask = (id) => {
-        api.delete(`tasks/${id}/`)
-            .then((res) => {
-                updateTaskList();
-            })
-            .catch((exc) => {
-                console.error(exc);
-            });
-    };
+  return (
+    <section className={styles.adminWrapper}>
+      <Section className={styles.adminTitleWrapper}>
+        <h1 className={styles.adminTitle}>Admin Panel</h1>
+      </Section>
 
-    const updateLocationList = () => {
-        api.get("locations/")
-            .then((res) => {
-                setLocations(res.data);
-            })
-            .catch((exc) => {
-                console.error(exc);
-            });
-    };
-    const handleAddLocation = (data) => {
-        api.post("locations/", { ...data })
-            .then((res) => {
-                updateLocationList();
-                resetLocationForm();
-            })
-            .catch((exc) => {
-                console.error(exc);
-            });
-    };
-    const handleRemoveLocation = (id) => {
-        api.delete(`locations/${id}/`)
-            .then((res) => {
-                updateLocationList();
-            })
-            .catch((exc) => {
-                console.error(exc);
-            });
-    };
+      <AdminBlock
+        title="Локации"
 
-    const updateGameList = () => {
-        api.get("games/")
-            .then((res) => {
-                setGames(res.data);
-            })
-            .catch((exc) => {
-                console.error(exc);
-            });
-    };
-    const handleAddGame = (data) => {
-        const formData = new FormData();
-        formData.append("name", data.name);
-        formData.append("map", data.map);
+        titleModal="Добавить Локацию"
+        formModal={LocationForm}
+        onOkModal={() => handleAddLocation(locationFormData)}
 
-        api.post("games/", formData)
-            .then((res) => {
-                updateGameList();
-                resetGameForm();
-            })
-            .catch((exc) => {
-                console.error(exc);
-            });
-    };
-    const handleRemoveGame = (id) => {
-        api.delete(`games/${id}/`)
-            .then((res) => {
-                updateGameList();
-            })
-            .catch((exc) => {
-                console.error(exc);
-            });
-    };
+        dataSource={locations}
+        renderItem={(location) => (
+          <div key={`location_${location.id}`} className={styles.locationBlock}>
+            <Avatar>{location.id}</Avatar>
 
-    return (
-        <section className={styles.adminWrapper}>
-            <Section className={styles.adminTitleWrapper}>
-                <h1 className={styles.adminTitle}>Admin Panel</h1>
-            </Section>
+            <div className={styles.locationBlockMiddle}>
+              <span className={styles.locationBlockTitle}>{location.name}</span>
+              <p>
+                Игра #{location.room} · {Math.round(location.x)}, {Math.round(location.y)}
+              </p>
+            </div>
 
-            <AdminBlock
-                title="Локации"
+            <Button
+              size="small"
+              variant="solid"
+              color="danger"
+              onClick={() => handleRemoveLocation(location.id)}
+            >
+              <DeleteOutlined />
+            </Button>
+          </div>
+        )}
+      />
 
-                titleModal="Добавить Локацию"
-                formModal={LocationForm}
-                onOkModal={() => handleAddLocation(locationFormData)}
+      <AdminBlock
+        title="Задания"
 
-                dataSource={locations}
-                renderItem={(location) => (
-                    <div
-                        key={`location_${location.id}`}
-                        className={styles.locationBlock}
-                    >
-                        <Avatar>{location.id}</Avatar>
+        titleModal="Добавить Задание"
+        formModal={TaskForm}
+        onOkModal={() => handleAddTask(taskFormData)}
 
-                        <div className={styles.locationBlockMiddle}>
-                            <span className={styles.locationBlockTitle}>
-                                {location.name}
-                            </span>
-                            <p>
-                                Игра #{location.room} · {Math.round(location.x)}, {Math.round(location.y)}
-                            </p>
-                        </div>
+        dataSource={tasks}
+        renderItem={(task) => (
+          <div key={`task_${task.id}`} className={styles.taskBlock}>
+            <Avatar>{task.id}</Avatar>
 
-                        <Button
-                            size="small"
-                            variant="solid"
-                            color="danger"
-                            onClick={() => handleRemoveLocation(location.id)}
-                        >
-                            <DeleteOutlined />
-                        </Button>
-                    </div>
-                )}
-            />
+            <p>{task.text}</p>
 
-            <AdminBlock
-                title="Задания"
+            <Button
+              size="small"
+              variant="solid"
+              color="danger"
+              onClick={() => handleRemoveTask(task.id)}
+            >
+              <DeleteOutlined />
+            </Button>
+          </div>
+        )}
+      />
 
-                titleModal="Добавить Задание"
-                formModal={TaskForm}
-                onOkModal={() => handleAddTask(taskFormData)}
+      <AdminBlock
+        className={blockStyles.gameBlock}
 
-                dataSource={tasks}
-                renderItem={(task) => (
-                    <div key={`task_${task.id}`} className={styles.taskBlock}>
-                        <Avatar>{task.id}</Avatar>
+        layout="grid"
 
-                        <p>{task.text}</p>
+        title="Игры"
 
-                        <Button
-                            size="small"
-                            variant="solid"
-                            color="danger"
-                            onClick={() => handleRemoveTask(task.id)}
-                        >
-                            <DeleteOutlined />
-                        </Button>
-                    </div>
-                )}
-            />
+        titleModal="Добавить Игру"
+        formModal={GameForm}
+        onOkModal={() => handleAddGame(gameFormData)}
 
-            <AdminBlock
-                className={blockStyles.gameBlock}
+        dataSource={games}
+        renderItem={(game) => (
+          <Link
+            key={`game_${game.id}`}
+            to={`/admin/game/${game.code}/`}
+            className={styles.gameBlock}
+          >
+            <img height={100} src={game.game_map} />
 
-                layout="grid"
+            <div>
+              <h4 className={styles.gameBlockTitle}>{game.name}</h4>
+              <p>{game.code}</p>
+            </div>
 
-                title="Игры"
-
-                titleModal="Добавить Игру"
-                formModal={GameForm}
-                onOkModal={() => handleAddGame(gameFormData)}
-
-                dataSource={games}
-                renderItem={(game) => (
-                    <Link key={`game_${game.id}`} to={`/admin/game/${game.code}/`} className={styles.gameBlock}>
-                        <img height={100} src={game.game_map} />
-
-                        <div>
-                            <h4 className={styles.gameBlockTitle}>{game.name}</h4>
-                            <p>{game.code}</p>
-                        </div>
-
-                        <div className={styles.gameBlockButtons}>
-                            <Button
-                                size="small"
-                                variant="solid"
-                                color="primary"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                }}
-                            >
-                                Начать
-                            </Button>
-                            <Button
-                                size="small"
-                                variant="solid"
-                                color="danger"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    handleRemoveGame(game.code);
-                                }}
-                            >
-                                <DeleteOutlined />
-                            </Button>
-                        </div>
-                    </Link>
-                )}
-            />
-        </section>
-    );
+            <div className={styles.gameBlockButtons}>
+              <Button
+                size="small"
+                variant="solid"
+                color="primary"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+              >
+                Начать
+              </Button>
+              <Button
+                size="small"
+                variant="solid"
+                color="danger"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleRemoveGame(game.code);
+                }}
+              >
+                <DeleteOutlined />
+              </Button>
+            </div>
+          </Link>
+        )}
+      />
+    </section>
+  );
 }

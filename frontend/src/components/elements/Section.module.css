@@ -1,7 +1,7 @@
 .section {
-	padding: var(--padding);
+  padding: var(--padding);
 
-	border: var(--line-width) var(--line-type) var(--color-border);
-	border-radius: var(--border-radius-lg);
-	background-color: var(--color-bg-container);
+  border: var(--line-width) var(--line-type) var(--color-border);
+  border-radius: var(--border-radius-lg);
+  background-color: var(--color-bg-container);
 }

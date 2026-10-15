@@ -1,120 +1,119 @@
 .adminGameTop {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 0 var(--padding);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0 var(--padding);
 }
 
 .adminGameTop > :global(.ant-avatar) {
-    grid-row: 1 / 3;
+  grid-row: 1 / 3;
 }
 
 .adminGameTopMiddle {
-    flex: 1 1 auto;
+  flex: 1 1 auto;
 }
 
 .adminGameTopMiddle h1 {
-    font-size: var(--font-size-heading-1);
-    font-weight: bold;
-    color: var(--color-text-heading);
+  font-size: var(--font-size-heading-1);
+  font-weight: bold;
+  color: var(--color-text-heading);
 }
 
 .adminGameMiddleTop {
-    display: flex;
-    flex-direction: row;
+  display: flex;
+  flex-direction: row;
 }
 
 .adminGameMiddleTop h2 {
-    flex: 1;
+  flex: 1;
 
-    font-size: var(--font-size-heading-3);
-    font-weight: bold;
-    color: var(--color-text-heading);
+  font-size: var(--font-size-heading-3);
+  font-weight: bold;
+  color: var(--color-text-heading);
 }
 
 .topEditSwitchWrapper {
-    display: flex;
-    flex-direction: row;
-    gap: var(--padding);
+  display: flex;
+  flex-direction: row;
+  gap: var(--padding);
 }
 
 .adminGameMiddleContainer {
-	max-height: 380px;
-    display: grid;
-    grid-template-rows: max-content auto;
+  max-height: 380px;
+  display: grid;
+  grid-template-rows: max-content auto;
 }
 .adminGameMiddleTaskList {
-    overflow-y: auto;
+  overflow-y: auto;
 }
 
 .adminGameTasksWrapper {
-    display: flex;
-    flex-direction: column;
-    gap: var(--padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--padding);
 }
 
 .adminGameTasksTop {
-    display: grid;
-    grid-template-columns: auto max-content;
-    align-items: center;
+  display: grid;
+  grid-template-columns: auto max-content;
+  align-items: center;
 }
 .adminGameTasks > h3 {
-    font-size: var(--font-size-heading-3);
-    font-weight: bold;
-    color: var(--color-text-heading);
+  font-size: var(--font-size-heading-3);
+  font-weight: bold;
+  color: var(--color-text-heading);
 }
 
 .adminGameMapWrapper {
-    display: grid;
-    grid-template-columns: max-content auto max-content;
-    gap: var(--padding);
+  display: grid;
+  grid-template-columns: max-content auto max-content;
+  gap: var(--padding);
 }
 
 .adminGameImgButtons {
-    /*padding: var(--padding-xs);*/
+  /*padding: var(--padding-xs);*/
 
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 
-    /*border-radius: var(--border-radius);
+  /*border-radius: var(--border-radius);
     background-color: var(--color-bg-elevated);*/
 }
 
 .adminGameMapImg {
-    user-select: none;
+  user-select: none;
 }
 
 .adminGameMapTasks {
-    overflow-y: auto;
+  overflow-y: auto;
 
-    display: flex;
-    flex-direction: column;
-    gap: var(--padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--padding);
 }
 .adminGameMapTask {
-    padding: var(--padding-xs) var(--padding);
+  padding: var(--padding-xs) var(--padding);
 
-    display: grid;
-    grid-template-columns: max-content auto;
-    gap: var(--padding);
-    align-items: center;
+  display: grid;
+  grid-template-columns: max-content auto;
+  gap: var(--padding);
+  align-items: center;
 
-    border: 1px solid var(--color-bg-elevated);
-    border-radius: var(--border-radius);
-    background-color: var(--color-bg-elevated);
+  border: 1px solid var(--color-bg-elevated);
+  border-radius: var(--border-radius);
+  background-color: var(--color-bg-elevated);
 
-    cursor: pointer;
-    user-select: none;
+  cursor: pointer;
+  user-select: none;
 
-    &.active {
-        border: 1px solid var(--color-border-secondary);
-        background-color: var(--color-fill-tertiary);
-    }
+  &.active {
+    border: 1px solid var(--color-border-secondary);
+    background-color: var(--color-fill-tertiary);
+  }
 }
 
-
 :global(#zones) {
-    width: 100%;
-    height: auto;
+  width: 100%;
+  height: auto;
 }

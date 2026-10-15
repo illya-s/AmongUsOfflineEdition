@@ -92,7 +92,7 @@ services:
         environment:
             - VITE_API_URL=/
             - VITE_PROXY_TARGET=http://backend:8000
-        command: sh -c "yarn build && yarn preview --host 0.0.0.0"
+        command: sh -c "vp build && vp preview --host 0.0.0.0"
         depends_on:
             backend:
                 condition: service_started

@@ -1,64 +1,64 @@
 .wrapper {
-	padding: var(--padding);
-	
-	display: flex;
-	flex-direction: column;
-	gap: var(--padding);
+  padding: var(--padding);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--padding);
 }
 
 .location-select-wrapper {
-	display: flex;
-	flex-direction: row;
-	gap: var(--padding);
-	align-items: center;
+  display: flex;
+  flex-direction: row;
+  gap: var(--padding);
+  align-items: center;
 }
 
 .location-select {
-	padding: var(--padding-xs);
+  padding: var(--padding-xs);
 
-	border: 1px solid var(--color-border-secondary);
-	border-radius: var(--border-radius);
-	background-color: var(--color-bg-elevated);
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--border-radius);
+  background-color: var(--color-bg-elevated);
 }
 
 .task {
-	padding: var(--padding);
+  padding: var(--padding);
 
-	display: grid;
-	grid-template-columns: auto 48px;
+  display: grid;
+  grid-template-columns: auto 48px;
 
-	border: 2px solid var(--color-border-secondary);
-	border-radius: var(--border-radius);
-	background-color: var(--color-bg-elevated);
+  border: 2px solid var(--color-border-secondary);
+  border-radius: var(--border-radius);
+  background-color: var(--color-bg-elevated);
 }
 
 .task-complete-button {
-	position: relative;
+  position: relative;
 
-	&::after {
-		content: "";
+  &::after {
+    content: "";
 
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 
-		width: 36px;
+    width: 36px;
 
-		aspect-ratio: 1;
+    aspect-ratio: 1;
 
-		border: 2px solid var(--color-border-secondary);
-		border-radius: var(--border-radius);
-		background-color: var(--color-fill-tertiary);
-	}
+    border: 2px solid var(--color-border-secondary);
+    border-radius: var(--border-radius);
+    background-color: var(--color-fill-tertiary);
+  }
 
-	& > svg {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		z-index: 2;
+  & > svg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
 
-		width: 22px;
-	}
+    width: 22px;
+  }
 }

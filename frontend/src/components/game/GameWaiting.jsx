@@ -6,91 +6,78 @@ import styles from "./GameWaiting.module.css";
 import { useRef } from "react";
 
 const Countdown = ({ startTime }) => {
-	const [left, setLeft] = useState(
-		Math.max(0, (startTime - Date.now()) / 1000),
-	);
-	const requestRef = useRef();
-	const initialLeft = useMemo(
-		() => Math.max(1, (startTime - Date.now()) / 1000),
-		[startTime],
-	);
+  const [left, setLeft] = useState(Math.max(0, (startTime - Date.now()) / 1000));
+  const requestRef = useRef();
+  const initialLeft = useMemo(() => Math.max(1, (startTime - Date.now()) / 1000), [startTime]);
 
-	useEffect(() => {
-		const update = () => {
-			const now = Date.now();
-			const remaining = Math.max(0, (startTime - now) / 1000);
+  useEffect(() => {
+    const update = () => {
+      const now = Date.now();
+      const remaining = Math.max(0, (startTime - now) / 1000);
 
-			setLeft(remaining);
+      setLeft(remaining);
 
-			if (remaining <= 0) {
-				cancelAnimationFrame(requestRef.current);
-			} else {
-				requestRef.current = requestAnimationFrame(update);
-			}
-		};
+      if (remaining <= 0) {
+        cancelAnimationFrame(requestRef.current);
+      } else {
+        requestRef.current = requestAnimationFrame(update);
+      }
+    };
 
-		requestRef.current = requestAnimationFrame(update);
-		return () => cancelAnimationFrame(requestRef.current);
-	}, [startTime]);
+    requestRef.current = requestAnimationFrame(update);
+    return () => cancelAnimationFrame(requestRef.current);
+  }, [startTime]);
 
-	const percent = (left / initialLeft) * 100;
+  const percent = (left / initialLeft) * 100;
 
-	const format = () => {
-		const m = Math.floor(left / 60);
-		const s = Math.ceil(left % 60);
-		return `${m}:${String(s).padStart(2, "0")}`;
-	};
+  const format = () => {
+    const m = Math.floor(left / 60);
+    const s = Math.ceil(left % 60);
+    return `${m}:${String(s).padStart(2, "0")}`;
+  };
 
-	return (
-		<Progress
-			type="circle"
-			percent={percent}
-			format={format}
-			size={180}
-			strokeColor={{
-				"0%": "#ff4d4f",
-				"100%": left < 30 ? "#ff4d4f" : "#1890ff",
-			}}
-		/>
-	);
+  return (
+    <Progress
+      type="circle"
+      percent={percent}
+      format={format}
+      size={180}
+      strokeColor={{
+        "0%": "#ff4d4f",
+        "100%": left < 30 ? "#ff4d4f" : "#1890ff",
+      }}
+    />
+  );
 };
 
 export function GameWaiting({ player, players, startTime }) {
-	return (
-		<div className={styles.wrapper}>
-			<div style={{ fontSize: 18 }}>Старт через…</div>
+  return (
+    <div className={styles.wrapper}>
+      <div style={{ fontSize: 18 }}>Старт через…</div>
 
-			<Countdown startTime={startTime} />
+      <Countdown startTime={startTime} />
 
-			<div className={styles["player-info"]}>
-				<span>Ваша роль:</span>
+      <div className={styles["player-info"]}>
+        <span>Ваша роль:</span>
 
-				{player?.role === "imposter" ? (
-					<KnifeIcon style={{ width: 16, color: "#FFF" }} />
-				) : (
-					<AliveIcon style={{ width: 16, color: "#FFF" }} />
-				)}
+        {player?.role === "imposter" ? (
+          <KnifeIcon style={{ width: 16, color: "#FFF" }} />
+        ) : (
+          <AliveIcon style={{ width: 16, color: "#FFF" }} />
+        )}
 
-				<span className={styles["player-info-name"]}>
-					{player?.role}
-				</span>
-			</div>
+        <span className={styles["player-info-name"]}>{player?.role}</span>
+      </div>
 
-			{player?.role === "imposter" && (
-				<div>
-					{players
-						?.filter(
-							(p) => p.role === "imposter" && p.id !== player.id,
-						)
-						.map((p) => (
-							<Player
-								key={`player_${p.id}`}
-								player={p}
-								active={p.id === player.id}
-							/>
-						))}
-				</div>
-			)}
-		</div>
-	);
+      {player?.role === "imposter" && (
+        <div>
+          {players
+            ?.filter((p) => p.role === "imposter" && p.id !== player.id)
+            .map((p) => (
+              <Player key={`player_${p.id}`} player={p} active={p.id === player.id} />
+            ))}
+        </div>
+      )}
+    </div>
+  );
 }

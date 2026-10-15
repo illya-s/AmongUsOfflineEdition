@@ -2,96 +2,94 @@ import { useEffect, useRef, useState } from "react";
 import { handleSocketMessage, initSocketHandlers } from "./sendWithAck";
 
 export const useGameSocket = (code, pId = null, setPlayer = null, setLoading) => {
-    const [gameSocket, setGameSocket] = useState(null);
-    const [game, setGame] = useState(null);
-    const [players, setPlayers] = useState([]);
-    const [tasks, setTasks] = useState([]);
-    const [locations, setLocations] = useState([]);
-    const [availableTasks, setAvailableTasks] = useState([]);
+  const [gameSocket, setGameSocket] = useState(null);
+  const [game, setGame] = useState(null);
+  const [players, setPlayers] = useState([]);
+  const [tasks, setTasks] = useState([]);
+  const [locations, setLocations] = useState([]);
+  const [availableTasks, setAvailableTasks] = useState([]);
 
-    const reconnectAttempts = useRef(0);
+  const reconnectAttempts = useRef(0);
 
-    useEffect(() => {
-        initSocketHandlers({
-            pId,
-            setPlayer,
-            setGame,
-            setTasks,
-            setPlayers,
-            setLocations,
-            setAvailableTasks,
-        });
-    }, [pId, setPlayer, setGame, setTasks, setPlayers, setLocations, setAvailableTasks]);
+  useEffect(() => {
+    initSocketHandlers({
+      pId,
+      setPlayer,
+      setGame,
+      setTasks,
+      setPlayers,
+      setLocations,
+      setAvailableTasks,
+    });
+  }, [pId, setPlayer, setGame, setTasks, setPlayers, setLocations, setAvailableTasks]);
 
-    useEffect(() => {
-        let ws;
-        let timerId;
-        let pingId;
-        let isMounted = true;
+  useEffect(() => {
+    let ws;
+    let timerId;
+    let pingId;
+    let isMounted = true;
 
-        const init = async () => {
-            const connect = () => {
-                const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-                const host = window.location.host;
-                ws = new WebSocket(
-                    `${protocol}//${host}/ws/game/${code}/?pId=${pId}`,
-                );
+    const init = async () => {
+      const connect = () => {
+        const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+        const host = window.location.host;
+        ws = new WebSocket(`${protocol}//${host}/ws/game/${code}/?pId=${pId}`);
 
-                ws.onopen = () => {
-                    console.log("WS Connected");
-                    reconnectAttempts.current = 0;
-                    setLoading?.(false);
-                    setGameSocket(ws);
-                    pingId = setInterval(() => {
-                        if (ws.readyState === WebSocket.OPEN) {
-                            ws.send(JSON.stringify({ action: "ping" }));
-                        }
-                    }, 50_000);
-                };
-
-                ws.onclose = (e) => {
-                    console.log("WS Disconnected");
-                    clearInterval(pingId);
-
-                    if (e.code === 1000 || e.code === 4004 || !isMounted) {
-                        setLoading?.(null);
-                        return;
-                    }
-
-                    if (reconnectAttempts.current < 10) {
-                        setLoading?.(true);
-                        reconnectAttempts.current++;
-                        const timeout = 1000 * reconnectAttempts.current;
-                        console.log(`Reconnecting in ${timeout}ms...`);
-                        timerId = setTimeout(() => {
-                            if (isMounted) connect();
-                        }, timeout);
-                    } else {
-                        setLoading?.(null);
-                        console.warn("Max reconnect attempts reached");
-                    }
-                };
-
-                ws.onerror = (err) => {
-                    console.error("WS error:", err);
-                    ws.close();
-                };
-
-                ws.onmessage = handleSocketMessage;
-            };
-
-            connect();
+        ws.onopen = () => {
+          console.log("WS Connected");
+          reconnectAttempts.current = 0;
+          setLoading?.(false);
+          setGameSocket(ws);
+          pingId = setInterval(() => {
+            if (ws.readyState === WebSocket.OPEN) {
+              ws.send(JSON.stringify({ action: "ping" }));
+            }
+          }, 50_000);
         };
 
-        init();
+        ws.onclose = (e) => {
+          console.log("WS Disconnected");
+          clearInterval(pingId);
 
-        return () => {
-            isMounted = false;
-            clearTimeout(timerId);
-            clearInterval(pingId);
-            if (ws) ws.close(1000);
+          if (e.code === 1000 || e.code === 4004 || !isMounted) {
+            setLoading?.(null);
+            return;
+          }
+
+          if (reconnectAttempts.current < 10) {
+            setLoading?.(true);
+            reconnectAttempts.current++;
+            const timeout = 1000 * reconnectAttempts.current;
+            console.log(`Reconnecting in ${timeout}ms...`);
+            timerId = setTimeout(() => {
+              if (isMounted) connect();
+            }, timeout);
+          } else {
+            setLoading?.(null);
+            console.warn("Max reconnect attempts reached");
+          }
         };
-    }, [code, pId]);
 
-    return { gameSocket, game, players, tasks, locations, availableTasks };
+        ws.onerror = (err) => {
+          console.error("WS error:", err);
+          ws.close();
+        };
+
+        ws.onmessage = handleSocketMessage;
+      };
+
+      connect();
+    };
+
+    init();
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timerId);
+      clearInterval(pingId);
+      if (ws) ws.close(1000);
+    };
+  }, [code, pId]);
+
+  return { gameSocket, game, players, tasks, locations, availableTasks };
 };

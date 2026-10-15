@@ -1,40 +1,40 @@
 .aside {
-	position: sticky;
-	top: 0;
+  position: sticky;
+  top: 0;
 
-	height: 100vh;
-	padding: var(--padding);
+  height: 100vh;
+  padding: var(--padding);
 
-	display: flex;
-	flex-direction: column;
-	gap: var(--padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--padding);
 }
 
 .title-wrapper {
-	display: grid;
-	grid-template-columns: 40px max-content;
-	gap: 0 var(--padding-sm);
-	align-items: center;
+  display: grid;
+  grid-template-columns: 40px max-content;
+  gap: 0 var(--padding-sm);
+  align-items: center;
 }
 .title-content {
-	display: flex;
-	flex-direction: column;
-	align-items: start;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
 }
 .title-title {
-	font-weight: bold;
-	font-size: var(--font-size-heading-1);
-	color: var(--color-text-heading);
+  font-weight: bold;
+  font-size: var(--font-size-heading-1);
+  color: var(--color-text-heading);
 }
 .title-code {
-	font-size: var(--font-size-heading-5);
-	color: var(--color-text-description);
+  font-size: var(--font-size-heading-5);
+  color: var(--color-text-description);
 }
 
 .nav {
-	display: grid;
-	grid-template-columns: 32px 32px max-content repeat(4, 32px);
-	align-items: center;
-	justify-content: space-between;
-	gap: var(--padding);
+  display: grid;
+  grid-template-columns: 32px 32px max-content repeat(4, 32px);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--padding);
 }

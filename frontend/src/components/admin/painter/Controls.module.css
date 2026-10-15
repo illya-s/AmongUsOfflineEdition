@@ -1,52 +1,52 @@
 .tools {
-    position: absolute;
-    z-index: 5;
-    bottom: 12px;
-    left: 50%;
-    transform: translateX(-50%);
+  position: absolute;
+  z-index: 5;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
 
-    padding: 6px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 
-    box-shadow: var(--box-shadow-secondary);
+  box-shadow: var(--box-shadow-secondary);
 }
 
 .tools button {
-    min-width: 34px;
-    height: 34px;
-    padding: 7px;
-    display: grid;
-    place-content: center;
-    border-radius: var(--border-radius);
-    color: var(--color-text);
-    font-weight: 700;
+  min-width: 34px;
+  height: 34px;
+  padding: 7px;
+  display: grid;
+  place-content: center;
+  border-radius: var(--border-radius);
+  color: var(--color-text);
+  font-weight: 700;
 }
 
 .tools button:hover:not(:disabled) {
-    background: var(--color-fill-tertiary);
+  background: var(--color-fill-tertiary);
 }
 
 .tools button:disabled {
-    color: var(--color-text-quaternary);
-    cursor: not-allowed;
+  color: var(--color-text-quaternary);
+  cursor: not-allowed;
 }
 
 .button.active,
 .button.active:hover {
-    background: var(--color-primary) !important;
+  background: var(--color-primary) !important;
 }
 
 .button img {
-    width: 20px;
-    height: 20px;
-    object-fit: contain;
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
 }
 
 .divider {
-    width: 1px;
-    height: 24px;
-    margin: 0 3px;
-    background: var(--color-split);
+  width: 1px;
+  height: 24px;
+  margin: 0 3px;
+  background: var(--color-split);
 }

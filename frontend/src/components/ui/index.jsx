@@ -1,3 +1,3 @@
 export { default as Progress } from "./Progress";
 export { default as Avatar } from "./Avatar";
-export { default as CopyLink } from "./CopyLink"
+export { default as CopyLink } from "./CopyLink";

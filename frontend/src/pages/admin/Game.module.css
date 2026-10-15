@@ -1,7 +1,7 @@
 .wrapper {
-	display: grid;
-	grid-template-columns: 1fr 3fr;
-	gap: var(--padding);
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  gap: var(--padding);
 }
 
 /*.wrapper {
@@ -11,9 +11,9 @@
 }*/
 
 .content {
-	padding: var(--padding);
-	display: flex;
-	flex-direction: column;
-	gap: var(--padding-md);
-	justify-content: space-between;
+  padding: var(--padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--padding-md);
+  justify-content: space-between;
 }

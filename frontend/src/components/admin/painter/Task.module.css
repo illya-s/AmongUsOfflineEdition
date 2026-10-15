@@ -1,71 +1,71 @@
 .task {
-    /*max-width: 250px;*/
-    padding: var(--padding);
+  /*max-width: 250px;*/
+  padding: var(--padding);
 
-    display: grid;
-    grid-template-columns: 32px minmax(0, 1fr) 24px;
-    align-items: center;
-    gap: var(--padding);
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) 24px;
+  align-items: center;
+  gap: var(--padding);
 
-    border: 1px solid var(--color-border);
-    border-radius: var(--border-radius);
-    background-color: var(--color-bg-container);
-    
-    cursor: pointer;
-    user-select: none;
-    
-    &.active {
-        background-color: var(--color-primary);
-        color: var(--color-text-heading);
-    }
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  background-color: var(--color-bg-container);
+
+  cursor: pointer;
+  user-select: none;
+
+  &.active {
+    background-color: var(--color-primary);
+    color: var(--color-text-heading);
+  }
 }
 
 .delete {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    color: var(--color-text-description);
-    font-size: 18px;
-    line-height: 1;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  color: var(--color-text-description);
+  font-size: 18px;
+  line-height: 1;
 }
 
 .delete:hover {
-    color: var(--color-error);
-    background: var(--color-error-bg);
+  color: var(--color-error);
+  background: var(--color-error-bg);
 }
 
 .center {
-    display: grid;
-    grid-template-rows: max-content max-content;
+  display: grid;
+  grid-template-rows: max-content max-content;
 }
 
 .name {
-    display: -webkit-box;
-    color: var(--color-text-heading);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  display: -webkit-box;
+  color: var(--color-text-heading);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .location {
-    color: var(--color-text-description);
+  color: var(--color-text-description);
 }
 
 .meta {
-    min-width: 0;
-    display: flex;
-    justify-content: space-between;
-    gap: 8px;
-    font-size: var(--font-size-sm);
+  min-width: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: var(--font-size-sm);
 }
 
 .location {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .status {
-    flex: none;
-    color: var(--color-primary);
+  flex: none;
+  color: var(--color-primary);
 }

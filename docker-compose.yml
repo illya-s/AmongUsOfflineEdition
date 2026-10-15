@@ -80,7 +80,7 @@ services:
 
     frontend:
         build: ./frontend
-        command: yarn dev --host 0.0.0.0
+        command: vp dev --host 0.0.0.0
         restart: always
         volumes:
             - ./frontend:/app
@@ -108,7 +108,7 @@ services:
 
     frontend_test:
         build: ./frontend
-        command: ["yarn", "test"]
+        command: ["vp", "test"]
         profiles: ["test"]
 
 volumes:

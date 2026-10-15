@@ -1,16 +1,10 @@
 import styles from "./Section.module.css";
 import { forwardRef } from "react";
 
-export const Section = forwardRef(
-    ({ className, children, ...props }, ref) => {
-        return (
-            <section
-                ref={ref}
-                className={`${styles.section} ${className ?? ""}`}
-                {...props}
-            >
-                {children}
-            </section>
-        );
-    },
-);
+export const Section = forwardRef(({ className, children, ...props }, ref) => {
+  return (
+    <section ref={ref} className={`${styles.section} ${className ?? ""}`} {...props}>
+      {children}
+    </section>
+  );
+});

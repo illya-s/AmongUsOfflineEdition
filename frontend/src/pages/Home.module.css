@@ -1,27 +1,27 @@
 .homeStartWrapper {
-    height: 100%;
+  height: 100%;
 
-    display: grid;
-    grid-template-rows: max-content max-content;
-    align-items: center;
-    align-content: center;
-    justify-items: center;
-    justify-content: center;
-    gap: 1rem;
+  display: grid;
+  grid-template-rows: max-content max-content;
+  align-items: center;
+  align-content: center;
+  justify-items: center;
+  justify-content: center;
+  gap: 1rem;
 }
 
 .homeStartTitleWrapper {
-    display: inline-flex;
-    flex-direction: column;
+  display: inline-flex;
+  flex-direction: column;
 }
 .homeStartTitleWrapper > h1 {
-    font-size: 2rem;
-    font-weight: bold;
-    color: var(--color-text-heading);
-    white-space: nowrap;
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--color-text-heading);
+  white-space: nowrap;
 }
 .homeStartTitleWrapper > span {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
