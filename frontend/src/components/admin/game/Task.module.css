@@ -1,37 +1,37 @@
 .task {
-  padding: var(--padding);
+	padding: var(--padding);
 
-  display: grid;
-  grid-template-columns: max-content auto;
-  align-items: center;
-  gap: var(--padding);
+	display: grid;
+	grid-template-columns: max-content auto;
+	align-items: center;
+	gap: var(--padding);
 
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
-  background-color: var(--color-bg-elevated);
+	border: 1px solid var(--color-border);
+	border-radius: var(--border-radius);
+	background-color: var(--color-bg-elevated);
 
-  cursor: pointer;
-  user-select: none;
+	cursor: pointer;
+	user-select: none;
 
-  &.active {
-    background-color: var(--color-primary);
-    color: var(--color-text-heading);
-  }
+	&.active {
+		background-color: var(--color-primary);
+		color: var(--color-text-heading);
+	}
 }
 
 .center {
-  display: grid;
-  grid-template-rows: max-content max-content;
+	display: grid;
+	grid-template-rows: max-content max-content;
 }
 
 .name {
-  display: -webkit-box;
-  color: var(--color-text-heading);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+	display: -webkit-box;
+	color: var(--color-text-heading);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .text {
-  color: var(--color-text-description);
+	color: var(--color-text-description);
 }

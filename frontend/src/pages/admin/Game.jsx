@@ -20,80 +20,80 @@ import { useGameSocket } from "@/lib/api/useGameSocket";
 import { AdminMeeting } from "@/components/admin/game/AdminMeeting";
 
 export default function AdminGame() {
-  const { code } = useParams();
+	const { code } = useParams();
 
-  const { gameSocket, game, players, tasks } = useGameSocket(code);
+	const { gameSocket, game, players, tasks } = useGameSocket(code);
 
-  const [isLoadingAutoMode, setIsLoadingAutoMode] = useState(false);
+	const [isLoadingAutoMode, setIsLoadingAutoMode] = useState(false);
 
-  return (
-    <div className={styles.wrapper}>
-      <Aside gameSocket={gameSocket} game={game} />
+	return (
+		<div className={styles.wrapper}>
+			<Aside gameSocket={gameSocket} game={game} />
 
-      <div className={styles.content}>
-        <Progress value={game?.progress} />
+			<div className={styles.content}>
+				<Progress value={game?.progress} />
 
-        <AdminMeeting gameSocket={gameSocket} game={game} />
+				<AdminMeeting gameSocket={gameSocket} game={game} />
 
-        <Section className={adminStyles.adminGameMiddleContainer}>
-          <div className={adminStyles.adminGameMiddleTop}>
-            <h2>Players</h2>
+				<Section className={adminStyles.adminGameMiddleContainer}>
+					<div className={adminStyles.adminGameMiddleTop}>
+						<h2>Players</h2>
 
-            <label
-              className={adminStyles.topEditSwitchWrapper}
-              title="Авто / Ручное назначение ролей"
-            >
-              {game?.auto_assign_role ? <span>Auto</span> : <span>Manual</span>}
+						<label
+							className={adminStyles.topEditSwitchWrapper}
+							title="Авто / Ручное назначение ролей"
+						>
+							{game?.auto_assign_role ? <span>Auto</span> : <span>Manual</span>}
 
-              <Switch
-                value={game?.auto_assign_role}
-                loading={isLoadingAutoMode}
-                onChange={(checked) => {
-                  setIsLoadingAutoMode(true);
-                  sendWithAck(gameSocket, {
-                    action: "toggle_auto_assign_role",
-                    data: { value: checked },
-                  })
-                    .then((req) => {})
-                    .catch((err) => {})
-                    .finally(() => {
-                      setIsLoadingAutoMode(false);
-                    });
-                }}
-                unCheckedChildren={<ToolFilled />}
-                checkedChildren={<RobotFilled />}
-                disabled={game?.active}
-              />
-            </label>
-          </div>
+							<Switch
+								value={game?.auto_assign_role}
+								loading={isLoadingAutoMode}
+								onChange={(checked) => {
+									setIsLoadingAutoMode(true);
+									sendWithAck(gameSocket, {
+										action: "toggle_auto_assign_role",
+										data: { value: checked },
+									})
+										.then(() => {})
+										.catch(() => {})
+										.finally(() => {
+											setIsLoadingAutoMode(false);
+										});
+								}}
+								unCheckedChildren={<ToolFilled />}
+								checkedChildren={<RobotFilled />}
+								disabled={game?.active}
+							/>
+						</label>
+					</div>
 
-          <List
-            dataSource={players}
-            renderItem={(player) => (
-              <Player
-                key={`player_${player.id}`}
-                player={player}
-                game={game}
-                gameSocket={gameSocket}
-                editable={!game?.auto_assign_role}
-                delete
-              />
-            )}
-          />
-        </Section>
+					<List
+						dataSource={players}
+						renderItem={(player) => (
+							<Player
+								key={`player_${player.id}`}
+								player={player}
+								game={game}
+								gameSocket={gameSocket}
+								editable={!game?.auto_assign_role}
+								delete
+							/>
+						)}
+					/>
+				</Section>
 
-        <Section className={adminStyles.adminGameMiddleContainer}>
-          <div className={adminStyles.adminGameMiddleTop}>
-            <h2>Tasks</h2>
-          </div>
+				<Section className={adminStyles.adminGameMiddleContainer}>
+					<div className={adminStyles.adminGameMiddleTop}>
+						<h2>Tasks</h2>
+					</div>
 
-          <List
-            className={adminStyles.adminGameMiddleTaskList}
-            dataSource={tasks}
-            renderItem={(task) => <Task key={`task_${task.id}`} task={task} />}
-          />
-        </Section>
-      </div>
-    </div>
-  );
+					<List
+						className={adminStyles.adminGameMiddleTaskList}
+						dataSource={tasks}
+						renderItem={(task) => <Task key={`task_${task.id}`} task={task} />}
+					/>
+				</Section>
+			</div>
+		</div>
+	);
 }

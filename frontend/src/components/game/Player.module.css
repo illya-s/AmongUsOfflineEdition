@@ -1,43 +1,43 @@
 .player {
-  --width: 100px;
-  --icon: 48px;
-  --font: 0.75em;
-  --pad: 1rem;
+	--width: 100px;
+	--icon: 48px;
+	--font: 0.75em;
+	--pad: 1rem;
 
-  flex: 0 0 var(--width);
+	flex: 0 0 var(--width);
 
-  padding: var(--pad);
+	padding: var(--pad);
 
-  display: grid;
-  grid-template-rows: var(--icon) max-content;
-  gap: var(--padding);
-  place-content: center;
-  place-items: center;
+	display: grid;
+	grid-template-rows: var(--icon) max-content;
+	gap: var(--padding);
+	place-content: center;
+	place-items: center;
 
-  border: solid 1px var(--color-border);
-  border-radius: var(--border-radius);
-  background-color: var(--color-bg-elevated);
+	border: solid 1px var(--color-border);
+	border-radius: var(--border-radius);
+	background-color: var(--color-bg-elevated);
 
-  word-break: break-all;
-  font-size: var(--font);
-  color: var(--color-text-heading);
+	word-break: break-all;
+	font-size: var(--font);
+	color: var(--color-text-heading);
 }
 
 .player > svg {
-  width: auto;
-  height: 100%;
+	width: auto;
+	height: 100%;
 }
 
 .me {
-  border-color: var(--color-primary-border);
-  background-color: var(--color-primary);
+	border-color: var(--color-primary-border);
+	background-color: var(--color-primary);
 
-  color: var(--color-text-heading);
+	color: var(--color-text-heading);
 }
 
 .large {
-  --width: 150px;
-  --icon: 56px;
-  --font: 1.2em;
-  --pad: 1.25rem 1.5rem;
+	--width: 150px;
+	--icon: 56px;
+	--font: 1.2em;
+	--pad: 1.25rem 1.5rem;
 }
