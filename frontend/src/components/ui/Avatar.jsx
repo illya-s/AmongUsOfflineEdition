@@ -47,8 +47,7 @@ export const Avatar = ({
 	const fallbackText = text ? getInitials(text) : "?";
 
 	// Автоматический или переданный цвет фона
-	const bgColor =
-		backgroundColor || (text ? getRandomColor(text) : undefined);
+	const bgColor = backgroundColor || (text ? getRandomColor(text) : undefined);
 
 	// Вычисляем размер шрифта пропорционально размеру аватарки
 	const fontSize = Math.floor(size * 0.4);
@@ -65,17 +64,9 @@ export const Avatar = ({
 			{...props}
 		>
 			{src && !imageError ? (
-				<img
-					src={src}
-					alt={alt}
-					className={styles.image}
-					onError={() => setImageError(true)}
-				/>
+				<img src={src} alt={alt} className={styles.image} onError={() => setImageError(true)} />
 			) : (
-				<span
-					className={styles.fallback}
-					style={{ fontSize: `${fontSize}px` }}
-				>
+				<span className={styles.fallback} style={{ fontSize: `${fontSize}px` }}>
 					{fallbackText}
 				</span>
 			)}

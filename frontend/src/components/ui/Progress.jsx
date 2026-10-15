@@ -17,11 +17,7 @@ export const Progress = ({ value = 0, max = 100, showLabel = true }) => {
 				className={`${styles.progressBar} ${isFull ? styles.full : ""}`}
 				style={{ width: `${percentage}%` }}
 			/>
-			{showLabel && (
-				<span className={styles.progressText}>
-					{Math.round(percentage)}%
-				</span>
-			)}
+			{showLabel && <span className={styles.progressText}>{Math.round(percentage)}%</span>}
 		</div>
 	);
 };

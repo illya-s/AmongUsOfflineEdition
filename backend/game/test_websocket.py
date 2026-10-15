@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 from asgiref.sync import async_to_sync
+from channels.db import database_sync_to_async
 from channels.layers import get_channel_layer
 from channels.routing import URLRouter
 from channels.testing import WebsocketCommunicator
@@ -220,3 +221,38 @@ class GameConsumerTests(TransactionTestCase):
         self.assertTrue(connected)
         event = await communicator.receive_output()
         self.assertEqual(event["type"], "websocket.close")
+
+    def test_connection_closes_when_room_is_deleted_before_next_message(self):
+        async_to_sync(self._assert_deleted_room_closes_connection)()
+
+    async def _assert_deleted_room_closes_connection(self):
+        communicator = WebsocketCommunicator(
+            self.application, f"/ws/game/{self.game.code}/"
+        )
+        self.assertTrue((await communicator.connect())[0])
+        await communicator.receive_json_from()
+
+        await database_sync_to_async(self.game.delete)()
+        await communicator.send_json_to({"action": "ping"})
+
+        event = await communicator.receive_output()
+        self.assertEqual(event["type"], "websocket.close")
+        self.assertEqual(event["code"], 4004)
+
+    def test_disconnect_after_room_deletion_cleans_player_presence(self):
+        player = Player.objects.create(room=self.game, name="Crewmate")
+        async_to_sync(self._assert_deleted_room_disconnect)(player.pk)
+
+    async def _assert_deleted_room_disconnect(self, player_id):
+        communicator = WebsocketCommunicator(
+            self.application,
+            f"/ws/game/{self.game.code}/?pId={player_id}",
+        )
+        self.assertTrue((await communicator.connect())[0])
+        await communicator.receive_json_from()
+        self.assertTrue(await cache.aget(f"player_online:{player_id}"))
+
+        await database_sync_to_async(self.game.delete)()
+        await communicator.disconnect()
+
+        self.assertIsNone(await cache.aget(f"player_online:{player_id}"))

@@ -12,7 +12,7 @@ export function VoteResults({ meeting, players, onClose }) {
 	const skipVoters = [];
 
 	if (Array.isArray(meeting?.votes)) {
-		meeting.votes.forEach(vote => {
+		meeting.votes.forEach((vote) => {
 			if (vote.voted_for) {
 				const targetId = vote.voted_for.id || vote.voted_for;
 				voteCounts[targetId] = (voteCounts[targetId] || 0) + 1;
@@ -33,7 +33,7 @@ export function VoteResults({ meeting, players, onClose }) {
 	Object.entries(voteCounts).forEach(([playerId, count]) => {
 		if (count > maxVotes) {
 			maxVotes = count;
-			ejectedPlayer = players.find(p => p.id === parseInt(playerId));
+			ejectedPlayer = players.find((p) => p.id === parseInt(playerId));
 			isTie = false;
 		} else if (count === maxVotes) {
 			isTie = true;
@@ -57,19 +57,13 @@ export function VoteResults({ meeting, players, onClose }) {
 	}, []);
 
 	return (
-		<Modal
-			open={visible}
-			onCancel={handleClose}
-			footer={null}
-			centered
-			className={styles.modal}
-		>
+		<Modal open={visible} onCancel={handleClose} footer={null} centered className={styles.modal}>
 			<div className={styles.wrapper}>
 				<h1>Результаты голосования</h1>
 
 				<div className={styles.voteList}>
 					{Object.entries(voteCounts).map(([playerId, count]) => {
-						const player = players.find(p => p.id === parseInt(playerId));
+						const player = players.find((p) => p.id === parseInt(playerId));
 						if (!player) return null;
 
 						return (
@@ -78,7 +72,9 @@ export function VoteResults({ meeting, players, onClose }) {
 									<Avatar size="large">{player.name[0]}</Avatar>
 									<div className={styles.voteInfo}>
 										<strong>{player.name}</strong>
-										<span>{count} {count === 1 ? 'голос' : 'голосов'}</span>
+										<span>
+											{count} {count === 1 ? "голос" : "голосов"}
+										</span>
 									</div>
 								</div>
 							</Card>
@@ -91,7 +87,9 @@ export function VoteResults({ meeting, players, onClose }) {
 								<Avatar size="large">⏭️</Avatar>
 								<div className={styles.voteInfo}>
 									<strong>Пропустили</strong>
-									<span>{skipCount} {skipCount === 1 ? 'голос' : 'голосов'}</span>
+									<span>
+										{skipCount} {skipCount === 1 ? "голос" : "голосов"}
+									</span>
 								</div>
 							</div>
 						</Card>
@@ -106,7 +104,8 @@ export function VoteResults({ meeting, players, onClose }) {
 								{ejectedPlayer.name} был изгнан!
 							</h2>
 							<p className={styles.role}>
-								Роль: <strong>{ejectedPlayer.role === "imposter" ? "Предатель" : "Член экипажа"}</strong>
+								Роль:{" "}
+								<strong>{ejectedPlayer.role === "imposter" ? "Предатель" : "Член экипажа"}</strong>
 							</p>
 						</>
 					) : (

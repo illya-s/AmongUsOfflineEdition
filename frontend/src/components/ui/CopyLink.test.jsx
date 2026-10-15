@@ -1,7 +1,7 @@
 /** @vitest-environment jsdom */
 
 import { cleanup, fireEvent, render, waitFor } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
 import CopyLink from "./CopyLink";
 
 describe("CopyLink", () => {
@@ -21,9 +21,7 @@ describe("CopyLink", () => {
 		fireEvent.click(getByRole("button"));
 
 		await waitFor(() =>
-			expect(writeText).toHaveBeenCalledWith(
-				`${window.location.origin}/game/ROOM42`,
-			),
+			expect(writeText).toHaveBeenCalledWith(`${window.location.origin}/game/ROOM42`),
 		);
 	});
 

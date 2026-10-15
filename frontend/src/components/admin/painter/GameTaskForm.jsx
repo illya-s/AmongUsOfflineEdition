@@ -5,75 +5,68 @@ import { useState } from "react";
 import { sendWithAck } from "@/lib/api/sendWithAck";
 import { useMessageApi } from "@/providers/MessageProvider";
 
-export function GameTaskForm({
-    gameSocket,
-    isOpen,
-    setIsOpen,
-    code,
-    locations,
-    tasks,
-}) {
-    const message = useMessageApi();
+export function GameTaskForm({ gameSocket, isOpen, setIsOpen, locations, tasks }) {
+	const message = useMessageApi();
 
-    const [task, setTask] = useState(null);
-    const [location, setLocation] = useState(null);
+	const [task, setTask] = useState(null);
+	const [location, setLocation] = useState(null);
 
-    const addGameTask = () => {
-        sendWithAck(gameSocket, {
-            action: "add_task",
-            data: { location: location, task: task },
-        })
-            .then(() => {
-                message.success("Задача создана");
-                setTask(null);
-                setLocation(null);
-                setIsOpen(false);
-            })
-            .catch(() => {
-                message.error("Что-то пошло не так!");
-            });
-    };
+	const addGameTask = () => {
+		sendWithAck(gameSocket, {
+			action: "add_task",
+			data: { location: location, task: task },
+		})
+			.then(() => {
+				message.success("Задача создана");
+				setTask(null);
+				setLocation(null);
+				setIsOpen(false);
+			})
+			.catch(() => {
+				message.error("Что-то пошло не так!");
+			});
+	};
 
-    return (
-        <Modal
-            title="Создать задачу для игры"
-            centered
-            open={isOpen}
-            onOk={addGameTask}
-            onCancel={() => setIsOpen(false)}
-            okButtonProps={{ disabled: !task || !location }}
-        >
-            <form className={styles.gameTaskFormWrapper}>
-                <label className={styles.gameTaskFormFieldWrapper}>
-                    <span>Основная локация</span>
+	return (
+		<Modal
+			title="Создать задачу для игры"
+			centered
+			open={isOpen}
+			onOk={addGameTask}
+			onCancel={() => setIsOpen(false)}
+			okButtonProps={{ disabled: !task || !location }}
+		>
+			<form className={styles.gameTaskFormWrapper}>
+				<label className={styles.gameTaskFormFieldWrapper}>
+					<span>Основная локация</span>
 
-                    <Select
-                        value={location}
-                        onChange={(value) => setLocation(value)}
-                        options={(Array.isArray(locations) ? locations : []).map((location) => {
-                            return {
-                                value: location.id,
-                                label: location.name,
-                            };
-                        })}
-                    />
-                </label>
+					<Select
+						value={location}
+						onChange={(value) => setLocation(value)}
+						options={(Array.isArray(locations) ? locations : []).map((location) => {
+							return {
+								value: location.id,
+								label: location.name,
+							};
+						})}
+					/>
+				</label>
 
-                <label className={styles.gameTaskFormFieldWrapper}>
-                    <span>Описание задания</span>
+				<label className={styles.gameTaskFormFieldWrapper}>
+					<span>Описание задания</span>
 
-                    <Select
-                        value={task}
-                        onChange={(value) => setTask(value)}
-                        options={(Array.isArray(tasks) ? tasks : []).map((task) => {
-                            return {
-                                value: task.id,
-                                label: task.text,
-                            };
-                        })}
-                    />
-                </label>
-            </form>
-        </Modal>
-    );
+					<Select
+						value={task}
+						onChange={(value) => setTask(value)}
+						options={(Array.isArray(tasks) ? tasks : []).map((task) => {
+							return {
+								value: task.id,
+								label: task.text,
+							};
+						})}
+					/>
+				</label>
+			</form>
+		</Modal>
+	);
 }

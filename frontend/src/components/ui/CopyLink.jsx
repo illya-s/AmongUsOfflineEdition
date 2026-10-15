@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Copy, LinkIcon } from "@/assets/icons"
+import { Copy } from "@/assets/icons";
 
 import styles from "./CopyLink.module.css";
 
@@ -56,7 +56,7 @@ const CopyLink = ({ href, children }) => {
 			onClick={handleCopy}
 			title={copied ? "Скопировано!" : "Скопировать ссылку"}
 		>
-			{!copied ? children : (<Copy />)}
+			{!copied ? children : <Copy />}
 		</button>
 	);
 };

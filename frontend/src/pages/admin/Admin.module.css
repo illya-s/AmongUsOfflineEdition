@@ -1,85 +1,80 @@
 .adminWrapper {
-    display: flex;
-    flex-wrap: wrap;
+	display: flex;
+	flex-wrap: wrap;
 
-    
-    /*display: grid;
+	/*display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: max-content 1fr;*/
-    gap: 1rem;
+	gap: 1rem;
 }
-
 
 .adminTitleWrapper {
-    width: 100%;
+	width: 100%;
 }
 .adminTitle {
-    color: var(--color-text-heading);
-    font-size: 1.2rem;
-    font-weight: bold;
+	color: var(--color-text-heading);
+	font-size: 1.2rem;
+	font-weight: bold;
 }
-
 
 .locationBlock {
-    padding: var(--padding);
-    
-    display: grid;
-    grid-template-columns: max-content auto max-content;
-    gap: 0 .35rem;
-    align-items: center;
-    
-    border-radius: 1rem;
-    background-color: var(--color-bg-elevated);
+	padding: var(--padding);
+
+	display: grid;
+	grid-template-columns: max-content auto max-content;
+	gap: 0 0.35rem;
+	align-items: center;
+
+	border-radius: 1rem;
+	background-color: var(--color-bg-elevated);
 }
 .locationBlockTitle {
-    font-size: .9rem;
-    font-weight: 700;
-    color: var(--color-text-heading);
+	font-size: 0.9rem;
+	font-weight: 700;
+	color: var(--color-text-heading);
 }
 
 .locationBlockMiddle {
-    display: flex;
-    flex-direction: column;
+	display: flex;
+	flex-direction: column;
 }
-
 
 .taskBlock {
-    padding: var(--padding);
-    
-    display: grid;
-    grid-template-columns: max-content auto max-content;
-    align-items: center;
-    gap: .5rem;
-    
-    border-radius: 1rem;
-    background-color: var(--color-bg-elevated);
+	padding: var(--padding);
+
+	display: grid;
+	grid-template-columns: max-content auto max-content;
+	align-items: center;
+	gap: 0.5rem;
+
+	border-radius: 1rem;
+	background-color: var(--color-bg-elevated);
 }
 
-
 .gameBlock {
-    padding: var(--padding);
+	padding: var(--padding);
 
-    display: grid;
-    ascent-override: 2 / 3;
-    grid-template-rows: repeat(4, max-content);
-    align-items: center;
-    gap: .5rem;
-    
-    border-radius: var(--border-radius-lg);
-    background-color: var(--color-bg-elevated);
+	display: grid;
+	ascent-override: 2 / 3;
+	grid-template-rows: repeat(4, max-content);
+	align-items: center;
+	gap: 0.5rem;
+
+	border-radius: var(--border-radius-lg);
+	background-color: var(--color-bg-elevated);
 }
 
 .gameBlock > img {
-    border-radius: var(--border-radius);
+	border-radius: var(--border-radius);
 }
 
 .gameBlockTitle {
-    font-weight: 700;
-    color: var(--color-text-heading);
+	font-weight: 700;
+	color: var(--color-text-heading);
 }
 
 .gameBlockButtons {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--padding);
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: var(--padding);
 }

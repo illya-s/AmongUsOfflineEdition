@@ -17,27 +17,16 @@ export default function Game() {
 	const [loading, setLoading] = useState(false);
 	const navigate = useNavigate();
 
-	const [pId, setPId] = useState(() =>
-		spId
-			? spId
-			: typeof window !== "undefined"
-				? localStorage.getItem(code)
-				: null,
-	);
+	const pId = spId ? spId : typeof window !== "undefined" ? localStorage.getItem(code) : null;
 
 	const [player, setPlayer] = useState(null);
 
-	const { gameSocket, game, players, tasks } = useGameSocket(
-		code,
-		pId,
-		setPlayer,
-		setLoading,
-	);
+	const { gameSocket, game, players, tasks } = useGameSocket(code, pId, setPlayer, setLoading);
 
 	useEffect(() => {
 		if (game && !player?.id) {
 			localStorage.removeItem(code);
-			navigate("/");
+			void navigate("/");
 		}
 	}, [game, player]);
 
@@ -46,16 +35,14 @@ export default function Game() {
 
 		if (player && !players.some((p) => p.id == player.id)) {
 			gameSocket.close();
-			navigate("/");
+			void navigate("/");
 		}
 	}, [players]);
 
-	const startTime = game?.start_time
-		? new Date(game.start_time).getTime()
-		: 0;
+	const startTime = game?.start_time ? new Date(game.start_time).getTime() : 0;
 
 	if (player && !player.is_alive) {
-		navigate("/ghost");
+		void navigate("/ghost");
 	}
 
 	if (game?.is_ended) {
@@ -72,11 +59,7 @@ export default function Game() {
 				</>
 			) : (
 				<>
-					<Spin
-						indicator={
-							<LoadingOutlined style={{ fontSize: 32 }} spin />
-						}
-					/>
+					<Spin indicator={<LoadingOutlined style={{ fontSize: 32 }} spin />} />
 					&nbsp;
 					<span>Соединение с сервером..</span>
 				</>
@@ -84,11 +67,7 @@ export default function Game() {
 		</Section>
 	) : game?.active ? (
 		startTime > Date.now() ? (
-			<GameWaiting
-				player={player}
-				players={players}
-				startTime={startTime}
-			/>
+			<GameWaiting player={player} players={players} startTime={startTime} />
 		) : (
 			<GameContainer
 				gameSocket={gameSocket}
@@ -99,11 +78,6 @@ export default function Game() {
 			/>
 		)
 	) : (
-		<GameLoading
-			gameSocket={gameSocket}
-			game={game}
-			player={player}
-			players={players}
-		/>
+		<GameLoading gameSocket={gameSocket} game={game} player={player} players={players} />
 	);
 }

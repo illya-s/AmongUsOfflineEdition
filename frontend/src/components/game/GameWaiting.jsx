@@ -1,19 +1,14 @@
 import { Progress } from "antd";
-import { useMemo, useEffect, useState, memo } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { Player } from "./Player";
 import { AliveIcon, KnifeIcon } from "@/assets/icons";
 import styles from "./GameWaiting.module.css";
 import { useRef } from "react";
 
 const Countdown = ({ startTime }) => {
-	const [left, setLeft] = useState(
-		Math.max(0, (startTime - Date.now()) / 1000),
-	);
+	const [left, setLeft] = useState(Math.max(0, (startTime - Date.now()) / 1000));
 	const requestRef = useRef();
-	const initialLeft = useMemo(
-		() => Math.max(1, (startTime - Date.now()) / 1000),
-		[startTime],
-	);
+	const initialLeft = useMemo(() => Math.max(1, (startTime - Date.now()) / 1000), [startTime]);
 
 	useEffect(() => {
 		const update = () => {
@@ -71,23 +66,15 @@ export function GameWaiting({ player, players, startTime }) {
 					<AliveIcon style={{ width: 16, color: "#FFF" }} />
 				)}
 
-				<span className={styles["player-info-name"]}>
-					{player?.role}
-				</span>
+				<span className={styles["player-info-name"]}>{player?.role}</span>
 			</div>
 
 			{player?.role === "imposter" && (
 				<div>
 					{players
-						?.filter(
-							(p) => p.role === "imposter" && p.id !== player.id,
-						)
+						?.filter((p) => p.role === "imposter" && p.id !== player.id)
 						.map((p) => (
-							<Player
-								key={`player_${p.id}`}
-								player={p}
-								active={p.id === player.id}
-							/>
+							<Player key={`player_${p.id}`} player={p} active={p.id === player.id} />
 						))}
 				</div>
 			)}

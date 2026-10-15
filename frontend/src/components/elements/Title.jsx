@@ -1,4 +1,4 @@
-import { theme } from "antd"
+import { theme } from "antd";
 
 export function Title({ children }) {
 	const { token } = theme.useToken();
@@ -13,10 +13,10 @@ export function Title({ children }) {
 
 				fontSize: token.fontSizeHeading1,
 				fontWeight: 700,
-				color: token.colorTextHeading
+				color: token.colorTextHeading,
 			}}
 		>
 			{children}
 		</h1>
-	)
+	);
 }

@@ -1,12 +1,10 @@
-FROM node:22-bookworm-slim
+FROM ghcr.io/voidzero-dev/vite-plus:1.2.0
 
 WORKDIR /app
 
-RUN corepack enable
+COPY --chown=vp:vp package.json bun.lock ./
+RUN vp install --frozen-lockfile
 
-COPY package.json yarn.lock .yarnrc.yml ./
-RUN yarn install --immutable
+COPY --chown=vp:vp . .
 
-COPY . .
-
-CMD ["yarn", "build"]
+CMD ["vp", "build"]

@@ -12,21 +12,19 @@ import { routes } from "./routes.jsx";
 
 import { darkTheme } from "./Theme.jsx";
 
-import { config } from "./config";
-
 const router = createBrowserRouter(routes);
 const cache = createCache({ hashPriority: "high" });
 
 function Root() {
-    return (
-        <StyleProvider cache={cache}>
-            <ConfigProvider theme={darkTheme}>
-                <MessageProvider>
-                    <RouterProvider router={router} />
-                </MessageProvider>
-            </ConfigProvider>
-        </StyleProvider>
-    );
+	return (
+		<StyleProvider cache={cache}>
+			<ConfigProvider theme={darkTheme}>
+				<MessageProvider>
+					<RouterProvider router={router} />
+				</MessageProvider>
+			</ConfigProvider>
+		</StyleProvider>
+	);
 }
 
 const rootElement = document.getElementById("root");
@@ -34,7 +32,7 @@ rootElement.className = `${baseStyles.root} ${themeStyles.themeScope}`;
 
 const reactRoot = import.meta.hot?.data.reactRoot ?? createRoot(rootElement);
 if (import.meta.hot) {
-    import.meta.hot.data.reactRoot = reactRoot;
+	import.meta.hot.data.reactRoot = reactRoot;
 }
 
 reactRoot.render(<Root />);

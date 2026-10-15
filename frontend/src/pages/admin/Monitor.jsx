@@ -11,7 +11,6 @@ import GameQRCode from "@/components/ui/GameQRCode";
 import styles from "./Monitor.module.css";
 
 import { LoadingOutlined } from "@ant-design/icons";
-import List from "@/components/admin/game/List";
 import { AliveIcon, GhostIcon } from "@/assets/icons";
 import { WinScreen } from "@/components/game/WinScreen";
 
@@ -27,11 +26,7 @@ export default function AdminMonitor() {
 		<div className={styles.wrapper}>
 			<div className={styles["main-wrapper"]}>
 				<div className={styles.title}>
-					<Spin
-						indicator={
-							<LoadingOutlined style={{ fontSize: 32 }} spin />
-						}
-					/>
+					<Spin indicator={<LoadingOutlined style={{ fontSize: 32 }} spin />} />
 
 					<span>Ожидпние старта игры</span>
 				</div>

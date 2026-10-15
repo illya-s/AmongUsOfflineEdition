@@ -1,56 +1,55 @@
 .adminBlockWrapper {
-    width: calc(50% - .5rem);
-    height: max-content;
-    min-height: calc(32px + (var(--padding) * 2));
+	width: calc(50% - 0.5rem);
+	height: max-content;
+	min-height: calc(32px + (var(--padding) * 2));
 
-    display: flex;
-    flex-direction: column;
-    gap: .5rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
 }
 
 .adminBlockTop {
-    display: grid;
-    grid-template-columns: auto max-content;
+	display: grid;
+	grid-template-columns: auto max-content;
 }
 .adminBlockTop > h3 {
-    color: var(--color-text-heading);
-    font-size: 1.1rem;
-    font-weight: 700;
+	color: var(--color-text-heading);
+	font-size: 1.1rem;
+	font-weight: 700;
 }
 
 .adminTasksAddButton {
-    font-size: 1.3rem;
-    font-weight: 600;
+	font-size: 1.3rem;
+	font-weight: 600;
 }
-
 
 .adminBlockList {
-    overflow-y: auto;
-    max-height: 140px;
-    
-    display: flex;
-    flex-direction: column;
-    gap: .5rem;
+	overflow-y: auto;
+	max-height: 140px;
+
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
 }
 .adminBlockWrapperLine > .adminBlockList {
-    display: flex;
-    flex-direction: column;
+	display: flex;
+	flex-direction: column;
 }
 .adminBlockWrapperGrid > .adminBlockList {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 }
 
 .adminBlockListEmpty {
-    color: var(--color-warning-text);
-    text-align: center;
+	color: var(--color-warning-text);
+	text-align: center;
 }
 
 .gameBlock {
-    width: 100% !important;
+	width: 100% !important;
 }
 
 .gameBlock .adminBlockList {
-    max-height: none !important;
-    justify-content: space-between;
+	max-height: none !important;
+	justify-content: space-between;
 }

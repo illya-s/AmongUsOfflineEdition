@@ -1,9 +1,9 @@
 .player {
 	--width: 100px;
 	--icon: 48px;
-	--font: .75em;
+	--font: 0.75em;
 	--pad: 1rem;
-	
+
 	flex: 0 0 var(--width);
 
 	padding: var(--pad);

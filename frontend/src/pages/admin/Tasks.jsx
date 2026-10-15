@@ -3,11 +3,7 @@ import styles from "./Tasks.module.css";
 
 import List from "@/components/admin/game/List";
 import { Section } from "@/components/elements/Section";
-import {
-    MapSvgLayer,
-    TaskEndpoints,
-    TaskRoute,
-} from "@/components/game/TaskMarkers";
+import { MapSvgLayer, TaskEndpoints, TaskRoute } from "@/components/game/TaskMarkers";
 import { GameLocations } from "@/components/game/GameLocations";
 import { useGameSocket } from "@/lib/api/useGameSocket";
 
@@ -48,18 +44,17 @@ export default function CompletedTasks() {
 		}
 	}, [game?.game_map]);
 
-	const [currentTaskId, setCurrentTaskId] = useState(null);
-	const handleSelectTask = (id) => {
-		setCurrentTaskId((prev) => (prev === id ? null : id));
-	};
-	const currentTask = tasks?.find((t) => t.id === currentTaskId);
+	// const [currentTaskId, setCurrentTaskId] = useState(null);
+	// const handleSelectTask = (id) => {
+	//   setCurrentTaskId((prev) => (prev === id ? null : id));
+	// };
+	// const currentTask = tasks?.find((t) => t.id === currentTaskId);
 
 	const renderList = (Array.isArray(tasks) ? tasks : []).filter((task) => {
 		if (!task) return false;
 		const isFinished = task.is_completed;
 		const matchesLocation =
-			selectedLocationId === "all" ||
-			task.location?.id === Number(selectedLocationId);
+			selectedLocationId === "all" || task.location?.id === Number(selectedLocationId);
 		return isFinished && matchesLocation;
 	});
 
@@ -121,7 +116,7 @@ export default function CompletedTasks() {
 					<div
 						className={styles.task}
 						key={`task_${task.id}`}
-						onClick={() => handleSelectTask(task.id)}
+						// onClick={() => handleSelectTask(task.id)}
 					>
 						<span>{task.task.text}</span>
 
@@ -129,7 +124,7 @@ export default function CompletedTasks() {
 							onClick={(e) => {
 								e.stopPropagation();
 
-								sendWithAck(gameSocket, {
+								void sendWithAck(gameSocket, {
 									action: "change_check_task",
 									data: {
 										id: task.id,

@@ -7,82 +7,82 @@ let updateLocations = null;
 let updateAvailableTasks = null;
 
 export function initSocketHandlers({
-    pId,
-    setPlayer,
-    setGame,
-    setTasks,
-    setPlayers,
-    setLocations,
-    setAvailableTasks,
+	pId,
+	setPlayer,
+	setGame,
+	setTasks,
+	setPlayers,
+	setLocations,
+	setAvailableTasks,
 }) {
-    player_id = pId;
-    updatePlayer = setPlayer;
-    updateGame = setGame;
-    updateTasks = setTasks;
-    updatePlayers = setPlayers;
-    updateLocations = setLocations;
-    updateAvailableTasks = setAvailableTasks;
+	player_id = pId;
+	updatePlayer = setPlayer;
+	updateGame = setGame;
+	updateTasks = setTasks;
+	updatePlayers = setPlayers;
+	updateLocations = setLocations;
+	updateAvailableTasks = setAvailableTasks;
 }
 
 let pendingRequests = {};
 
 export function sendWithAck(socket, payload) {
-    return new Promise((resolve, reject) => {
-        const id = Date.now() + Math.random();
-        payload.request_id = id;
+	return new Promise((resolve, reject) => {
+		const id = Date.now() + Math.random();
+		payload.request_id = id;
 
-        if (player_id) {
-            payload.player_id = player_id;
-        }
+		if (player_id) {
+			payload.player_id = player_id;
+		}
 
-        pendingRequests[id] = { resolve, reject };
+		pendingRequests[id] = { resolve, reject };
 
-        socket.send(JSON.stringify(payload));
+		socket.send(JSON.stringify(payload));
 
-        setTimeout(() => {
-            if (pendingRequests[id]) {
-                reject(new Error("Timeout waiting for server"));
-                delete pendingRequests[id];
-            }
-        }, 5000);
-    });
+		setTimeout(() => {
+			if (pendingRequests[id]) {
+				reject(new Error("Timeout waiting for server"));
+				delete pendingRequests[id];
+			}
+		}, 5000);
+	});
 }
 
 export function handleSocketMessage(event) {
-    const msg = JSON.parse(event.data);
+	const msg = JSON.parse(event.data);
 
-    if (msg.request_id) {
-        if (pendingRequests[msg.request_id]) {
-            const { resolve, reject } = pendingRequests[msg.request_id];
-    
-            if (msg.action === "error" || msg.status === "error") {
-                reject(new Error(msg.message || "Server error"));
-            } else {
-                resolve(msg);
-            }
-    
-            delete pendingRequests[msg.request_id];
-        }
-    }
+	if (msg.request_id) {
+		if (pendingRequests[msg.request_id]) {
+			const { resolve, reject } = pendingRequests[msg.request_id];
 
-    switch (msg.action) {
-        case "init":
-        case "update":
-            const game = msg.data?.game;
-            if (!game) {
-                console.error("Invalid game socket message: missing data.game", msg);
-                break;
-            }
-            updateGame?.(game);
-            updateTasks?.(Array.isArray(game.tasks) ? game.tasks : []);
-            updatePlayers?.(Array.isArray(game.players) ? game.players : []);
-            updatePlayer?.(msg.player)
-            updateLocations?.(Array.isArray(game.locations) ? game.locations : []);
-            updateAvailableTasks?.(Array.isArray(game.available_tasks) ? game.available_tasks : []);
-            break;
+			if (msg.action === "error" || msg.status === "error") {
+				reject(new Error(msg.message || "Server error"));
+			} else {
+				resolve(msg);
+			}
 
-        case "error":
-            console.error(`${msg.code}: ${msg.message}`);
-            break;
-    }
+			delete pendingRequests[msg.request_id];
+		}
+	}
+
+	switch (msg.action) {
+		case "init":
+		case "update":
+			const game = msg.data?.game;
+			if (!game) {
+				console.error("Invalid game socket message: missing data.game", msg);
+				break;
+			}
+			updateGame?.(game);
+			updateTasks?.(Array.isArray(game.tasks) ? game.tasks : []);
+			updatePlayers?.(Array.isArray(game.players) ? game.players : []);
+			updatePlayer?.(msg.player);
+			updateLocations?.(Array.isArray(game.locations) ? game.locations : []);
+			updateAvailableTasks?.(Array.isArray(game.available_tasks) ? game.available_tasks : []);
+			break;
+
+		case "error":
+			console.error(`${msg.code}: ${msg.message}`);
+			break;
+	}
 }

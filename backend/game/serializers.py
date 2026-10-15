@@ -60,6 +60,13 @@ class ChangeGameSerializer(serializers.Serializer):
     def update(self, instance: GameRoom, validated_data):
         value = validated_data["value"]
 
+        if value == instance.active:
+            return instance
+
+        if not value:
+            instance.reset_game()
+            return instance
+
         all_players = instance.players.all()
         all_players_count = all_players.count()
 
@@ -67,7 +74,7 @@ class ChangeGameSerializer(serializers.Serializer):
         all_tasks_count = all_tasks.count()
         shuffle_tasks = list(all_tasks.order_by("?"))
 
-        if not instance.active and all_players_count <= 3:
+        if not instance.active and all_players_count <= settings.MIN_PLAYERS:
             raise NotEnoughPlayersError("Недостаточно игроков для начала игры")
 
         if not instance.active and all_tasks_count < all_players_count:
@@ -75,28 +82,8 @@ class ChangeGameSerializer(serializers.Serializer):
                 f"Недостаточно задач: найдено {all_tasks_count}, а игроков экипажа {all_players_count}"
             )
 
-        start_time = timezone.now() + datetime.timedelta(seconds=20)
 
-        instance.active = value
-        instance.start_time = start_time
-        instance.save()
-
-        if not instance.active:
-            instance.reset_game()
-            return instance
-
-        update.apply_async(args=[instance.pk], eta=start_time)
-
-        if not instance.auto_assign_role:
-            if all_players.filter(role__isnull=True).exists():
-                raise PlayerRoleNotAssignedError(
-                    "Роль игрока необходимо назначить до начала игры"
-                )
-            if all_players.filter(role=Player.Roles.IMPOSTER).exists() is False:
-                raise NoImposterAssignedError(
-                    "Для начала игры необходимо назначить как минимум одного самозванца"
-                )
-        else:
+        if instance.auto_assign_role:
             random_players = list(all_players.order_by("?"))
 
             imposters_count = 1
@@ -118,12 +105,30 @@ class ChangeGameSerializer(serializers.Serializer):
                 for player in crew:
                     player.role = Player.Roles.CREW
                     player.save(update_fields=["role"])
+        else:
+            if all_players.filter(role__isnull=True).exists():
+                raise PlayerRoleNotAssignedError(
+                    "Роль игрока необходимо назначить до начала игры"
+                )
+            if all_players.filter(role=Player.Roles.IMPOSTER).exists() is False:
+                raise NoImposterAssignedError(
+                    "Для начала игры необходимо назначить как минимум одного самозванца"
+                )
 
         with transaction.atomic():
             for index, task in enumerate(shuffle_tasks):
                 assigned_player = all_players[index % all_players_count]
                 task.player = assigned_player
                 task.save(update_fields=["player"])
+
+
+        start_time = timezone.now() + datetime.timedelta(seconds=20)
+
+        instance.active = value
+        instance.start_time = start_time
+        instance.save()
+
+        update.apply_async(args=[instance.pk], eta=start_time)
 
         return instance
 

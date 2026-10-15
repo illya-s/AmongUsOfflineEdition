@@ -1,16 +1,15 @@
 import { DeleteFilled } from "@ant-design/icons";
 import { Badge, Button, Popconfirm, Select } from "antd";
-import { useState } from "react";
 import { sendWithAck } from "@/lib/api/sendWithAck";
 import styles from "./Player.module.css";
 import { AliveIcon, GhostIcon, KnifeIcon } from "@/assets/icons";
 
 export default function Player({ player, game, gameSocket, editable = false }) {
-	const [isLoading, setIsLoading] = useState(false);
+	// const [isLoading, setIsLoading] = useState(false);
 
 	const updatePlayerRole = (value) => {
 		setIsLoading(true);
-		sendWithAck(gameSocket, {
+		void sendWithAck(gameSocket, {
 			action: "change_player_role",
 			data: { id: player.id, value: value == "null" ? null : value },
 		}).finally(() => {
@@ -43,13 +42,7 @@ export default function Player({ player, game, gameSocket, editable = false }) {
 
 			<div className={styles.middle}>
 				<h3>
-
-					<Badge
-						text={player.name}
-						color={
-							player.is_online ? "green" : "red"
-						}
-					/>
+					<Badge text={player.name} color={player.is_online ? "green" : "red"} />
 				</h3>
 
 				<span>
@@ -57,9 +50,7 @@ export default function Player({ player, game, gameSocket, editable = false }) {
 					{game?.active ? (
 						<span>
 							{Array.isArray(player.roleList) &&
-								player.roleList.find(
-									(role) => role.value == roleValue,
-								)?.name}
+								player.roleList.find((role) => role.value == roleValue)?.name}
 						</span>
 					) : (
 						<Select
@@ -67,10 +58,7 @@ export default function Player({ player, game, gameSocket, editable = false }) {
 							onChange={updatePlayerRole}
 							options={[
 								{ value: "null", label: "Не назначено" },
-								...(Array.isArray(player.roleList)
-									? player.roleList
-									: []
-								).map((role) => {
+								...(Array.isArray(player.roleList) ? player.roleList : []).map((role) => {
 									return {
 										value: role.value,
 										label: role.name,
@@ -95,21 +83,13 @@ export default function Player({ player, game, gameSocket, editable = false }) {
 						});
 					}}
 				>
-					<Button
-						size="middle"
-						danger
-						shape="circle"
-						style={{ marginRight: "10px" }}
-					>
+					<Button size="middle" danger shape="circle" style={{ marginRight: "10px" }}>
 						🔪
 					</Button>
 				</Popconfirm>
 			)}
 
-			<Popconfirm
-				title="Вы действительно хотите удалить игрока?"
-				onConfirm={handleDeletePlayer}
-			>
+			<Popconfirm title="Вы действительно хотите удалить игрока?" onConfirm={handleDeletePlayer}>
 				<Button
 					size="middle"
 					variant="solid"

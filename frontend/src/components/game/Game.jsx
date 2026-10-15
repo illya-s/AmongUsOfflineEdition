@@ -8,7 +8,8 @@ import gameContStyles from "./GameContainer.module.css";
 
 import { Progress } from "@/components/ui";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { AliveIcon, KnifeIcon } from "@/assets/icons";
 import List from "../admin/game/List";
 import gameLoadingStyles from "./GameLoading.module.css";
@@ -19,11 +20,8 @@ import { ReportButton } from "./ReportButton";
 import { SabotageMenu } from "./SabotageMenu";
 import { SelfKillButton } from "./SelfKillButton";
 import { MapSvgLayer, TaskEndpoints, TaskRoute } from "./TaskMarkers";
-import { useMessageApi } from "@/providers/MessageProvider";
 
 export function GameContainer({ gameSocket, game, tasks, player, players }) {
-	const message = useMessageApi();
-
 	const [mapDimensions, setMapDimensions] = useState({ width: 0, height: 0 });
 
 	const [currentTaskId, setCurrentTaskId] = useState(null);
@@ -46,8 +44,7 @@ export function GameContainer({ gameSocket, game, tasks, player, players }) {
 	}, [game?.game_map]);
 
 	const renderList = currentTaskId ? [currentTask] : player.tasks;
-	const isCooldown =
-		player.cooldown_until && new Date(player.cooldown_until) > new Date();
+	const isCooldown = player.cooldown_until && new Date(player.cooldown_until) > new Date();
 
 	const isImposter = player.role === "imposter";
 	const activeMeeting = game?.meetings.find((m) => m.is_active);
@@ -91,9 +88,7 @@ export function GameContainer({ gameSocket, game, tasks, player, players }) {
 						<div className={gameContStyles["role-wrapper"]}>
 							<div
 								className={
-									player.role == "imposter"
-										? gameContStyles.imposter
-										: gameContStyles.crew
+									player.role == "imposter" ? gameContStyles.imposter : gameContStyles.crew
 								}
 							>
 								{player?.role == "imposter" ? (
@@ -105,13 +100,7 @@ export function GameContainer({ gameSocket, game, tasks, player, players }) {
 								<span>{player.role}</span>
 							</div>
 
-							{isImposter && (
-								<SabotageMenu
-									gameSocket={gameSocket}
-									game={game}
-									player={player}
-								/>
-							)}
+							{isImposter && <SabotageMenu gameSocket={gameSocket} game={game} player={player} />}
 						</div>
 					}
 				>
@@ -127,7 +116,7 @@ export function GameContainer({ gameSocket, game, tasks, player, players }) {
 				{!isImposter ? (
 					<SelfKillButton
 						onClick={() => {
-							sendWithAck(gameSocket, {
+							void sendWithAck(gameSocket, {
 								action: "kill_player",
 							});
 						}}
@@ -135,10 +124,7 @@ export function GameContainer({ gameSocket, game, tasks, player, players }) {
 				) : (
 					<div>
 						Вы сможете убить через
-						<Statistic.Timer
-							type="countdown"
-							value={player.kill_cooldown_until}
-						/>
+						<Statistic.Timer type="countdown" value={player.kill_cooldown_until} />
 					</div>
 				)}
 			</div>
@@ -189,20 +175,11 @@ export function GameContainer({ gameSocket, game, tasks, player, players }) {
 						<span>{task.task.text}</span>
 
 						<button
-							disabled={
-								isCooldown ||
-								isCommsSabotaged ||
-								task.is_completed
-							}
+							disabled={isCooldown || isCommsSabotaged || task.is_completed}
 							onClick={(e) => {
 								e.stopPropagation();
 
-								if (
-									isCooldown ||
-									isCommsSabotaged ||
-									task.is_completed
-								)
-									return;
+								if (isCooldown || isCommsSabotaged || task.is_completed) return;
 
 								sendWithAck(gameSocket, {
 									action: "complete_task",
@@ -210,10 +187,7 @@ export function GameContainer({ gameSocket, game, tasks, player, players }) {
 										id: task.id,
 									},
 								}).catch((error) => {
-									console.error(
-										"Failed to complete task:",
-										error,
-									);
+									console.error("Failed to complete task:", error);
 								});
 							}}
 							className={`${gameContStyles["task-complete-button"]} ${isCooldown || task.is_completed ? gameContStyles.disabled : ""}`}
@@ -228,15 +202,17 @@ export function GameContainer({ gameSocket, game, tasks, player, players }) {
 }
 
 export function GameLoading({ gameSocket, game, player, players }) {
+	const navigate = useNavigate();
+
 	const handleExit = () => {
-		gameSocket.close();
-		localStorage.removeItem(game.code);
 		sendWithAck(gameSocket, {
 			action: "delete_player",
 			data: { id: player?.id },
 		})
-			.then((res) => {
-				navigate("/");
+			.then(() => {
+				gameSocket.close();
+				localStorage.removeItem(game.code);
+				void navigate("/");
 			})
 			.catch((err) => {
 				console.error(err.message);
@@ -246,11 +222,7 @@ export function GameLoading({ gameSocket, game, player, players }) {
 	return (
 		<div className={gameLoadingStyles.wrapper}>
 			<div className={gameLoadingStyles["top-wrapper"]}>
-				<Spin
-					indicator={
-						<LoadingOutlined style={{ fontSize: 32 }} spin />
-					}
-				/>
+				<Spin indicator={<LoadingOutlined style={{ fontSize: 32 }} spin />} />
 
 				<span>Ожидпние старта игры</span>
 
@@ -262,11 +234,7 @@ export function GameLoading({ gameSocket, game, player, players }) {
 			<div className={gameLoadingStyles.content}>
 				{Array.isArray(players) &&
 					players?.map((p) => (
-						<Player
-							key={`player_${p.id}`}
-							player={p}
-							active={p.id == player?.id}
-						/>
+						<Player key={`player_${p.id}`} player={p} active={p.id == player?.id} />
 					))}
 			</div>
 		</div>

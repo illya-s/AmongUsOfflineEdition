@@ -43,11 +43,7 @@ export default function AdminGame() {
 							className={adminStyles.topEditSwitchWrapper}
 							title="Авто / Ручное назначение ролей"
 						>
-							{game?.auto_assign_role ? (
-								<span>Auto</span>
-							) : (
-								<span>Manual</span>
-							)}
+							{game?.auto_assign_role ? <span>Auto</span> : <span>Manual</span>}
 
 							<Switch
 								value={game?.auto_assign_role}
@@ -58,8 +54,8 @@ export default function AdminGame() {
 										action: "toggle_auto_assign_role",
 										data: { value: checked },
 									})
-										.then((req) => {})
-										.catch((err) => {})
+										.then(() => {})
+										.catch(() => {})
 										.finally(() => {
 											setIsLoadingAutoMode(false);
 										});
@@ -94,9 +90,7 @@ export default function AdminGame() {
 					<List
 						className={adminStyles.adminGameMiddleTaskList}
 						dataSource={tasks}
-						renderItem={(task) => (
-							<Task key={`task_${task.id}`} task={task} />
-						)}
+						renderItem={(task) => <Task key={`task_${task.id}`} task={task} />}
 					/>
 				</Section>
 			</div>

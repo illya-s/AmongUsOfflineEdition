@@ -16,7 +16,8 @@ export function SecurityCameras({ game, visible, onClose }) {
 	const cam = CAMERA_LOCATIONS[currentCamIndex];
 
 	const handleNext = () => setCurrentCamIndex((currentCamIndex + 1) % CAMERA_LOCATIONS.length);
-	const handlePrev = () => setCurrentCamIndex((currentCamIndex - 1 + CAMERA_LOCATIONS.length) % CAMERA_LOCATIONS.length);
+	const handlePrev = () =>
+		setCurrentCamIndex((currentCamIndex - 1 + CAMERA_LOCATIONS.length) % CAMERA_LOCATIONS.length);
 
 	return (
 		<Modal
@@ -39,7 +40,7 @@ export function SecurityCameras({ game, visible, onClose }) {
 					style={{
 						backgroundImage: `url(${game.game_map})`,
 						backgroundPosition: `${cam.x}% ${cam.y}%`,
-						backgroundSize: `${cam.zoom * 100}%`
+						backgroundSize: `${cam.zoom * 100}%`,
 					}}
 				></div>
 			</div>
@@ -47,7 +48,9 @@ export function SecurityCameras({ game, visible, onClose }) {
 			<div className={styles.controls}>
 				<Space>
 					<Button onClick={handlePrev}>Предыдущая</Button>
-					<Button type="primary" onClick={handleNext}>Следующая</Button>
+					<Button type="primary" onClick={handleNext}>
+						Следующая
+					</Button>
 				</Space>
 			</div>
 		</Modal>

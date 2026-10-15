@@ -1,6 +1,7 @@
 import os
 
 from .base import *
+from .config import *
 
 DEBUG = False
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")

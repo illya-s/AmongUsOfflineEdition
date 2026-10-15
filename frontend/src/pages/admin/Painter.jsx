@@ -7,19 +7,11 @@ import { Controls } from "@/components/admin/painter/Controls";
 import { GameTaskForm } from "@/components/admin/painter/GameTaskForm";
 import { Task } from "@/components/admin/painter/Task";
 import { Section } from "@/components/elements/Section";
-import {
-    MapSvgLayer,
-    TaskEndpoints,
-    TaskRoute,
-} from "@/components/game/TaskMarkers";
+import { MapSvgLayer, TaskEndpoints, TaskRoute } from "@/components/game/TaskMarkers";
 import { GameLocations } from "@/components/game/GameLocations";
 import { sendWithAck } from "@/lib/api/sendWithAck";
 import { useGameSocket } from "@/lib/api/useGameSocket";
-import {
-	AlignLeftIcon,
-	AlignCenterIcon,
-	AlignRightIcon,
-} from "@/assets/icons";
+import { AlignLeftIcon, AlignCenterIcon, AlignRightIcon } from "@/assets/icons";
 import styles from "./Painter.module.css";
 
 const TOOLS = {
@@ -34,8 +26,7 @@ const PAN_SPEED = 1;
 
 export default function Painter() {
 	const { code } = useParams();
-	const { gameSocket, game, players, tasks, locations, availableTasks } =
-		useGameSocket(code);
+	const { gameSocket, game, tasks, locations, availableTasks } = useGameSocket(code);
 
 	const [mapDimensions, setMapDimensions] = useState({ width: 0, height: 0 });
 
@@ -84,9 +75,7 @@ export default function Painter() {
 	};
 	const currentTask = tasks?.find((t) => t.id === currentTaskId);
 	const activePoints = currentTask?.points || [];
-	const currentLocation = locations?.find(
-		(location) => location.id === currentLocationId,
-	);
+	const currentLocation = locations?.find((location) => location.id === currentLocationId);
 	const renderedLocations = locations.map((location) =>
 		dragLocation?.id === location.id
 			? { ...location, x: dragLocation.x, y: dragLocation.y }
@@ -99,23 +88,22 @@ export default function Painter() {
 		setCurrentTool(TOOLS.MOVE);
 	};
 
-	const sendAction = (action, data) =>
-		sendWithAck(gameSocket, { action, data });
+	const sendAction = async (action, data) => await sendWithAck(gameSocket, { action, data });
 
 	const deleteTask = (id) => {
-		sendAction("delete_task", { id });
+		void sendAction("delete_task", { id });
 		if (currentTaskId === id) setCurrentTaskId(null);
 	};
 
 	const deleteLocation = (id) => {
-		sendAction("delete_location", { id });
+		void sendAction("delete_location", { id });
 		if (currentLocationId === id) setCurrentLocationId(null);
 	};
 
 	const addLocation = () => {
 		const name = newLocationName.trim();
 		if (!name) return;
-		sendAction("add_location", {
+		void sendAction("add_location", {
 			name,
 			x: mapDimensions.width / 2,
 			y: mapDimensions.height / 2,
@@ -141,18 +129,14 @@ export default function Painter() {
 	};
 
 	const undo = () => {
-		if (
-			!currentTaskId ||
-			(activePoints.length === 0 && history.length === 0)
-		)
-			return;
+		if (!currentTaskId || (activePoints.length === 0 && history.length === 0)) return;
 
 		if (history.length == 0) {
 			const nextPoints = activePoints.slice(0, -1);
 
 			setRedoStack((prev) => [activePoints, ...prev]);
 
-			sendWithAck(gameSocket, {
+			void sendWithAck(gameSocket, {
 				action: "update_zones",
 				data: { id: currentTaskId, points: nextPoints },
 			});
@@ -161,7 +145,7 @@ export default function Painter() {
 			setRedoStack((prev) => [activePoints, ...prev]);
 			setHistory((prev) => prev.slice(0, -1));
 
-			sendWithAck(gameSocket, {
+			void sendWithAck(gameSocket, {
 				action: "update_zones",
 				data: { id: currentTaskId, points: prevState },
 			});
@@ -175,7 +159,7 @@ export default function Painter() {
 		setRedoStack((prev) => prev.slice(1));
 		setHistory((prev) => [...prev, activePoints]);
 
-		sendWithAck(gameSocket, {
+		void sendWithAck(gameSocket, {
 			action: "update_zones",
 			data: { id: currentTaskId, points: nextState },
 		});
@@ -187,7 +171,7 @@ export default function Painter() {
 		setHistory((prev) => [...prev, activePoints]);
 		setRedoStack([]);
 
-		sendWithAck(gameSocket, {
+		void sendWithAck(gameSocket, {
 			action: "update_zones",
 			data: { id: taskId, points: [...activePoints, point] },
 		});
@@ -197,12 +181,10 @@ export default function Painter() {
 
 	const removePoint = (index) => {
 		if (!currentTaskId) return;
-		const nextPoints = activePoints.filter(
-			(_, pointIndex) => pointIndex !== index,
-		);
+		const nextPoints = activePoints.filter((_, pointIndex) => pointIndex !== index);
 		setHistory((prev) => [...prev, activePoints]);
 		setRedoStack([]);
-		sendWithAck(gameSocket, {
+		void sendWithAck(gameSocket, {
 			action: "update_zones",
 			data: { id: currentTaskId, points: nextPoints },
 		});
@@ -213,7 +195,7 @@ export default function Painter() {
 		if (!currentTaskId || activePoints.length === 0) return;
 		setHistory((prev) => [...prev, activePoints]);
 		setRedoStack([]);
-		sendWithAck(gameSocket, {
+		void sendWithAck(gameSocket, {
 			action: "update_zones",
 			data: { id: currentTaskId, points: [] },
 		});
@@ -230,8 +212,7 @@ export default function Painter() {
 		if (visualIsDragging) {
 			return "grabbing";
 		}
-		if (currentTool === TOOLS.MOVE)
-			return `url(/cursor-tool.png) 8 8, grab`;
+		if (currentTool === TOOLS.MOVE) return `url(/cursor-tool.png) 8 8, grab`;
 		if (currentTool === TOOLS.PEN) return `url(/pen-tool.png), crosshair`;
 		return "default";
 	};
@@ -250,10 +231,8 @@ export default function Painter() {
 
 		const actualRatio = nextScale / prevScale;
 
-		transform.current.x =
-			centerX - (centerX - transform.current.x) * actualRatio;
-		transform.current.y =
-			centerY - (centerY - transform.current.y) * actualRatio;
+		transform.current.x = centerX - (centerX - transform.current.x) * actualRatio;
+		transform.current.y = centerY - (centerY - transform.current.y) * actualRatio;
 		transform.current.scale = nextScale;
 
 		updateDOM();
@@ -276,14 +255,11 @@ export default function Painter() {
 
 			const ratio = nextScale / prevScale;
 
-			transform.current.x =
-				mouseX - (mouseX - transform.current.x) * ratio;
-			transform.current.y =
-				mouseY - (mouseY - transform.current.y) * ratio;
+			transform.current.x = mouseX - (mouseX - transform.current.x) * ratio;
+			transform.current.y = mouseY - (mouseY - transform.current.y) * ratio;
 			transform.current.scale = nextScale;
 		} else {
-			transform.current.x -=
-				(e.shiftKey ? e.deltaY : e.deltaX) * PAN_SPEED;
+			transform.current.x -= (e.shiftKey ? e.deltaY : e.deltaX) * PAN_SPEED;
 			transform.current.y -= (!e.shiftKey ? e.deltaY : 0) * PAN_SPEED;
 		}
 		updateDOM();
@@ -295,9 +271,7 @@ export default function Painter() {
 
 		const onMouseDown = (e) => {
 			if (!e.target.closest("svg") || dragLocationRef.current) return;
-			const canDrag =
-				e.button === 1 ||
-				(e.button === 0 && currentTool === TOOLS.MOVE);
+			const canDrag = e.button === 1 || (e.button === 0 && currentTool === TOOLS.MOVE);
 			if (!canDrag) return;
 			isDragging.current = true;
 			setVisualIsDragging(true);
@@ -337,7 +311,7 @@ export default function Painter() {
 			setDragLocation(null);
 			setVisualIsDragging(false);
 
-			if (location) sendAction("update_location", location);
+			if (location) void sendAction("update_location", location);
 		};
 
 		container.addEventListener("wheel", handleWheel, { passive: false });
@@ -390,11 +364,7 @@ export default function Painter() {
 						<span>Задания</span>
 						<small>{tasks.length}</small>
 					</summary>
-					<button
-						type="button"
-						className={styles.add}
-						onClick={() => setIsOpenForm(true)}
-					>
+					<button type="button" className={styles.add} onClick={() => setIsOpenForm(true)}>
 						+ Добавить задание
 					</button>
 					<List
@@ -418,11 +388,7 @@ export default function Painter() {
 						<span>Локации</span>
 						<small>{locations.length}</small>
 					</summary>
-					<button
-						type="button"
-						className={styles.add}
-						onClick={() => setIsLocationFormOpen(true)}
-					>
+					<button type="button" className={styles.add} onClick={() => setIsLocationFormOpen(true)}>
 						+ Добавить локацию
 					</button>
 					<div className={styles["location-list"]}>
@@ -431,18 +397,13 @@ export default function Painter() {
 								type="button"
 								key={location.id}
 								className={`${styles["location-item"]} ${
-									currentLocationId === location.id
-										? styles.active
-										: ""
+									currentLocationId === location.id ? styles.active : ""
 								}`}
-								onClick={() =>
-									handleSelectLocation(location.id)
-								}
+								onClick={() => handleSelectLocation(location.id)}
 							>
 								<span>{location.name}</span>
 								<small>
-									{Math.round(location.x)},{" "}
-									{Math.round(location.y)}
+									{Math.round(location.x)}, {Math.round(location.y)}
 								</small>
 								<span
 									className={styles["delete-location"]}
@@ -483,36 +444,26 @@ export default function Painter() {
 					onPressEnter={addLocation}
 				/>
 				<p className={styles.hint}>
-					Локация появится в центре карты. Перетащите её в нужное
-					место.
+					Локация появится в центре карты. Перетащите её в нужное место.
 				</p>
 			</Modal>
 
-			<Section
-				className={styles.wrapper}
-				ref={wrapperRef}
-				style={{ cursor: getCursor() }}
-			>
+			<Section className={styles.wrapper} ref={wrapperRef} style={{ cursor: getCursor() }}>
 				<aside className={styles.inspector}>
 					{currentTask ? (
 						<>
 							<div className={styles["inspector-heading"]}>
 								<span className={styles["task-number"]}>
-									{currentTask.sequence_number ??
-										currentTask.id}
+									{currentTask.sequence_number ?? currentTask.id}
 								</span>
 								<div>
 									<strong>{currentTask.task.text}</strong>
-									<small>
-										{currentTask.location?.name ||
-											"Без локации"}
-									</small>
+									<small>{currentTask.location?.name || "Без локации"}</small>
 								</div>
 							</div>
 
 							<p className={styles.hint}>
-								{activePoints.length === 0 &&
-									"Нажмите на карте, чтобы поставить точку задания."}
+								{activePoints.length === 0 && "Нажмите на карте, чтобы поставить точку задания."}
 								{activePoints.length === 1 &&
 									"Начало задано. Добавьте место доставки или оставьте одну точку."}
 								{activePoints.length === 2 &&
@@ -528,22 +479,13 @@ export default function Painter() {
 											onClick={() => removePoint(index)}
 											title="Удалить точку"
 										>
-											<span>
-												{index === 0
-													? "Начало"
-													: "Доставка"}
-											</span>
+											<span>{index === 0 ? "Начало" : "Доставка"}</span>
 											<small>
-												{Math.round(point.x)},{" "}
-												{Math.round(point.y)} ×
+												{Math.round(point.x)}, {Math.round(point.y)} ×
 											</small>
 										</button>
 									))}
-									<button
-										type="button"
-										className={styles.clear}
-										onClick={clearPoints}
-									>
+									<button type="button" className={styles.clear} onClick={clearPoints}>
 										Очистить
 									</button>
 								</div>
@@ -562,17 +504,13 @@ export default function Painter() {
 										onPointerUp={(event) =>
 											sendAction("update_task_size", {
 												id: currentTask.id,
-												size: Number(
-													event.currentTarget.value,
-												),
+												size: Number(event.currentTarget.value),
 											})
 										}
 										onKeyUp={(event) =>
 											sendAction("update_task_size", {
 												id: currentTask.id,
-												size: Number(
-													event.currentTarget.value,
-												),
+												size: Number(event.currentTarget.value),
 											})
 										}
 									/>
@@ -589,21 +527,15 @@ export default function Painter() {
 					) : currentLocation ? (
 						<>
 							<div className={styles["inspector-heading"]}>
-								<span className={styles["location-symbol"]}>
-									⌖
-								</span>
+								<span className={styles["location-symbol"]}>⌖</span>
 								<div>
 									<strong>{currentLocation.name}</strong>
 									<small>
-										{Math.round(currentLocation.x)},{" "}
-										{Math.round(currentLocation.y)}
+										{Math.round(currentLocation.x)}, {Math.round(currentLocation.y)}
 									</small>
 								</div>
 							</div>
-							<p className={styles.hint}>
-								Перетащите текст по карте или задайте точные
-								параметры.
-							</p>
+							<p className={styles.hint}>Перетащите текст по карте или задайте точные параметры.</p>
 							<div className={styles["entity-controls"]}>
 								<label className={styles["full-field"]}>
 									<span>Название</span>
@@ -617,13 +549,9 @@ export default function Painter() {
 											})
 										}
 										onBlur={(event) => {
-											const name =
-												event.currentTarget.value.trim();
-											if (
-												name &&
-												name !== currentLocation.name
-											)
-												sendAction("update_location", {
+											const name = event.currentTarget.value.trim();
+											if (name && name !== currentLocation.name)
+												void sendAction("update_location", {
 													id: currentLocation.id,
 													name,
 												});
@@ -634,9 +562,7 @@ export default function Painter() {
 								<fieldset>
 									<legend>Положение</legend>
 									<div className={styles["field-row"]}>
-										<label
-											className={styles["number-field"]}
-										>
+										<label className={styles["number-field"]}>
 											<span>X</span>
 											<input
 												type="number"
@@ -644,23 +570,14 @@ export default function Painter() {
 												defaultValue={currentLocation.x}
 												key={`location-x-${currentLocation.id}-${currentLocation.x}`}
 												onBlur={(event) =>
-													sendAction(
-														"update_location",
-														{
-															id: currentLocation.id,
-															x: Number(
-																event
-																	.currentTarget
-																	.value,
-															),
-														},
-													)
+													sendAction("update_location", {
+														id: currentLocation.id,
+														x: Number(event.currentTarget.value),
+													})
 												}
 											/>
 										</label>
-										<label
-											className={styles["number-field"]}
-										>
+										<label className={styles["number-field"]}>
 											<span>Y</span>
 											<input
 												type="number"
@@ -668,17 +585,10 @@ export default function Painter() {
 												defaultValue={currentLocation.y}
 												key={`location-y-${currentLocation.id}-${currentLocation.y}`}
 												onBlur={(event) =>
-													sendAction(
-														"update_location",
-														{
-															id: currentLocation.id,
-															y: Number(
-																event
-																	.currentTarget
-																	.value,
-															),
-														},
-													)
+													sendAction("update_location", {
+														id: currentLocation.id,
+														y: Number(event.currentTarget.value),
+													})
 												}
 											/>
 										</label>
@@ -688,32 +598,20 @@ export default function Painter() {
 								<fieldset>
 									<legend>Поворот</legend>
 									<div className={styles["rotation-row"]}>
-										<label
-											className={styles["number-field"]}
-										>
+										<label className={styles["number-field"]}>
 											<span>↳</span>
 											<input
 												type="number"
 												min="-180"
 												max="180"
 												step="1"
-												defaultValue={
-													currentLocation.rotation ??
-													0
-												}
+												defaultValue={currentLocation.rotation ?? 0}
 												key={`location-rotation-${currentLocation.id}-${currentLocation.rotation}`}
 												onBlur={(event) =>
-													sendAction(
-														"update_location",
-														{
-															id: currentLocation.id,
-															rotation: Number(
-																event
-																	.currentTarget
-																	.value,
-															),
-														},
-													)
+													sendAction("update_location", {
+														id: currentLocation.id,
+														rotation: Number(event.currentTarget.value),
+													})
 												}
 											/>
 											<span>°</span>
@@ -725,20 +623,13 @@ export default function Painter() {
 													key={rotation}
 													title={`Повернуть на ${rotation}°`}
 													onClick={() =>
-														sendAction(
-															"update_location",
-															{
-																id: currentLocation.id,
-																rotation,
-															},
-														)
+														sendAction("update_location", {
+															id: currentLocation.id,
+															rotation,
+														})
 													}
 												>
-													{rotation === 0
-														? "↕"
-														: rotation < 0
-															? "↶"
-															: "↷"}
+													{rotation === 0 ? "↕" : rotation < 0 ? "↶" : "↷"}
 												</button>
 											))}
 										</div>
@@ -748,32 +639,20 @@ export default function Painter() {
 								<div className={styles["field-row"]}>
 									<fieldset>
 										<legend>Размер текста</legend>
-										<label
-											className={styles["number-field"]}
-										>
+										<label className={styles["number-field"]}>
 											<span>A</span>
 											<input
 												type="number"
 												min="6"
 												max="200"
 												step="1"
-												defaultValue={
-													currentLocation.font_size ??
-													13
-												}
+												defaultValue={currentLocation.font_size ?? 13}
 												key={`location-font-${currentLocation.id}-${currentLocation.font_size}`}
 												onBlur={(event) =>
-													sendAction(
-														"update_location",
-														{
-															id: currentLocation.id,
-															font_size: Number(
-																event
-																	.currentTarget
-																	.value,
-															),
-														},
-													)
+													sendAction("update_location", {
+														id: currentLocation.id,
+														font_size: Number(event.currentTarget.value),
+													})
 												}
 											/>
 											<span>px</span>
@@ -781,33 +660,20 @@ export default function Painter() {
 									</fieldset>
 									<fieldset>
 										<legend>Интервал букв</legend>
-										<label
-											className={styles["number-field"]}
-										>
+										<label className={styles["number-field"]}>
 											<span>|A|</span>
 											<input
 												type="number"
 												min="-20"
 												max="100"
 												step="0.1"
-												defaultValue={
-													currentLocation.letter_spacing ??
-													0
-												}
+												defaultValue={currentLocation.letter_spacing ?? 0}
 												key={`location-spacing-${currentLocation.id}-${currentLocation.letter_spacing}`}
 												onBlur={(event) =>
-													sendAction(
-														"update_location",
-														{
-															id: currentLocation.id,
-															letter_spacing:
-																Number(
-																	event
-																		.currentTarget
-																		.value,
-																),
-														},
-													)
+													sendAction("update_location", {
+														id: currentLocation.id,
+														letter_spacing: Number(event.currentTarget.value),
+													})
 												}
 											/>
 											<span>px</span>
@@ -825,21 +691,13 @@ export default function Painter() {
 											max="400"
 											step="1"
 											placeholder="Auto"
-											defaultValue={
-												currentLocation.line_height ??
-												""
-											}
+											defaultValue={currentLocation.line_height ?? ""}
 											key={`location-line-${currentLocation.id}-${currentLocation.line_height}`}
 											onBlur={(event) =>
 												sendAction("update_location", {
 													id: currentLocation.id,
-													line_height: event
-														.currentTarget.value
-														? Number(
-																event
-																	.currentTarget
-																	.value,
-															)
+													line_height: event.currentTarget.value
+														? Number(event.currentTarget.value)
 														: null,
 												})
 											}
@@ -852,29 +710,20 @@ export default function Painter() {
 									<legend>Выравнивание</legend>
 									<div className={styles["alignment-row"]}>
 										<div className={styles.segmented}>
-							{[
-								["left", <AlignLeftIcon />],
-								["center", <AlignCenterIcon />],
-								["right", <AlignRightIcon />],
+											{[
+												["left", <AlignLeftIcon />],
+												["center", <AlignCenterIcon />],
+												["right", <AlignRightIcon />],
 											].map(([value, icon]) => (
 												<button
 													type="button"
 													key={value}
-													className={
-														currentLocation.text_align ===
-														value
-															? styles.selected
-															: ""
-													}
+													className={currentLocation.text_align === value ? styles.selected : ""}
 													onClick={() =>
-														sendAction(
-															"update_location",
-															{
-																id: currentLocation.id,
-																text_align:
-																	value,
-															},
-														)
+														sendAction("update_location", {
+															id: currentLocation.id,
+															text_align: value,
+														})
 													}
 												>
 													{icon}
@@ -891,20 +740,13 @@ export default function Painter() {
 													type="button"
 													key={value}
 													className={
-														currentLocation.vertical_align ===
-														value
-															? styles.selected
-															: ""
+														currentLocation.vertical_align === value ? styles.selected : ""
 													}
 													onClick={() =>
-														sendAction(
-															"update_location",
-															{
-																id: currentLocation.id,
-																vertical_align:
-																	value,
-															},
-														)
+														sendAction("update_location", {
+															id: currentLocation.id,
+															vertical_align: value,
+														})
 													}
 												>
 													{icon}
@@ -916,18 +758,14 @@ export default function Painter() {
 								<button
 									type="button"
 									className={styles.danger}
-									onClick={() =>
-										deleteLocation(currentLocation.id)
-									}
+									onClick={() => deleteLocation(currentLocation.id)}
 								>
 									Удалить локацию
 								</button>
 							</div>
 						</>
 					) : (
-						<p className={styles.hint}>
-							Выберите задание или локацию в панели слева.
-						</p>
+						<p className={styles.hint}>Выберите задание или локацию в панели слева.</p>
 					)}
 				</aside>
 
@@ -939,10 +777,7 @@ export default function Painter() {
 						if (currentTool === TOOLS.PEN) {
 							if (currentTaskId) {
 								const point = getSvgPoint(e);
-								onDrawPoint(
-									{ x: point.x, y: point.y },
-									currentTaskId,
-								);
+								onDrawPoint({ x: point.x, y: point.y }, currentTaskId);
 							} else {
 								setIsOpenForm(true);
 							}
@@ -988,45 +823,33 @@ export default function Painter() {
 										mapWidth={mapDimensions.width}
 										mapHeight={mapDimensions.height}
 									/>
-									<TaskEndpoints
-										task={task}
-									/>
+									<TaskEndpoints task={task} />
 								</React.Fragment>
 							);
 						})}
 
-					{currentTool === TOOLS.PEN &&
-						mousePos &&
-						activePoints.length < 2 && (
-							<>
-								{activePoints.length === 1 && (
-									<line
-										x1={
-											activePoints[
-												activePoints.length - 1
-											].x
-										}
-										y1={
-											activePoints[
-												activePoints.length - 1
-											].y
-										}
-										x2={mousePos.x}
-										y2={mousePos.y}
-										stroke="var(--color-primary)"
-										strokeWidth={2}
-									/>
-								)}
-								<circle
-									cx={mousePos.x}
-									cy={mousePos.y}
-									r={2}
-									fill="white"
+					{currentTool === TOOLS.PEN && mousePos && activePoints.length < 2 && (
+						<>
+							{activePoints.length === 1 && (
+								<line
+									x1={activePoints[activePoints.length - 1].x}
+									y1={activePoints[activePoints.length - 1].y}
+									x2={mousePos.x}
+									y2={mousePos.y}
 									stroke="var(--color-primary)"
-									strokeWidth={1}
+									strokeWidth={2}
 								/>
-							</>
-						)}
+							)}
+							<circle
+								cx={mousePos.x}
+								cy={mousePos.y}
+								r={2}
+								fill="white"
+								stroke="var(--color-primary)"
+								strokeWidth={1}
+							/>
+						</>
+					)}
 				</svg>
 
 				<Controls

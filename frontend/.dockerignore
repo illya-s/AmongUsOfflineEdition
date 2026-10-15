@@ -1,7 +1,9 @@
 node_modules
 dist
-.pnp.*
-.yarn/install-state.gz
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+
+# Bun lockfile
+bun.lockb
+
+# Bun logs
+*.log

@@ -6,11 +6,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router";
 
 import { GameLocations } from "@/components/game/GameLocations";
-import {
-    MapSvgLayer,
-    TaskEndpoints,
-    TaskRoute,
-} from "@/components/game/TaskMarkers";
+import { MapSvgLayer, TaskEndpoints, TaskRoute } from "@/components/game/TaskMarkers";
 
 import { Avatar, CopyLink } from "@/components/ui";
 import { AdminMusic } from "@/components/admin/game/AdminMusic";
@@ -79,8 +75,9 @@ const Aside = ({ gameSocket, game }) => {
 	};
 
 	const handleRemoveGame = () => {
-		api.delete(`games/${game?.code}/`)
-			.then((res) => {
+		api
+			.delete(`games/${game?.code}/`)
+			.then(() => {
 				gameSocket.close();
 				navigate("/admin/");
 			})
@@ -107,11 +104,7 @@ const Aside = ({ gameSocket, game }) => {
 					shape="circle"
 					size="middle"
 					icon={
-						!game?.active ? (
-							<PlayCircleFilled size="large" />
-						) : (
-							<PauseCircleFilled size="large" />
-						)
+						!game?.active ? <PlayCircleFilled size="large" /> : <PauseCircleFilled size="large" />
 					}
 					onClick={(e) => {
 						e.preventDefault();
@@ -129,23 +122,12 @@ const Aside = ({ gameSocket, game }) => {
 
 				<div>
 					<Badge
-						color={
-							game?.active && !game?.is_ended ? "green" : "red"
-						}
-						text={
-							game?.active
-								? !game?.is_ended
-									? "Активна"
-									: "Завершена"
-								: "Не активна"
-						}
+						color={game?.active && !game?.is_ended ? "green" : "red"}
+						text={game?.active ? (!game?.is_ended ? "Активна" : "Завершена") : "Не активна"}
 					/>
 
 					{game?.active && !game?.is_ended && (
-						<Statistic.Timer
-							type="countup"
-							value={new Date(game?.start_time).getTime()}
-						/>
+						<Statistic.Timer type="countup" value={new Date(game?.start_time).getTime()} />
 					)}
 				</div>
 
@@ -180,8 +162,7 @@ const Aside = ({ gameSocket, game }) => {
 							<PictureFilled />
 						</p>
 						<p className="ant-upload-text">
-							Нажмите или перетащите изображение для обновления
-							карты
+							Нажмите или перетащите изображение для обновления карты
 						</p>
 					</Upload.Dragger>
 				</Modal>

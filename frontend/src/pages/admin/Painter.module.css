@@ -1,6 +1,6 @@
 .container {
 	grid-row: 1 / 3;
-	
+
 	height: 100vh;
 
 	display: grid;
