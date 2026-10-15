@@ -108,7 +108,8 @@ services:
 
     frontend_test:
         build: ./frontend
-        command: ["vp", "test"]
+        entrypoint: []
+        command: vp test
         profiles: ["test"]
 
 volumes:
